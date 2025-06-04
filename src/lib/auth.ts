@@ -4,6 +4,7 @@ import { db } from "@/db/drizzle";
 import { authSchema } from "@/db/schemas/auth-schema";
 import { nextCookies } from "better-auth/next-js";
 import { compare, genSalt, hash } from "bcrypt-ts";
+import { createAuthMiddleware, APIError } from "better-auth/api";
 
 export const auth = betterAuth({
   appName: "BriefBriefun",
@@ -12,6 +13,16 @@ export const auth = betterAuth({
     provider: "pg",
     schema: authSchema,
   }),
+  cookieCache: {
+    enabled: true,
+    maxAge: 5 * 60, // Cache duration in seconds
+  },
+
+  user: {
+    deleteUser: {
+      enabled: true,
+    },
+  },
   emailAndPassword: {
     enabled: true,
     minPasswordLength: 8,
@@ -32,12 +43,52 @@ export const auth = betterAuth({
       clientSecret: process.env.GITHUB_CLIENT_SECRET as string,
     },
     google: {
-      prompt: "select_account",
+      // prompt: "select_account",
       clientId: process.env.GOOGLE_CLIENT_ID as string,
       clientSecret: process.env.GOOGLE_CLIENT_SECRET as string,
     },
   },
-  onAPIError: {
-    throw: true,
+
+  hooks: {
+    after: createAuthMiddleware(async (ctx) => {
+      const response = ctx.context.returned as APIError;
+      if (response && response.body) {
+        if (response.body?.code === "USER_ALREADY_EXISTS") {
+          throw new APIError("BAD_REQUEST", {
+            ...response.body,
+            message: "USER_ALREADY_EXISTS", // account already exists
+          });
+        }
+        if (response.body?.code === "INVALID_EMAIL_OR_PASSWORD") {
+          throw new APIError("UNAUTHORIZED", {
+            ...response.body,
+            message: "INVALID_EMAIL_OR_PASSWORD",
+          });
+        }
+        if (response.body?.code === "INVALID_EMAIL") {
+          throw new APIError("UNAUTHORIZED", {
+            ...response.body,
+            message: "INVALID_EMAIL",
+          });
+        }
+        if (response.body?.code === "INVALID_PASSWORD") {
+          throw new APIError("BAD_REQUEST", {
+            ...response.body,
+            message: "INVALID_PASSWORD",
+          });
+        }
+      }
+    }),
+  },
+
+  advanced: {
+    ipAddress: {
+      ipAddressHeaders: [
+        "x-forwarded-for",
+        "x-vercel-forwarded-for",
+        "x-real-ip",
+      ],
+      disableIpTracking: false,
+    },
   },
 });

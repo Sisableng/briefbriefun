@@ -17,7 +17,6 @@ import {
 import { Input } from "@/components/ui/input";
 import {
   ArrowRightIcon,
-  ChevronRightIcon,
   EyeIcon,
   EyeOffIcon,
   LoaderCircleIcon,
@@ -26,10 +25,31 @@ import { Label } from "@/components/ui/label";
 import { Checkbox } from "@/components/ui/checkbox";
 import { signin } from "./actions";
 import { toast } from "sonner";
-import { getErrorMessage } from "@/lib/auth-client";
+import { authClient, getErrorMessage } from "@/lib/auth-client";
+import SocialIcon from "@/components/SocialIcon";
+import { Separator } from "@/components/ui/separator";
+import { useRouter } from "@bprogress/next/app";
 
-const formSchema = z.object({
+const allowedEmailDomains = [
+  "gmail.com",
+  "yahoo.com",
+  "outlook.com",
+  "hotmail.com",
+  "live.com",
+];
+
+const loginSchema = z.object({
   email: z.string().email("Masukin email yang bener!"),
+  // .refine(
+  //   (email) => {
+  //     const domain = email.split("@")[1];
+  //     return allowedEmailDomains.includes(domain);
+  //   },
+  //   {
+  //     message:
+  //       "Cuma nerima email dari Gmail, Yahoo, atau Outlook aja ya bos!",
+  //   },
+  // ),
   password: z
     .string()
     .min(8, "Password lu kependekan!")
@@ -44,9 +64,11 @@ const formSchema = z.object({
 export default function SigninForm() {
   const [showPassword, setShowPassword] = React.useState(false);
 
+  const router = useRouter();
+
   // 1. Define your form.
-  const form = useForm<z.infer<typeof formSchema>>({
-    resolver: zodResolver(formSchema),
+  const form = useForm<z.infer<typeof loginSchema>>({
+    resolver: zodResolver(loginSchema),
     defaultValues: {
       email: "",
       password: "",
@@ -56,95 +78,131 @@ export default function SigninForm() {
   const { isSubmitting } = form.formState;
 
   // 2. Define a submit handler.
-  async function onSubmit(values: z.infer<typeof formSchema>) {
+  async function onSubmit(values: z.infer<typeof loginSchema>) {
     const result = await signin(values);
 
     if (result?.error) {
-      console.log(result?.error.message, result?.error.status);
+      console.log(result);
       toast.error(getErrorMessage(result?.error.message));
+    } else {
+      router.push("/me");
+    }
+  }
+
+  async function socialAuth(provider: "google" | "github") {
+    const result = await authClient.signIn.social({
+      provider: provider,
+      callbackURL: "/me",
+      newUserCallbackURL: "/me/after-oauth",
+    });
+
+    if (result?.error) {
+      console.log(result);
+      toast.error(getErrorMessage(result?.error.code));
     }
   }
 
   return (
-    <Form {...form}>
-      <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-8">
-        <FormField
-          control={form.control}
-          name="email"
-          render={({ field }) => (
-            <FormItem>
-              <FormLabel>Email</FormLabel>
-              <FormControl>
-                <Input placeholder="mail@mail.com" {...field} />
-              </FormControl>
-              <FormMessage className="ml-2 text-xs" />
-            </FormItem>
-          )}
-        />
-        <FormField
-          control={form.control}
-          name="password"
-          render={({ field }) => (
-            <FormItem>
-              <div className="flex items-center justify-between gap-2">
-                <FormLabel>Password</FormLabel>
-
-                <button
-                  type="button"
-                  onClick={() => setShowPassword(!showPassword)}
-                  className="text-muted-foreground mr-2 flex cursor-pointer items-center gap-1.5 rounded-full border p-1 px-2 text-xs"
-                >
-                  {showPassword ? (
-                    <>
-                      <EyeOffIcon className="inline-flex size-3" />
-                      Tutup
-                    </>
-                  ) : (
-                    <>
-                      <EyeIcon className="inline-flex size-3" />
-                      Liat
-                    </>
-                  )}
-                </button>
-              </div>
-              <FormControl>
-                <Input
-                  type={showPassword ? "text" : "password"}
-                  placeholder="Password nya"
-                  {...field}
-                  autoComplete="off"
-                />
-              </FormControl>
-              <FormMessage className="ml-2 text-xs" />
-            </FormItem>
-          )}
-        />
-
-        <div>
-          <Label className="text-muted-foreground items-start text-xs sm:text-sm">
-            <Checkbox className="mt-1" />
-            Saya menyetujui peraturan yang dibuat oleh Luffy untuk mencari
-            Onepiece dan mengalahkan madara dengan menaiki awan kinton.
-          </Label>
-        </div>
-
+    <>
+      <div className="flex items-center justify-center gap-3">
         <Button
-          type="submit"
           size={"lg"}
-          className="w-full"
-          disabled={isSubmitting}
+          variant={"outline"}
+          onClick={() => socialAuth("github")}
         >
-          {isSubmitting ? (
-            <>
-              Sabar... <LoaderCircleIcon className="animate-spin" />
-            </>
-          ) : (
-            <>
-              Masuk <ArrowRightIcon />
-            </>
-          )}
+          <SocialIcon name="github" /> Github
         </Button>
-      </form>
-    </Form>
+        <Button
+          size={"lg"}
+          variant={"outline"}
+          onClick={() => socialAuth("google")}
+        >
+          <SocialIcon name="google" /> Google
+        </Button>
+      </div>
+
+      <Separator />
+
+      <Form {...form}>
+        <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-8">
+          <FormField
+            control={form.control}
+            name="email"
+            render={({ field }) => (
+              <FormItem>
+                <FormLabel>Email</FormLabel>
+                <FormControl>
+                  <Input placeholder="mail@gmail.com" {...field} />
+                </FormControl>
+                <FormMessage className="ml-2 text-xs" />
+              </FormItem>
+            )}
+          />
+          <FormField
+            control={form.control}
+            name="password"
+            render={({ field }) => (
+              <FormItem>
+                <div className="flex items-center justify-between gap-2">
+                  <FormLabel>Password</FormLabel>
+
+                  <button
+                    type="button"
+                    onClick={() => setShowPassword(!showPassword)}
+                    className="text-muted-foreground mr-2 flex cursor-pointer items-center gap-1.5 rounded-full border p-1 px-2 text-xs"
+                  >
+                    {showPassword ? (
+                      <>
+                        <EyeOffIcon className="inline-flex size-3" />
+                        Tutup
+                      </>
+                    ) : (
+                      <>
+                        <EyeIcon className="inline-flex size-3" />
+                        Liat
+                      </>
+                    )}
+                  </button>
+                </div>
+                <FormControl>
+                  <Input
+                    type={showPassword ? "text" : "password"}
+                    placeholder="Password nya"
+                    {...field}
+                    autoComplete="off"
+                  />
+                </FormControl>
+                <FormMessage className="ml-2 text-xs" />
+              </FormItem>
+            )}
+          />
+
+          <div>
+            <Label className="text-muted-foreground items-start text-xs sm:text-sm">
+              <Checkbox className="mt-1" />
+              Saya menyetujui peraturan yang dibuat oleh Luffy untuk mencari
+              Onepiece dan mengalahkan madara dengan menaiki awan kinton.
+            </Label>
+          </div>
+
+          <Button
+            type="submit"
+            size={"lg"}
+            className="w-full"
+            disabled={isSubmitting}
+          >
+            {isSubmitting ? (
+              <>
+                Sabar... <LoaderCircleIcon className="animate-spin" />
+              </>
+            ) : (
+              <>
+                Masuk <ArrowRightIcon />
+              </>
+            )}
+          </Button>
+        </form>
+      </Form>
+    </>
   );
 }

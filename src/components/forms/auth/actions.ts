@@ -2,6 +2,7 @@
 
 import { auth } from "@/lib/auth";
 import { APIError } from "better-auth/api";
+import { headers } from "next/headers";
 
 type Authentication = {
   email: string;
@@ -17,23 +18,14 @@ export const signin = async (value: Omit<Authentication, "name">) => {
         password: value.password,
         callbackURL: "/me",
       },
+      headers: await headers(),
     });
   } catch (error) {
+    console.error("server", error);
     if (error instanceof APIError) {
       return { error };
     }
   }
-};
-
-export const signinSocial = async (provider: "google" | "github") => {
-  await auth.api.signInSocial({
-    body: {
-      provider,
-      callbackURL: "/me",
-      errorCallbackURL: "/social-error",
-      newUserCallbackURL: "/me",
-    },
-  });
 };
 
 export const signup = async (value: Authentication) => {
@@ -44,5 +36,19 @@ export const signup = async (value: Authentication) => {
       password: value.password,
       callbackURL: "/me",
     },
+    headers: await headers(),
   });
+};
+
+export const setPassword = async (newPassword: string) => {
+  try {
+    await auth.api.setPassword({
+      body: { newPassword: newPassword },
+      headers: await headers(),
+    });
+  } catch (error) {
+    if (error instanceof APIError) {
+      return { error };
+    }
+  }
 };

@@ -8,9 +8,9 @@ export const authClient = createAuthClient({
 type ErrorTypes = Partial<Record<keyof typeof auth.$ERROR_CODES, string>>;
 
 const errorCodes = {
-  "Invalid email or password": "Kek nya email/password! lu salah deh.",
-  "User already exists": "Akun lo udah terdaftar, bro!",
-} as const;
+  INVALID_EMAIL_OR_PASSWORD: "Kek nya email/password! lu salah deh.",
+  USER_ALREADY_EXISTS: "Akun lo udah terdaftar, bro!",
+} satisfies ErrorTypes;
 
 export const getErrorMessage = (code?: string) => {
   if (code && code in errorCodes) {

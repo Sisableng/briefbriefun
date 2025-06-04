@@ -1,5 +1,6 @@
 import React from "react";
+import MeHomePage from "./page.client";
 
-export default function MeHomePage() {
-  return <div>MeHomePage</div>;
+export default function page() {
+  return <MeHomePage />;
 }
