@@ -6,10 +6,18 @@ import React, { FC } from "react";
 import Image from "next/image";
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
-import { ArrowRightIcon, ArrowUpRightIcon, DicesIcon } from "lucide-react";
+import {
+  ArrowRightIcon,
+  ArrowUpRightIcon,
+  DicesIcon,
+  LoaderCircleIcon,
+} from "lucide-react";
 import { useDebounce } from "@/hooks/useDebounce";
 import Link from "next/link";
 import { Badge } from "@/components/ui/badge";
+import { authClient, getErrorMessage } from "@/lib/auth-client";
+import { toast } from "sonner";
+import { useUpdateUser } from "@/hooks/query/auth-hooks";
 
 interface PreviewAvatarProps {
   type: string;
@@ -19,6 +27,12 @@ interface PreviewAvatarProps {
 const PreviewAvatar = ({ type, options }: PreviewAvatarProps) => {
   const [avatarUrl, setAvatarUrl] = React.useState("");
   const [seed, setSeed] = React.useState(createRandomSeed());
+
+  const {
+    mutateAsync: updateUser,
+    error: updateError,
+    isPending,
+  } = useUpdateUser();
 
   const avatar = createAvatar((styles as any)[type], {
     seed,
@@ -41,21 +55,41 @@ const PreviewAvatar = ({ type, options }: PreviewAvatarProps) => {
       .toLowerCase()}/svg`,
   );
 
-  if (seed) {
-    urlParam.searchParams.set("seed", seed);
-  }
+  async function handleSave() {
+    const toastId = toast.loading("Sabar...");
 
-  if (options) {
-    Object.entries(options).forEach(([key, value]) => {
-      if (value !== undefined && value !== null) {
-        urlParam.searchParams.set(key, String(value));
-      }
+    await updateUser({
+      image: avatarUrl,
+    });
+
+    if (updateError) {
+      toast.error("Gagal menyimpan!", {
+        id: toastId,
+      });
+    }
+
+    toast.success("Dah disimpan!", {
+      id: toastId,
     });
   }
 
   React.useEffect(() => {
+    if (seed) {
+      urlParam.searchParams.set("seed", seed);
+    }
+
+    if (options) {
+      Object.entries(options).forEach(([key, value]) => {
+        if (value !== undefined && value !== null) {
+          urlParam.searchParams.set(key, String(value));
+        }
+      });
+    }
+  }, [seed, options, urlParam]);
+
+  React.useEffect(() => {
     setAvatarUrl(urlParam.toString());
-  }, [urlParam]);
+  }, [seed, options]);
 
   return (
     <div className="flex flex-1 flex-col items-center gap-4 md:border-r">
@@ -95,7 +129,7 @@ const PreviewAvatar = ({ type, options }: PreviewAvatarProps) => {
       )}
 
       <Input
-        defaultValue={avatarUrl}
+        value={avatarUrl}
         onChange={(e) => setAvatarUrl(e.target.value)}
         className="max-w-sm"
       />
@@ -105,13 +139,21 @@ const PreviewAvatar = ({ type, options }: PreviewAvatarProps) => {
           size={"lg"}
           variant={"secondary"}
           onClick={() => setSeed(createRandomSeed())}
+          disabled={isPending}
         >
           <DicesIcon />
           Random
         </Button>
-        <Button size={"lg"} onClick={() => setSeed(createRandomSeed())}>
-          Simpan
-          <ArrowRightIcon />
+        <Button size={"lg"} onClick={handleSave} disabled={isPending}>
+          {isPending ? (
+            <>
+              Sabar... <LoaderCircleIcon className="animate-spin" />
+            </>
+          ) : (
+            <>
+              Simpan <ArrowRightIcon />
+            </>
+          )}
         </Button>
       </div>
     </div>

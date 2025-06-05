@@ -4,13 +4,14 @@ import { auth } from "@/lib/auth";
 import { APIError } from "better-auth/api";
 import { headers } from "next/headers";
 
-type Authentication = {
+export type Authentication = {
   email: string;
   password: string;
   name: string;
+  image: string;
 };
 
-export const signin = async (value: Omit<Authentication, "name">) => {
+export const signin = async (value: Omit<Authentication, "name" | "image">) => {
   try {
     await auth.api.signInEmail({
       body: {
@@ -29,15 +30,23 @@ export const signin = async (value: Omit<Authentication, "name">) => {
 };
 
 export const signup = async (value: Authentication) => {
-  await auth.api.signUpEmail({
-    body: {
-      name: value.name,
-      email: value.email,
-      password: value.password,
-      callbackURL: "/me",
-    },
-    headers: await headers(),
-  });
+  try {
+    await auth.api.signUpEmail({
+      body: {
+        name: value.name,
+        email: value.email,
+        password: value.password,
+
+        callbackURL: "/me",
+      },
+      headers: await headers(),
+    });
+  } catch (error) {
+    console.error("server", error);
+    if (error instanceof APIError) {
+      return { error };
+    }
+  }
 };
 
 export const setPassword = async (newPassword: string) => {

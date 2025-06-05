@@ -1,6 +1,6 @@
 "use client";
 
-import { schema, type Style } from "@dicebear/core";
+import { type Style } from "@dicebear/core";
 import * as styles from "@dicebear/collection";
 import React from "react";
 import {
@@ -32,10 +32,6 @@ const PreviewAvatar = dynamic(
     },
   },
 );
-
-const schemaOptions = {
-  ...schema.properties,
-};
 
 export default function CreateAvatarPage() {
   const [options, setOptions] = React.useState({

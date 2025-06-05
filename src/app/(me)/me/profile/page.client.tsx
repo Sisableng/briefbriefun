@@ -1,14 +1,48 @@
 "use client";
-import { useAuth } from "@/components/context/auth-context";
+
 import React from "react";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Button } from "@/components/ui/button";
-import { UserPenIcon, WandSparklesIcon } from "lucide-react";
+import { LucideIcon, WandSparklesIcon } from "lucide-react";
 import Link from "next/link";
 import BackButton from "@/components/BackButton";
+import { useSession } from "@/hooks/query/auth-hooks";
+import UserInfoTab from "@/components/me/profile/UserInfoTab";
+import AccountTab from "@/components/me/profile/AccountTab";
+import SecurityTab from "@/components/me/profile/SecurityTab";
+import LoadingScreen from "@/components/LoadingScreen";
+
+type ProfileTab = {
+  title: string;
+  value: string;
+  icon?: LucideIcon;
+};
+
+const tabs = [
+  {
+    title: "Informasi",
+    value: "info",
+  },
+  {
+    title: "Akun",
+    value: "account",
+  },
+  {
+    title: "Keamanan",
+    value: "security",
+  },
+] as const satisfies ProfileTab[];
+
+type ActiveTab = (typeof tabs)[number]["value"];
 
 export default function ProfilePage() {
-  const { user } = useAuth();
+  const [activeTab, setActiveTab] = React.useState<ActiveTab>("info");
+
+  const { user, isPending } = useSession();
+
+  if (isPending) {
+    return <LoadingScreen />;
+  }
 
   if (!user) {
     return (
@@ -19,7 +53,7 @@ export default function ProfilePage() {
   }
 
   return (
-    <div className="cme-content flex flex-col gap-8">
+    <div className="cme-content flex h-full flex-col gap-8">
       <BackButton />
 
       <div className="flex items-start gap-4">
@@ -35,17 +69,34 @@ export default function ProfilePage() {
           <p className="text-muted-foreground">{user.email}</p>
 
           <div className="mt-6 flex items-center gap-2">
-            <Button variant={"secondary"} asChild>
+            <Button size={"sm"} variant={"outline"} asChild>
               <Link href={"/me/profile/create-avatar"}>
                 <WandSparklesIcon />
                 Buat Avatar
               </Link>
             </Button>
-            <Button>
-              <UserPenIcon /> Edit Profil
-            </Button>
           </div>
         </div>
+      </div>
+
+      <div className="md:mt-20">
+        <div className="flex w-full items-center gap-2 border-b pb-8">
+          {tabs.map((tab) => (
+            <Button
+              key={tab.value}
+              variant={activeTab === tab.value ? "secondary" : "ghost"}
+              onClick={() => setActiveTab(tab.value)}
+            >
+              {tab.title}
+            </Button>
+          ))}
+        </div>
+      </div>
+
+      <div className="">
+        {activeTab === "info" && <UserInfoTab />}
+        {activeTab === "account" && <AccountTab />}
+        {activeTab === "security" && <SecurityTab />}
       </div>
     </div>
   );

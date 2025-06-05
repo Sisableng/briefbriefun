@@ -1,5 +1,5 @@
 "use client";
-import { useAuth } from "@/components/context/auth-context";
+
 import { authClient } from "@/lib/auth-client";
 import { useRouter } from "@bprogress/next/app";
 import { usePathname } from "next/navigation";
@@ -8,8 +8,6 @@ import {
   DropdownMenu,
   DropdownMenuContent,
   DropdownMenuItem,
-  DropdownMenuLabel,
-  DropdownMenuSeparator,
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
@@ -17,12 +15,13 @@ import { LogOutIcon, PlusIcon, UserIcon } from "lucide-react";
 import Link from "next/link";
 import SiteName from "@/components/SiteName";
 import { Button } from "@/components/ui/button";
+import { useSession } from "@/hooks/query/auth-hooks";
 
 export default function Navbar() {
   const pathname = usePathname();
   const router = useRouter();
 
-  const { user } = useAuth();
+  const { user } = useSession();
 
   async function signOut() {
     await authClient.signOut({

@@ -1,10 +1,11 @@
 "use client";
-import { useAuth } from "@/components/context/auth-context";
+
+import { useSession } from "@/hooks/query/auth-hooks";
 import getFirstName from "@/lib/getFirstName";
 import React from "react";
 
 export default function MeHomePage() {
-  const { user, session } = useAuth();
+  const { user, session } = useSession();
   return (
     <div className="cme-content">
       <div className="max-w-sm space-y-2">

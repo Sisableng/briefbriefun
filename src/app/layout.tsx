@@ -5,6 +5,7 @@ import QueryProvider from "@/components/providers/query-provider";
 import ThemeProvider from "@/components/providers/theme-provider";
 import BProgressProvider from "@/components/providers/bprogress-provider";
 import SonnerProvider from "@/components/providers/sonner-provider";
+import AuthProviders from "@/components/providers/auth-provider";
 
 const geistSans = Geist({
   variable: "--font-geist-sans",
@@ -21,7 +22,7 @@ export const metadata: Metadata = {
   description: "Welcome to BriefBriefun",
 };
 
-export default function RootLayout({
+export default async function RootLayout({
   children,
 }: Readonly<{
   children: React.ReactNode;
@@ -32,16 +33,18 @@ export default function RootLayout({
         className={`${geistSans.variable} ${geistMono.variable} antialiased`}
       >
         <QueryProvider>
-          <ThemeProvider
-            attribute="class"
-            defaultTheme="system"
-            enableSystem
-            disableTransitionOnChange
-          >
-            <BProgressProvider>
-              <SonnerProvider>{children}</SonnerProvider>
-            </BProgressProvider>
-          </ThemeProvider>
+          <AuthProviders>
+            <ThemeProvider
+              attribute="class"
+              defaultTheme="system"
+              enableSystem
+              disableTransitionOnChange
+            >
+              <BProgressProvider>
+                <SonnerProvider>{children}</SonnerProvider>
+              </BProgressProvider>
+            </ThemeProvider>
+          </AuthProviders>
         </QueryProvider>
       </body>
     </html>

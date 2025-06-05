@@ -17,5 +17,6 @@ export const getErrorMessage = (code?: string) => {
     return errorCodes[code as keyof typeof errorCodes];
   }
 
-  return "Something went wrong. Please try again later";
+  // return "Something went wrong. Please try again later";
+  return code;
 };

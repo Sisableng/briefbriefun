@@ -13,14 +13,23 @@ export const auth = betterAuth({
     provider: "pg",
     schema: authSchema,
   }),
-  cookieCache: {
-    enabled: true,
-    maxAge: 5 * 60, // Cache duration in seconds
+  session: {
+    cookieCache: {
+      enabled: true,
+      maxAge: 5 * 60, // Cache duration in seconds
+    },
   },
-
   user: {
     deleteUser: {
       enabled: true,
+    },
+  },
+  account: {
+    accountLinking: {
+      enabled: true,
+      allowDifferentEmails: true,
+      allowUnlinkingAll: true,
+      trustedProviders: ["google", "github"],
     },
   },
   emailAndPassword: {
@@ -36,6 +45,8 @@ export const auth = betterAuth({
         return await compare(data.password, data.hash);
       },
     },
+    // autoSignIn: true,
+    // revokeSessionsOnPasswordReset: true,
   },
   socialProviders: {
     github: {
@@ -80,7 +91,6 @@ export const auth = betterAuth({
       }
     }),
   },
-
   advanced: {
     ipAddress: {
       ipAddressHeaders: [
