@@ -16,12 +16,17 @@ import Link from "next/link";
 import SiteName from "@/components/SiteName";
 import { Button } from "@/components/ui/button";
 import { useSession } from "@/hooks/query/auth-hooks";
+import UserAvatar from "../avatar/UserAvatar";
+import useWindowScroll from "@/hooks/useWindowScroll";
+import clsx from "clsx";
 
 export default function Navbar() {
   const pathname = usePathname();
   const router = useRouter();
 
   const { user } = useSession();
+
+  const { isScrolled } = useWindowScroll();
 
   async function signOut() {
     await authClient.signOut({
@@ -36,7 +41,12 @@ export default function Navbar() {
   if (pathname === "/me/after-oauth") return null;
 
   return (
-    <div className="sticky inset-x-0 top-0 mx-auto flex h-16 w-full max-w-[90rem] items-center justify-between gap-4 px-4 md:h-20">
+    <div
+      className={clsx(
+        "sticky inset-x-0 top-0 mx-auto flex h-16 w-full max-w-[90rem] items-center justify-between gap-4 px-4 backdrop-blur transition-all ease-in-out md:h-20",
+        isScrolled ? "bg-background/10" : "",
+      )}
+    >
       <div className="flex items-center gap-10">
         <Link
           href={"/me"}
@@ -46,12 +56,6 @@ export default function Navbar() {
             <SiteName />
           </h3>
         </Link>
-
-        {/* <div className="flex items-center gap-4">
-          <Button variant={"outline"} asChild>
-            <Link href={"#"}>Proyek</Link>
-          </Button>
-        </div> */}
       </div>
 
       <div className="flex items-center gap-4">
@@ -63,10 +67,11 @@ export default function Navbar() {
         {user && (
           <DropdownMenu>
             <DropdownMenuTrigger className="flex cursor-pointer items-center gap-3">
-              <Avatar className="size-9 flex-1">
-                <AvatarImage src={user.image ?? undefined} />
-                <AvatarFallback>{user.name[0].toUpperCase()}</AvatarFallback>
-              </Avatar>
+              <UserAvatar
+                src={user.image ?? undefined}
+                fallback={user.name}
+                className="flex-1"
+              />
 
               <div className="max-w-30 text-left">
                 <p className="truncate text-sm font-semibold">{user.name}</p>

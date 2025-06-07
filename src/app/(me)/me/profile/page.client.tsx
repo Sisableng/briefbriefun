@@ -1,6 +1,6 @@
 "use client";
 
-import React from "react";
+import React, { useMemo } from "react";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Button } from "@/components/ui/button";
 import { LucideIcon, WandSparklesIcon } from "lucide-react";
@@ -11,6 +11,9 @@ import UserInfoTab from "@/components/me/profile/UserInfoTab";
 import AccountTab from "@/components/me/profile/AccountTab";
 import SecurityTab from "@/components/me/profile/SecurityTab";
 import LoadingScreen from "@/components/LoadingScreen";
+import { useUrlParams } from "@/hooks/useUrlParams";
+import { useSearchParams } from "next/navigation";
+import UserAvatar from "@/components/me/avatar/UserAvatar";
 
 type ProfileTab = {
   title: string;
@@ -36,9 +39,26 @@ const tabs = [
 type ActiveTab = (typeof tabs)[number]["value"];
 
 export default function ProfilePage() {
-  const [activeTab, setActiveTab] = React.useState<ActiveTab>("info");
+  // const [activeTab, setActiveTab] = React.useState<ActiveTab>("info");
+
+  const searchParams = useSearchParams();
+  const { updateParams } = useUrlParams(searchParams);
+
+  const activeTabParams = searchParams.get("tab");
 
   const { user, isPending } = useSession();
+
+  const handleActiveTab = (tab: string) => {
+    updateParams("tab", tab, false);
+  };
+
+  const activeTab = useMemo(() => {
+    if (activeTabParams) {
+      return activeTabParams as ActiveTab;
+    } else {
+      return tabs[0].value;
+    }
+  }, [activeTabParams]);
 
   if (isPending) {
     return <LoadingScreen />;
@@ -57,12 +77,11 @@ export default function ProfilePage() {
       <BackButton />
 
       <div className="flex items-start gap-4">
-        <Avatar className="size-20 md:size-24">
-          <AvatarImage src={user.image ?? undefined} />
-          <AvatarFallback className="text-2xl">
-            {user.name[0].toUpperCase()}
-          </AvatarFallback>
-        </Avatar>
+        <UserAvatar
+          src={user.image ?? undefined}
+          fallback={user.name}
+          className="size-20 md:size-24"
+        />
 
         <div className="space-y-2">
           <h2>{user.name}</h2>
@@ -85,7 +104,7 @@ export default function ProfilePage() {
             <Button
               key={tab.value}
               variant={activeTab === tab.value ? "secondary" : "ghost"}
-              onClick={() => setActiveTab(tab.value)}
+              onClick={() => handleActiveTab(tab.value)}
             >
               {tab.title}
             </Button>

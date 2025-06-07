@@ -3,20 +3,27 @@
 import SocialIcon from "@/components/SocialIcon";
 import { Skeleton } from "@/components/ui/skeleton";
 import { Button } from "@/components/ui/button";
-import { useSession } from "@/hooks/query/auth-hooks";
+import { useSession, useUnlinkAccount } from "@/hooks/query/auth-hooks";
 import { authClient } from "@/lib/auth-client";
 import { useQuery } from "@tanstack/react-query";
-import { IdCardIcon, PlusIcon } from "lucide-react";
+import { IdCardIcon, PlusIcon, XIcon } from "lucide-react";
 import { usePathname } from "next/navigation";
 import React from "react";
 import { toast } from "sonner";
+import DrawerResponsive from "@/components/ui/drawer-responsive";
+import { capitalize } from "@/lib/utils";
 
 const acceptedProviders = ["google", "github"];
 
 export default function AccountTab() {
+  const [unlinkData, setUnlinkData] = React.useState<{
+    providerId: "google" | "github";
+    accountId: string;
+  } | null>(null);
+
   const pathname = usePathname();
 
-  const { user } = useSession();
+  const { user, refetch } = useSession();
 
   const { data, isPending } = useQuery({
     queryKey: ["account", user?.id],
@@ -28,32 +35,52 @@ export default function AccountTab() {
     staleTime: 1000 * 60 * 30, // 30 minutes
   });
 
+  const {
+    mutateAsync: unlinkAccount,
+    isError: isErrorUnlink,
+    error: errorUnlink,
+  } = useUnlinkAccount();
+
   async function handleLinkAccount(provider: "google" | "github") {
+    const toastId = toast.loading("Sabar...");
+
     const { error } = await authClient.linkSocial({
       provider, // Provider to link
-      callbackURL: pathname, // Callback URL after linking completes
+      callbackURL: pathname + "?tab=account", // Callback URL after linking completes
     });
 
     if (error) {
-      toast.error(error.message);
+      toast.error(error.message, { id: toastId });
       return;
     }
 
-    toast.success("Akun udah terhubung.");
+    toast.success("Akun udah terhubung.", { id: toastId });
   }
 
-  async function unlinkAccount(data: {
-    providerId: "google" | "github";
-    accountId: string;
-  }) {
-    const { error } = await authClient.unlinkAccount(data);
-
-    if (error) {
-      toast.error(error.message);
+  async function handleUnlinkAccount() {
+    if (!unlinkData) {
+      toast.error("Data gak ketemu!");
       return;
     }
 
-    toast.success("Akun udah udah dihapus");
+    const toastId = toast.loading("Sabar...");
+
+    await unlinkAccount(unlinkData);
+
+    if (isErrorUnlink && errorUnlink) {
+      toast.error(errorUnlink.message, {
+        id: toastId,
+      });
+      return;
+    }
+
+    toast.success("Akun udah dihapus", {
+      id: toastId,
+    });
+
+    refetch({
+      throwOnError: true,
+    });
   }
 
   // Get missing providers
@@ -118,12 +145,13 @@ export default function AccountTab() {
                       variant="outline"
                       size="sm"
                       onClick={() =>
-                        unlinkAccount({
+                        setUnlinkData({
                           providerId: item.provider as "google" | "github",
-                          accountId: item.id,
+                          accountId: item.accountId,
                         })
                       }
                     >
+                      <XIcon />
                       Putusin
                     </Button>
                   )}
@@ -161,6 +189,33 @@ export default function AccountTab() {
           </div>
         ))}
       </div>
+
+      <DrawerResponsive
+        open={!!unlinkData}
+        onOpenChange={(open) => {
+          if (open) {
+            return;
+          } else {
+            setUnlinkData(null);
+          }
+        }}
+        title={`Putusin ${capitalize(unlinkData?.providerId)}`}
+        description="Sekali hapus, gak bisa di-undo, bro. Yakin nih?"
+        className="md:max-w-xl"
+      >
+        <div className="flex flex-wrap items-center gap-2 md:justify-end">
+          <Button
+            variant={"secondary"}
+            className="max-sm:w-full"
+            onClick={() => setUnlinkData(null)}
+          >
+            G jadi deng
+          </Button>
+          <Button className="max-sm:w-full" onClick={handleUnlinkAccount}>
+            Yoi!
+          </Button>
+        </div>
+      </DrawerResponsive>
     </div>
   );
 }

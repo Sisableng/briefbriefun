@@ -52,7 +52,7 @@ const PreviewAvatar = ({ type, options }: PreviewAvatarProps) => {
   const urlParam = new URL(
     `https://api.dicebear.com/9.x/${type
       .replace(/([a-z0-9])([A-Z])/g, "$1-$2")
-      .toLowerCase()}/svg`,
+      .toLowerCase()}/webp`,
   );
 
   async function handleSave() {
@@ -85,11 +85,11 @@ const PreviewAvatar = ({ type, options }: PreviewAvatarProps) => {
         }
       });
     }
-  }, [seed, options, urlParam]);
+  }, [type, seed, options, urlParam]);
 
   React.useEffect(() => {
     setAvatarUrl(urlParam.toString());
-  }, [seed, options]);
+  }, [type, seed, options]);
 
   return (
     <div className="flex flex-1 flex-col items-center gap-4 md:border-r">
