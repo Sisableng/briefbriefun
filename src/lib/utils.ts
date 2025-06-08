@@ -1,3 +1,4 @@
+import { ProjectStatus } from "@/components/forms/projects/schema";
 import { clsx, type ClassValue } from "clsx";
 import { twMerge } from "tailwind-merge";
 
@@ -15,4 +16,16 @@ export function capitalize(str?: string): string {
   }
 
   return str.charAt(0).toUpperCase() + str.slice(1);
+}
+
+export function getStatus(status: ProjectStatus) {
+  switch (status) {
+    case "draft":
+      return "Draft";
+    case "inProgress":
+      return "Otw";
+
+    default:
+      return "Beres";
+  }
 }

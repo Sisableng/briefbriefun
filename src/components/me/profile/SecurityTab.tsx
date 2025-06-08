@@ -28,6 +28,8 @@ import {
   EyeIcon,
   EyeOffIcon,
   LoaderCircleIcon,
+  LockIcon,
+  XIcon,
 } from "lucide-react";
 import { useRouter } from "@bprogress/next/app";
 
@@ -77,8 +79,17 @@ export default function SecurityTab() {
     <div className="max-w-lg space-y-8">
       <h3>Keamanan Akun</h3>
 
-      <Button onClick={() => setShowForm(!showForm)}>
-        {showForm ? "G jadi deng" : "Ganti Password"}
+      <Button variant={"secondary"} onClick={() => setShowForm(!showForm)}>
+        {showForm ? (
+          <>
+            <XIcon /> G jadi deng
+          </>
+        ) : (
+          <>
+            <LockIcon />
+            Ganti Password
+          </>
+        )}
       </Button>
 
       {showForm && <ChangePasswordForm />}

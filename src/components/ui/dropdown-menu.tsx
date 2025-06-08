@@ -51,7 +51,7 @@ function DropdownMenuContent({
       >
         {children}
 
-        <DropdownMenuPrimitive.Arrow className="fill-popover" />
+        <DropdownMenuPrimitive.Arrow className="dark fill-popover" />
       </DropdownMenuPrimitive.Content>
     </DropdownMenuPrimitive.Portal>
   );

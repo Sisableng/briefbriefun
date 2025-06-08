@@ -58,7 +58,7 @@ export default function ProfilePage() {
     } else {
       return tabs[0].value;
     }
-  }, [activeTabParams]);
+  }, [activeTabParams, tabs]);
 
   if (isPending) {
     return <LoadingScreen />;
@@ -88,7 +88,7 @@ export default function ProfilePage() {
           <p className="text-muted-foreground">{user.email}</p>
 
           <div className="mt-6 flex items-center gap-2">
-            <Button size={"sm"} variant={"outline"} asChild>
+            <Button size={"sm"} variant={"secondary"} asChild>
               <Link href={"/me/profile/create-avatar"}>
                 <WandSparklesIcon />
                 Buat Avatar
@@ -98,12 +98,12 @@ export default function ProfilePage() {
         </div>
       </div>
 
-      <div className="md:mt-20">
+      <div className="md:mt-14">
         <div className="flex w-full items-center gap-2 border-b pb-8">
           {tabs.map((tab) => (
             <Button
               key={tab.value}
-              variant={activeTab === tab.value ? "secondary" : "ghost"}
+              variant={activeTab === tab.value ? "outline" : "ghost"}
               onClick={() => handleActiveTab(tab.value)}
             >
               {tab.title}

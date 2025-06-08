@@ -10,11 +10,9 @@ interface UserAvatarProps {
 
 const UserAvatar = ({ src, fallback, className }: UserAvatarProps) => {
   return (
-    <Avatar className={cn("size-9", className)}>
+    <Avatar className={cn("size-9 border", className)}>
       <AvatarImage src={src} />
-      <AvatarFallback className="text-2xl">
-        {fallback[0].toUpperCase()}
-      </AvatarFallback>
+      <AvatarFallback>{fallback[0].toUpperCase()}</AvatarFallback>
     </Avatar>
   );
 };
