@@ -1,7 +1,7 @@
 "use server";
 
 import { db } from "@/db/drizzle";
-import { eq, and, SQL } from "drizzle-orm";
+import { eq, and, SQL, desc } from "drizzle-orm";
 import { project } from "@/db/schemas/project-schema";
 import { z } from "zod";
 import { createProjectSchema, ProjectStatus } from "./schema";
@@ -37,6 +37,7 @@ export const getProjectAction = async (
       .select()
       .from(project)
       .where(and(...filters))
+      .orderBy(desc(project.createdAt))
       .$dynamic();
 
     if (options?.pageSize) {

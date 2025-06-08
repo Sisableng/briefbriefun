@@ -60,6 +60,23 @@ export const auth = betterAuth({
     },
   },
 
+  databaseHooks: {
+    session: {
+      create: {
+        async before(session) {
+          const res = await fetch("https://ipinfo.io/json");
+          const locationData = await res.json();
+
+          return {
+            data: {
+              ...session,
+              ipAddress: locationData.ip ?? null,
+            },
+          };
+        },
+      },
+    },
+  },
   hooks: {
     after: createAuthMiddleware(async (ctx) => {
       const response = ctx.context.returned as APIError;
@@ -97,6 +114,7 @@ export const auth = betterAuth({
         "x-forwarded-for",
         "x-vercel-forwarded-for",
         "x-real-ip",
+        "x-client-ip",
       ],
       disableIpTracking: false,
     },

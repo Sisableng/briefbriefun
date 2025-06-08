@@ -15,7 +15,6 @@ import {
 import { useDebounce } from "@/hooks/useDebounce";
 import Link from "next/link";
 import { Badge } from "@/components/ui/badge";
-import { authClient, getErrorMessage } from "@/lib/auth-client";
 import { toast } from "sonner";
 import { useUpdateUser } from "@/hooks/query/auth-hooks";
 

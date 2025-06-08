@@ -15,8 +15,11 @@ import dynamic from "next/dynamic";
 import { Button } from "@/components/ui/button";
 import BackButton from "@/components/BackButton";
 import { LoaderCircleIcon, MinusIcon, PlusIcon } from "lucide-react";
-import OptionItem from "@/components/me/avatar/OptionItem";
 import { Separator } from "@/components/ui/separator";
+
+const OptionItem = dynamic(() => import("@/components/me/avatar/OptionItem"), {
+  ssr: false,
+});
 
 const PreviewAvatar = dynamic(
   () => import("@/components/me/avatar/PreviewAvatar"),

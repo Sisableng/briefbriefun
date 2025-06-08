@@ -38,6 +38,7 @@ import { experimental_useObject as useObject } from "@ai-sdk/react";
 import { outputSchema } from "@/ai-stuff/output-schema";
 import dynamic from "next/dynamic";
 import { projectFormSchema } from "./schema";
+import { useSession } from "@/hooks/query/auth-hooks";
 
 const ProjectReview = dynamic(() => import("./ProjectReview"), {
   ssr: false,
@@ -49,9 +50,14 @@ const ProjectReview = dynamic(() => import("./ProjectReview"), {
 export default function ProjectForm() {
   const [briefData, setBriefData] = React.useState<any>(null);
 
+  const { session } = useSession();
+
   const { object, submit, isLoading, stop, error } = useObject({
     api: "/api/generate-projects",
     schema: outputSchema,
+    onError(error) {
+      console.log("use-object", error.message);
+    },
   });
 
   const form = useForm<z.infer<typeof projectFormSchema>>({
@@ -92,6 +98,11 @@ export default function ProjectForm() {
   }, []);
 
   async function onSubmit(values: z.infer<typeof projectFormSchema>) {
+    if (!session) {
+      toast.error("Gak ada sesi, Kamu siapa? 🤨");
+      return;
+    }
+
     try {
       if (watchSource === "goodbrief") {
         const toastId = toast.loading("Sabar...");
@@ -130,15 +141,25 @@ export default function ProjectForm() {
           type: values.type,
           industry: values.industry,
           vibe: values.vibe,
+          ip: session.ipAddress,
         }),
       );
     } catch (error) {
       console.error(error);
       toast.dismiss();
 
-      toast.error("Sori, Keknya ada yang salah bro!");
+      toast.error("Waduh, Keknya ada yang salah! 😱");
     }
   }
+
+  const processing = React.useMemo(() => {
+    if (process.env.NODE_ENV === "development") {
+      return form.formState.isSubmitting;
+    }
+
+    return form.formState.isSubmitting || isLoading;
+  }, [form.formState.isSubmitting, isLoading]);
+
   return (
     <div className="mt-14 flex size-full flex-1 flex-col gap-10 sm:flex-row">
       <div className="sticky top-20 shrink-0 space-y-8 self-start overflow-y-auto p-1 md:top-26 md:w-60">
@@ -331,7 +352,7 @@ export default function ProjectForm() {
           object: object as any,
           form: form.getValues(),
         }}
-        isLoading={form.formState.isSubmitting}
+        isLoading={processing}
         error={error}
       />
     </div>

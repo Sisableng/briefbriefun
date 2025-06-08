@@ -1,25 +1,24 @@
 // Robot.tsx
 "use client";
-import React, {
-  useRef,
-  forwardRef,
-  useImperativeHandle,
-  useEffect,
-} from "react";
-import dynamic from "next/dynamic";
-import { LoaderCircleIcon } from "lucide-react";
+import React, { useRef, forwardRef, Suspense } from "react";
 import { cn } from "@/lib/utils";
 import Tip from "@/components/Tip";
-import { Application } from "@splinetool/runtime";
+import { LoaderCircleIcon } from "lucide-react";
+// import Spline from "@splinetool/react-spline";
 
-const Spline = dynamic(() => import("@splinetool/react-spline"), {
-  ssr: false,
-  loading: () => (
-    <div className="grid min-h-60 place-content-center">
-      <LoaderCircleIcon className="text-muted-foreground size-6 animate-spin" />
-    </div>
-  ),
-});
+// import dynamic from "next/dynamic";
+// import { LoaderCircleIcon } from "lucide-react";
+
+// const Spline = dynamic(() => import(""), {
+//   ssr: false,
+//   loading: () => (
+//     <div className="grid min-h-60 place-content-center">
+//       <LoaderCircleIcon className="text-muted-foreground size-6 animate-spin" />
+//     </div>
+//   ),
+// });
+
+const Spline = React.lazy(() => import("@splinetool/react-spline"));
 
 interface RobotProps {
   className?: string;
@@ -45,14 +44,22 @@ const Robot = forwardRef<RobotRef, RobotProps>(
           className,
         )}
       >
-        <Spline
-          scene="https://prod.spline.design/kZDDjO5HuC9GJUM2/scene.splinecode"
-          onLoad={(spline) => {
-            if (spline.controls !== undefined) {
-              onLoaded?.(true);
-            }
-          }}
-        />
+        <Suspense
+          fallback={
+            <div className="grid min-h-60 place-content-center">
+              <LoaderCircleIcon className="text-muted-foreground size-6 animate-spin" />
+            </div>
+          }
+        >
+          <Spline
+            scene="https://prod.spline.design/kZDDjO5HuC9GJUM2/scene.splinecode"
+            onLoad={(spline) => {
+              if (spline.controls !== undefined) {
+                onLoaded?.(true);
+              }
+            }}
+          />
+        </Suspense>
 
         <Tip className="group-hover:animate-in group-hover:zoom-in absolute inset-x-0 top-[5%] mx-auto opacity-0 transition-all ease-in-out group-hover:opacity-100">
           Hello!
