@@ -1,17 +1,19 @@
 "use client";
 import { outputSchema } from "@/ai-stuff/output-schema";
-import React, { FC, memo, useMemo, useCallback } from "react";
+import React, { memo, useCallback } from "react";
 import { z } from "zod";
 import Markdown from "react-markdown";
 import { Separator } from "@/components/ui/separator";
 import { ArrowRightIcon, FilePenIcon, FileXIcon, SaveIcon } from "lucide-react";
-import { Skeleton } from "@/components/ui/skeleton";
 import { Button } from "@/components/ui/button";
 import { toast } from "sonner";
-import { projectFormSchema, statusSchema } from "./schema";
+import { projectFormSchema, statusSchema } from "../../forms/projects/schema";
 import { useSession } from "@/hooks/query/auth-hooks";
 import { useRouter } from "@bprogress/next/app";
 import { useProject } from "@/hooks/query/useProject";
+import ProjectField from "./ProjectField";
+import LoadingSkeleton from "@/components/forms/projects/LoadingSkeleton";
+import clsx from "clsx";
 
 const formSchema = projectFormSchema.omit({
   source: true,
@@ -26,43 +28,11 @@ interface ProjectReviewProps {
   error?: Error;
 }
 
-// Memoized ProjectField component
-const ProjectField = memo(
-  ({ title, children }: { title: string; children: React.ReactNode }) => {
-    return (
-      <div>
-        <p className="text-muted-foreground text-sm">{title}</p>
-        {children}
-      </div>
-    );
-  },
-);
-
-ProjectField.displayName = "ProjectField";
-
 // Memoized Loading component
-const LoadingSkeleton = memo(() => (
-  <>
-    {[...Array(4)].map((_, i) => {
-      const widths = ["60%", "75%", "90%", "45%", "85%"];
-      return (
-        <Skeleton
-          key={`skeleton-${i}`}
-          className="h-6"
-          style={{
-            width: widths[Math.floor(Math.random() * widths.length)],
-          }}
-        />
-      );
-    })}
-  </>
-));
-
-LoadingSkeleton.displayName = "LoadingSkeleton";
 
 // Memoized Error component
 const ErrorDisplay = memo(({ error }: { error: Error }) => (
-  <div className="absolute inset-0 grid place-content-center gap-2 text-center">
+  <div className="inset-0 grid min-h-80 place-content-center gap-2 p-4 text-center">
     <div className="bg-secondary m-auto mb-4 grid size-14 place-content-center rounded-full">
       <FileXIcon className="text-primary size-8" />
     </div>
@@ -91,15 +61,15 @@ ErrorDisplay.displayName = "ErrorDisplay";
 
 // Memoized Empty state component
 const EmptyState = memo(() => (
-  <div className="absolute inset-0 grid place-content-center gap-2 text-center">
+  <div className="inset-0 grid h-80 place-content-center gap-2 p-4 text-center">
     <div className="bg-secondary m-auto mb-4 grid size-14 place-content-center rounded-full">
       <FilePenIcon className="text-primary size-8" />
     </div>
-    <h2>Brief-an Dulu, Kerjain Nanti</h2>
+    <h2 className="max-sm:text-2xl">Brief-an Dulu, Kerjain Nanti</h2>
     <p className="text-muted-foreground max-w-lg text-sm">
       Pilih tipe project, industri, dan gaya ngomong client-nya. Sisanya?
-      Serahin ke AI. Brief akan muncul seperti beneran dapet dari client yang
-      super... unik.
+      Serahin ke AI. <br /> Brief akan muncul seperti beneran dapet dari client
+      yang super... unik.
     </p>
   </div>
 ));
@@ -123,7 +93,7 @@ const ProjectContent = memo(
 
     return (
       <>
-        <div className="flex items-center justify-end gap-2">
+        <div className="from-background flex items-center justify-end gap-2 to-transparent max-sm:fixed max-sm:inset-x-0 max-sm:bottom-40 max-sm:justify-center max-sm:bg-gradient-to-t max-sm:pb-4">
           <Button variant={"secondary"} onClick={handleDraftSave}>
             <SaveIcon />
             Masukin ke Draft
@@ -236,7 +206,12 @@ const ProjectReview = memo(({ data, isLoading, error }: ProjectReviewProps) => {
   };
 
   return (
-    <div className="bg-card relative flex min-h-60 flex-1 flex-col gap-4 rounded-xl p-4 md:p-6">
+    <div
+      className={clsx(
+        "md:bg-card relative flex h-fit min-h-60 flex-1 flex-col gap-4 rounded-xl p-4 md:p-6",
+        data.object && "max-sm:pb-40",
+      )}
+    >
       {renderContent()}
     </div>
   );

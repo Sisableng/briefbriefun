@@ -6,21 +6,22 @@ import { ChevronLeftIcon } from "lucide-react";
 import { cn } from "@/lib/utils";
 
 interface BackButtonProps {
+  showText?: boolean;
   className?: string;
 }
 
-export default function BackButton({ className }: BackButtonProps) {
+export default function BackButton({ showText, className }: BackButtonProps) {
   const router = useRouter();
 
   return (
     <Button
-      size={"icon"}
+      size={"sm"}
       variant={"outline"}
       onClick={() => router.back()}
-      className={cn("", className)}
+      className={cn("w-max", className)}
     >
       <ChevronLeftIcon />
-      <span className="sr-only">Balik</span>
+      <span className="">Balik</span>
     </Button>
   );
 }

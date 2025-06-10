@@ -13,12 +13,13 @@ import {
 export const useProjectQuery = (
   userId?: string,
   options?: {
+    projectId?: string;
     page?: number;
     pageSize?: number;
   },
 ) => {
   return useQuery({
-    queryKey: ["db-projects", userId],
+    queryKey: ["db-projects", userId, options],
     queryFn: () => getProjectAction(userId, options),
     enabled: !!userId,
   });
@@ -71,6 +72,7 @@ export const useProjectMutations = (userId?: string) => {
 export const useProject = (
   userId?: string,
   options?: {
+    projectId?: string;
     page?: number;
     pageSize?: number;
   },

@@ -26,7 +26,7 @@ const MeLayout = async ({ children }: MeLayoutProps) => {
 
   return (
     <HydrationBoundary state={dehydrate(queryClient)}>
-      <main className="flex min-h-dvh flex-col gap-20 pb-20">
+      <main className="flex min-h-dvh flex-col gap-10 pb-20 md:gap-20">
         <Navbar />
         {children}
       </main>

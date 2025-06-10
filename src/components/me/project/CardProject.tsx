@@ -13,16 +13,43 @@ import { ArrowUpRightIcon } from "lucide-react";
 import { Project } from "@/components/forms/projects/schema";
 import Link from "next/link";
 import { Badge } from "@/components/ui/badge";
-import { getStatus } from "@/lib/utils";
+import StatusBadge from "./StatusBadge";
+import { cn } from "@/lib/utils";
+import clsx from "clsx";
 
 interface CardProjectProps {
   data: Project;
   className?: string;
+  checkMode?: boolean;
+  checked?: boolean;
+  onCheckedChange?: (checked: boolean) => void;
 }
 
-const CardProject = ({ data, className }: CardProjectProps) => {
+const CardProject = ({
+  data,
+  className,
+  checkMode,
+  checked,
+  onCheckedChange,
+}: CardProjectProps) => {
+  const handleCardClick = () => {
+    if (checkMode && onCheckedChange) {
+      onCheckedChange(!checked);
+    }
+  };
+
   return (
-    <Card className={className}>
+    <Card
+      className={cn(
+        "",
+
+        checkMode && "ring-border cursor-pointer ring hover:opacity-50",
+
+        checked ? "ring-primary ring-2" : "",
+        className,
+      )}
+      onClick={handleCardClick}
+    >
       <CardHeader>
         <div className="flex flex-wrap items-center gap-2 border-b pb-4">
           <Badge variant={"secondary"} className="capitalize">
@@ -39,24 +66,18 @@ const CardProject = ({ data, className }: CardProjectProps) => {
         </CardDescription>
       </CardHeader>
       <CardContent>
-        <div className="">
-          <p className="text-muted-foreground text-sm">Deadline</p>
-          <p className="text-sm">{data.deadline}</p>
+        <div className={clsx(checkMode && "pointer-events-none")}>
+          <p className="text-sm">Deadline</p>
+          <p className="text-muted-foreground text-sm">{data.deadline}</p>
         </div>
       </CardContent>
-      <CardFooter className="justify-between gap-2">
-        <Badge
-          variant={
-            data.status === "draft"
-              ? "outline"
-              : data.status === "inProgress"
-                ? "secondary"
-                : "default"
-          }
-          className="capitalize"
-        >
-          {getStatus(data.status)}
-        </Badge>
+      <CardFooter
+        className={clsx(
+          "justify-between gap-2",
+          checkMode && "pointer-events-none",
+        )}
+      >
+        <StatusBadge status={data.status} />
 
         <Button size={"icon"} variant={"outline"} className="ml-auto" asChild>
           <Link href={`/me/projects/${data.id}`}>

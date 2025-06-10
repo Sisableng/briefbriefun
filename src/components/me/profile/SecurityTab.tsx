@@ -77,7 +77,7 @@ export default function SecurityTab() {
 
   return (
     <div className="max-w-lg space-y-8">
-      <h3>Keamanan Akun</h3>
+      <h3 className="max-sm:text-lg">Keamanan Akun</h3>
 
       <Button variant={"secondary"} onClick={() => setShowForm(!showForm)}>
         {showForm ? (
@@ -94,12 +94,14 @@ export default function SecurityTab() {
 
       {showForm && <ChangePasswordForm />}
 
-      <h3 className="mt-10">Zona Bahaya!</h3>
+      <h3 className="mt-10 max-sm:text-lg">Zona Bahaya!</h3>
 
-      <div className="bg-card space-y-4 rounded-xl border p-4 md:p-6">
+      <div className="space-y-4 rounded-xl border p-4 md:p-6">
         <div className="text-destructive mb-8 space-y-2">
-          <h3>Ingat bro!</h3>
-          <p>Sekali hapus, akun lo lenyap. Serius, ini bukan latihan.</p>
+          <h3 className="max-sm:text-lg">Ingat bro!</h3>
+          <p className="max-sm:text-sm">
+            Sekali hapus, akun lo lenyap. Serius, ini bukan latihan.
+          </p>
         </div>
 
         <Separator />

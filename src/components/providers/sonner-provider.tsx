@@ -20,7 +20,7 @@ const SonnerProvider = ({ children }: SonnerProviderProps) => {
 
       <Toaster
         closeButton
-        position="bottom-right"
+        position="top-center"
         icons={{
           success: <CircleCheck className="text-green-500" size={iconSize} />,
           info: <Info size={iconSize} className="text-blue-500" />,

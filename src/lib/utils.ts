@@ -23,7 +23,7 @@ export function getStatus(status: ProjectStatus) {
     case "draft":
       return "Draft";
     case "inProgress":
-      return "Otw";
+      return "Lagi otw";
 
     default:
       return "Beres";

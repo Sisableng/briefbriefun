@@ -39,7 +39,7 @@ export default function UserInfoTab() {
 
   return (
     <div className="space-y-8">
-      <h3>Informasi Profil</h3>
+      <h3 className="max-sm:text-lg">Informasi Profil</h3>
 
       <OptionItem title="Ubah Nama" className="max-w-sm" labelFor="newName">
         <div className="relative">

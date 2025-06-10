@@ -98,7 +98,7 @@ export default function DrawerResponsive({
             )}
           </DialogHeader>
 
-          <div className="flex flex-grow flex-col overflow-auto">
+          <div className="flex min-h-28 flex-grow flex-col overflow-auto">
             {children}
           </div>
         </DialogContent>

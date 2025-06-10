@@ -14,6 +14,7 @@ import LoadingScreen from "@/components/LoadingScreen";
 import { useUrlParams } from "@/hooks/useUrlParams";
 import { useSearchParams } from "next/navigation";
 import UserAvatar from "@/components/me/avatar/UserAvatar";
+import clsx from "clsx";
 
 type ProfileTab = {
   title: string;
@@ -98,13 +99,14 @@ export default function ProfilePage() {
         </div>
       </div>
 
-      <div className="md:mt-14">
+      <div className="mt-10 md:mt-14">
         <div className="flex w-full items-center gap-2 border-b pb-8">
           {tabs.map((tab) => (
             <Button
               key={tab.value}
               variant={activeTab === tab.value ? "outline" : "ghost"}
               onClick={() => handleActiveTab(tab.value)}
+              className={clsx(activeTab === tab.value && "text-primary")}
             >
               {tab.title}
             </Button>

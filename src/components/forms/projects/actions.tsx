@@ -22,6 +22,7 @@ export const getProjectCountAction = async (userId?: string) => {
 export const getProjectAction = async (
   userId?: string,
   options?: {
+    projectId?: string;
     page?: number;
     pageSize?: number;
   },
@@ -32,6 +33,10 @@ export const getProjectAction = async (
     const filters: SQL[] = [];
 
     filters.push(eq(project.userId, userId));
+
+    if (options?.projectId) {
+      filters.push(eq(project.id, options.projectId));
+    }
 
     let query = db
       .select()

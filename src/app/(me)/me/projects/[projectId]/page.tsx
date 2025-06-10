@@ -1,5 +1,5 @@
-import BackButton from "@/components/BackButton";
 import React, { FC } from "react";
+import DetailProjectPage from "./page.client";
 
 interface pageProps {
   params: Promise<{
@@ -10,12 +10,7 @@ interface pageProps {
 const page = async ({ params }: pageProps) => {
   const { projectId } = await params;
 
-  return (
-    <div className="cme-content space-y-8">
-      <BackButton />
-      <p>{projectId}</p>
-    </div>
-  );
+  return <DetailProjectPage />;
 };
 
 export default page;

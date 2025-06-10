@@ -63,7 +63,11 @@ export default function Navbar() {
           className="hover:text-primary group transition-colors ease-in-out"
         >
           <h3>
-            <SiteName />
+            <span className="hidden sm:block">
+              <SiteName />
+            </span>
+
+            <span className="block sm:hidden">B2f</span>
           </h3>
         </Link>
       </div>

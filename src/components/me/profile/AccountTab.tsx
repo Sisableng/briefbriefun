@@ -97,7 +97,7 @@ export default function AccountTab() {
 
   return (
     <div className="max-w-lg space-y-8">
-      <h3>Yang Udah Nyantol</h3>
+      <h3 className="max-sm:text-lg">Yang Udah Nyantol</h3>
 
       {/* Existing linked accounts */}
       <div className="space-y-2">
@@ -163,7 +163,7 @@ export default function AccountTab() {
       </div>
 
       {/* Missing providers - show buttons to add them */}
-      <h3 className="mt-20">Provider yang Siap Digaet</h3>
+      <h3 className="mt-20 max-sm:text-lg">Provider yang Siap Digaet</h3>
       <div className="space-y-2">
         {missingProviders.map((provider) => (
           <div
