@@ -18,6 +18,12 @@ const geistMono = Geist_Mono({
 });
 
 export const metadata: Metadata = {
+  metadataBase: new URL(
+    process.env.BETTER_AUTH_URL ||
+      (process.env.NODE_ENV === "production"
+        ? "https://b2f.wildanm.my.id"
+        : "http://localhost:3028"),
+  ),
   title: "B2f",
   description: "Welcome to BriefBriefun",
   icons: {
