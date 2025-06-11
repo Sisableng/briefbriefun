@@ -10,10 +10,18 @@ import {
 } from "@tanstack/react-query";
 import { headers } from "next/headers";
 import FloatingAddBriefBtn from "@/components/FloatingAddBriefBtn";
+import { Metadata } from "next/types";
 
 interface MeLayoutProps {
   children: React.ReactNode;
 }
+
+export const metadata: Metadata = {
+  title: {
+    template: "%s | B2f",
+    default: "B2f", // a default is required when creating a template
+  },
+};
 
 const MeLayout = async ({ children }: MeLayoutProps) => {
   const queryClient = new QueryClient();

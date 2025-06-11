@@ -62,7 +62,7 @@ const Robot = forwardRef<RobotRef, RobotProps>(
         </Suspense>
 
         <Tip className="group-hover:animate-in group-hover:zoom-in absolute inset-x-0 top-[5%] mx-auto opacity-0 transition-all ease-in-out group-hover:opacity-100">
-          Hello!
+          Ha?
         </Tip>
       </div>
     );

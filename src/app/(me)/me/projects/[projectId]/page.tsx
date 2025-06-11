@@ -7,6 +7,10 @@ interface pageProps {
   }>;
 }
 
+export const metadata = {
+  title: "Detail Project",
+};
+
 const page = async ({ params }: pageProps) => {
   const { projectId } = await params;
 

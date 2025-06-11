@@ -2,6 +2,10 @@ import { example } from "@/other-stuff/information";
 import React from "react";
 import Markdown from "react-markdown";
 
+export const metadata = {
+  title: "Example",
+};
+
 export default function ExamplePage() {
   return (
     <div className="c-content">

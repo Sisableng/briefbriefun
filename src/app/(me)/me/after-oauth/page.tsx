@@ -2,6 +2,10 @@ import PasswordForm from "@/components/forms/auth/PasswordForm";
 import SiteName from "@/components/SiteName";
 import React from "react";
 
+export const metadata = {
+  title: "Create Password",
+};
+
 export default function AfterOauthPage() {
   return (
     <div className="c-content mt-10 max-w-2xl space-y-10">
