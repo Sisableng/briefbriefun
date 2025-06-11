@@ -1,18 +1,83 @@
 "use server";
 
 import { db } from "@/db/drizzle";
-import { eq, and, SQL, desc } from "drizzle-orm";
+import { eq, and, SQL, desc, count, ilike } from "drizzle-orm";
 import { project } from "@/db/schemas/project-schema";
 import { z } from "zod";
 import { createProjectSchema, ProjectStatus } from "./schema";
 
-export const getProjectCountAction = async (userId?: string) => {
+export type ProjectQueryOptions = {
+  projectId?: string;
+  page?: number;
+  pageSize?: number;
+  filters?: {
+    type?: string;
+    industry?: string;
+    title?: string;
+    status?: ProjectStatus;
+  };
+  withCount?: boolean;
+};
+
+// Reusable function to generate filters
+const generateFilters = (
+  userId: string,
+  filterOptions?: ProjectQueryOptions["filters"],
+  projectId?: string,
+): SQL[] => {
+  const filters: SQL[] = [];
+
+  // Add userId filter
+  filters.push(eq(project.userId, userId));
+
+  // Add projectId filter if provided
+  if (projectId) {
+    filters.push(eq(project.id, projectId));
+  }
+
+  // Dynamic filter building
+  if (filterOptions) {
+    Object.entries(filterOptions).forEach(([key, value]) => {
+      if (value !== undefined && value !== null && value !== "") {
+        switch (key) {
+          case "type":
+            filters.push(eq(project.type, value));
+            break;
+          case "industry":
+            filters.push(eq(project.industry, value));
+            break;
+          case "status":
+            filters.push(eq(project.status, value as ProjectStatus));
+            break;
+          case "title":
+            filters.push(ilike(project.title, `%${value}%`));
+            break;
+          // Add more filter cases as needed
+          default:
+            break;
+        }
+      }
+    });
+  }
+
+  return filters;
+};
+
+export const getProjectCountAction = async (
+  userId?: string,
+  options?: Pick<ProjectQueryOptions, "filters">,
+) => {
   try {
     if (!userId) throw new Error("User not found");
 
-    const count = await db.$count(project);
+    const filters = generateFilters(userId, options?.filters);
 
-    return count;
+    const [countData] = await db
+      .select({ count: count() })
+      .from(project)
+      .where(and(...filters));
+
+    return countData;
   } catch (error) {
     console.error(error);
     throw error;
@@ -21,22 +86,16 @@ export const getProjectCountAction = async (userId?: string) => {
 
 export const getProjectAction = async (
   userId?: string,
-  options?: {
-    projectId?: string;
-    page?: number;
-    pageSize?: number;
-  },
+  options?: ProjectQueryOptions,
 ) => {
   try {
     if (!userId) throw new Error("User not found");
 
-    const filters: SQL[] = [];
-
-    filters.push(eq(project.userId, userId));
-
-    if (options?.projectId) {
-      filters.push(eq(project.id, options.projectId));
-    }
+    const filters = generateFilters(
+      userId,
+      options?.filters,
+      options?.projectId,
+    );
 
     let query = db
       .select()

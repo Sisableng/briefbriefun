@@ -1,4 +1,4 @@
-import React, { FC, useCallback, useState } from "react";
+import React, { FC, useCallback, useEffect, useMemo, useState } from "react";
 import CardProject from "./CardProject";
 import { Button } from "@/components/ui/button";
 import {
@@ -7,6 +7,7 @@ import {
   ListFilterIcon,
   LoaderCircleIcon,
   SearchIcon,
+  SquareCheckIcon,
   SquareDashedIcon,
   SquareDashedMousePointerIcon,
   TrashIcon,
@@ -21,6 +22,11 @@ import { toast } from "sonner";
 import { AnimatePresence, motion } from "motion/react";
 import DrawerResponsive from "@/components/ui/drawer-responsive";
 import clsx from "clsx";
+import { useSearchParams } from "next/navigation";
+import { useUrlParams } from "@/hooks/useUrlParams";
+import ProjectFilters from "./ProjectFilters";
+import { useDebounce, useDebounceValue } from "@/hooks/useDebounce";
+import { ProjectQueryOptions } from "@/components/forms/projects/actions";
 
 interface ProjectListsProps {
   userId: string;
@@ -37,6 +43,16 @@ const ErrorElement = () => {
     <div className="text-muted-foreground col-span-full grid min-h-60 place-content-center gap-4 text-center">
       <h2>Yah :(</h2>
       <p>Datanya lagi ngambek. Coba lagi nanti ya!</p>
+    </div>
+  );
+};
+
+const NotFoundElement = () => {
+  return (
+    <div className="col-span-full grid min-h-60 place-content-center gap-3 text-center">
+      <h2>Gak ketemu.</h2>
+
+      <p>Query yang kamu cari gak ketemu euy.</p>
     </div>
   );
 };
@@ -61,15 +77,55 @@ const ProjectLists = ({ userId }: ProjectListsProps) => {
   const [selectedProjects, setSelectedProjects] = useState<any[]>([]);
 
   const [isOpenDelete, setIsOpenDelete] = useState(false);
+  const [isOpenFilter, setIsOpenFilter] = useState(false);
+
+  const searchParams = useSearchParams();
+  const { updateParams, deleteParams, getParam } = useUrlParams(searchParams);
+
+  const debounceSearch = useDebounce((v: string) => {
+    if (v.length > 0) {
+      updateParams("search", v);
+    } else {
+      deleteParams("search");
+    }
+  }, 300);
+
+  const debounceInputpage = useDebounce((v: string) => {
+    if (v.length > 0) {
+      updateParams("page", v);
+    } else {
+      deleteParams("page");
+    }
+  }, 300);
+
+  const currentPage = useMemo(() => {
+    return getParam("page") || "1";
+  }, [updateParams]);
+
+  const searchQuery = useMemo(() => {
+    return getParam("search") || undefined;
+  }, [updateParams]);
+
+  const filtersParams = useMemo((): ProjectQueryOptions["filters"] => {
+    return Object.fromEntries(
+      searchParams.entries(),
+    ) as ProjectQueryOptions["filters"];
+  }, [searchParams]);
+
+  const PAGE_SIZE = 10;
 
   const {
     project: { data, isPending, error, refetch },
+    count: { data: countData },
     deleteProject: {
       mutateAsync: deleteProjectMutation,
       isPending: isPendingDelete,
     },
   } = useProject(userId, {
-    pageSize: 10,
+    page: Number(currentPage) ?? 1,
+    pageSize: PAGE_SIZE,
+    filters: filtersParams,
+    withCount: true,
   });
 
   // Optimized handler with useCallback to prevent unnecessary re-renders
@@ -114,13 +170,17 @@ const ProjectLists = ({ userId }: ProjectListsProps) => {
 
   // Toggle select mode and clear selection when disabled
   const toggleSelectMode = useCallback(() => {
+    if (isOpenFilter) {
+      setIsOpenFilter(false);
+    }
+
     setSelectMode((prev) => {
       if (prev) {
         setSelectedProjects([]); // Clear selection when exiting select mode
       }
       return !prev;
     });
-  }, []);
+  }, [isOpenFilter]);
 
   const handleDeleteBulkAction = useCallback(async () => {
     if (selectedProjects.length === 0) {
@@ -209,16 +269,77 @@ const ProjectLists = ({ userId }: ProjectListsProps) => {
     setSelectMode,
   ]);
 
+  const handleUpdatePage = useCallback(
+    (direction: "next" | "prev") => {
+      let newPage = currentPage;
+
+      if (direction === "next") {
+        newPage = String(Number(currentPage) + 1);
+
+        updateParams("page", newPage);
+      } else {
+        newPage = String(Number(currentPage) - 1);
+
+        updateParams("page", newPage);
+      }
+
+      if (typeof window !== "undefined") {
+        const input = document.getElementById("sip") as HTMLInputElement;
+
+        input.value = String(newPage);
+      }
+    },
+    [currentPage],
+  );
+
+  const shouldShowOptions = useMemo(() => {
+    if (data && data.length > 0) return true;
+    else if (data && data.length === 0 && countData && countData.count > 0)
+      return true;
+    return false;
+  }, [data, countData]);
+
   return (
     <div className="space-y-10">
-      <div className="flex items-center justify-between">
+      <div className="flex items-center justify-between gap-2">
         <div className="relative w-full max-w-sm">
           <SearchIcon className="text-muted-foreground absolute top-3.5 left-4 size-5" />
-          <Input placeholder="Search Project" className="w-full !pl-12" />
+          <Input
+            id="spi"
+            defaultValue={searchQuery}
+            onChange={(e) => debounceSearch(e.target.value)}
+            placeholder="Search Project"
+            className="w-full !px-12"
+            disabled={!shouldShowOptions}
+          />
+
+          {searchQuery && (
+            <Button
+              size={"icon"}
+              variant={"secondary"}
+              className="absolute top-1.5 right-1.5"
+              onClick={() => {
+                deleteParams("search");
+
+                if (typeof window !== "undefined") {
+                  const input = document.getElementById(
+                    "spi",
+                  ) as HTMLInputElement;
+                  input.value = "";
+                }
+              }}
+            >
+              <XIcon />
+            </Button>
+          )}
         </div>
 
         <div className="flex items-center gap-2">
-          <Button variant={"secondary"} onClick={toggleSelectMode}>
+          <Button
+            variant={"secondary"}
+            onClick={toggleSelectMode}
+            disabled={!shouldShowOptions}
+          >
             {selectMode ? (
               <>
                 <XIcon />
@@ -232,7 +353,17 @@ const ProjectLists = ({ userId }: ProjectListsProps) => {
             )}
           </Button>
 
-          <Button variant={"secondary"}>
+          <Button
+            variant={"secondary"}
+            onClick={() => {
+              setIsOpenFilter(!isOpenFilter);
+
+              if (selectMode) {
+                setSelectMode(false);
+              }
+            }}
+            disabled={!shouldShowOptions}
+          >
             <ListFilterIcon />
             Filter
           </Button>
@@ -254,122 +385,156 @@ const ProjectLists = ({ userId }: ProjectListsProps) => {
               onCheckedChange={(v) => handleSelectProject(v, project.id)}
             />
           ))
+        ) : shouldShowOptions ? (
+          <NotFoundElement />
         ) : (
           <EmptyElement />
         )}
       </div>
 
-      <div className="flex items-center justify-center gap-4">
-        <Button size={"icon"} variant={"secondary"} disabled>
-          <ChevronLeftIcon />
-        </Button>
-
-        <div className="relative">
-          <input
-            type="number"
-            defaultValue={1}
-            min={1}
-            max={10}
-            step={1}
-            className="bg-input h-9 rounded-md px-2 pr-12 text-center focus:border-0 focus:ring-0 focus:outline-none"
-          />
-
-          <div className="text-muted-foreground absolute top-1.5 right-4 block">{`/ 10`}</div>
-        </div>
-
-        <Button size={"icon"} variant={"secondary"}>
-          <ChevronRightIcon />
-        </Button>
-      </div>
-
-      <AnimatePresence>
-        {selectMode && (
-          <motion.div
-            initial={{
-              opacity: 0,
-              y: 50,
-            }}
-            animate={{
-              opacity: 1,
-              y: 0,
-            }}
-            exit={{
-              opacity: 0,
-              y: 50,
-            }}
-            className="fixed inset-x-0 bottom-4 mx-auto w-max max-w-sm"
-          >
-            <div className="bg-secondary flex items-center gap-2 rounded-full p-2 px-2">
-              <Button size={"sm"} variant={"outline"} onClick={toggleSelectAll}>
-                <SquareDashedIcon />
-                Pilih Semua
-              </Button>
-
+      {data && shouldShowOptions && (
+        <>
+          {data.length > 0 && (
+            <div className="flex items-center justify-center gap-4">
               <Button
-                size={"sm"}
-                variant={"outline"}
-                className="text-destructive"
-                onClick={() => setIsOpenDelete(true)}
-              >
-                <TrashIcon />
-                {`Hapus ${selectedProjects.length}`}
-              </Button>
-
-              <button
-                onClick={toggleSelectMode}
-                className="text-muted-foreground hover:text-foreground grid size-6 cursor-pointer place-content-center"
-              >
-                <XIcon className="size-4" />
-              </button>
-            </div>
-          </motion.div>
-        )}
-      </AnimatePresence>
-
-      <DrawerResponsive
-        title={"Kamu yakin?"}
-        description="Yakin nih mau hapus project ini?"
-        open={isOpenDelete}
-        onOpenChange={setIsOpenDelete}
-      >
-        <div>
-          <p className="text-muted-foreground text-sm">
-            {`Yakin mau hapus ${selectedProjects.length} project? Aksi ini gak bisa di-undo loh!`}
-          </p>
-        </div>
-
-        <div
-          className={clsx(
-            "mt-auto flex items-center gap-2",
-            isPendingDelete ? "justify-center" : "justify-end",
-          )}
-        >
-          {isPendingDelete ? (
-            <>
-              <p className="animate-pulse">Lagi ngapus...</p>
-              <LoaderCircleIcon className="text-primary animate-spin" />
-            </>
-          ) : (
-            <>
-              <Button
+                size={"icon"}
                 variant={"secondary"}
-                className="max-sm:w-full max-sm:flex-1"
-                onClick={() => setIsOpenDelete(false)}
-                disabled={isPendingDelete}
+                onClick={() => handleUpdatePage("prev")}
+                disabled={Number(currentPage) === 1}
               >
-                G jadi deng
+                <ChevronLeftIcon />
               </Button>
+              <div className="relative">
+                <input
+                  id="sip"
+                  type="number"
+                  defaultValue={currentPage}
+                  onChange={(e) => debounceInputpage(e.target.value)}
+                  min={1}
+                  max={Math.ceil((countData?.count ?? 0) / PAGE_SIZE)}
+                  step={1}
+                  disabled={
+                    Number(currentPage) >=
+                    Math.ceil((countData?.count ?? 0) / PAGE_SIZE)
+                  }
+                  className="bg-input disabled:text-muted-foreground h-9 rounded-md px-2 pr-12 text-center focus:border-0 focus:ring-0 focus:outline-none disabled:pointer-events-none"
+                />
+                <div className="text-muted-foreground absolute top-1.5 right-4 block">{`/ ${Math.ceil((countData?.count ?? 0) / PAGE_SIZE)}`}</div>
+              </div>
               <Button
-                className="max-sm:w-full max-sm:flex-1"
-                onClick={handleDeleteBulkAction}
-                disabled={isPendingDelete}
+                size={"icon"}
+                variant={"secondary"}
+                onClick={() => handleUpdatePage("next")}
+                disabled={
+                  Number(currentPage) >=
+                  Math.ceil((countData?.count ?? 0) / PAGE_SIZE)
+                }
               >
-                Y
+                <ChevronRightIcon />
               </Button>
-            </>
+            </div>
           )}
-        </div>
-      </DrawerResponsive>
+
+          <AnimatePresence>
+            {selectMode && (
+              <motion.div
+                initial={{
+                  opacity: 0,
+                  y: 50,
+                }}
+                animate={{
+                  opacity: 1,
+                  y: 0,
+                }}
+                exit={{
+                  opacity: 0,
+                  y: 50,
+                }}
+                className="fixed inset-x-0 bottom-4 mx-auto w-max max-w-sm"
+              >
+                <div className="bg-secondary flex items-center gap-2 rounded-full p-2 px-2">
+                  <Button
+                    size={"sm"}
+                    variant={"outline"}
+                    onClick={toggleSelectAll}
+                  >
+                    {selectedProjects.length === data.length ? (
+                      <SquareCheckIcon />
+                    ) : (
+                      <SquareDashedIcon className="" />
+                    )}
+                    Pilih Semua
+                  </Button>
+
+                  <Button
+                    size={"sm"}
+                    variant={"outline"}
+                    className="text-destructive"
+                    onClick={() => setIsOpenDelete(true)}
+                  >
+                    <TrashIcon />
+                    {`Hapus ${selectedProjects.length}`}
+                  </Button>
+
+                  <button
+                    onClick={toggleSelectMode}
+                    className="text-muted-foreground hover:text-foreground grid size-6 cursor-pointer place-content-center"
+                  >
+                    <XIcon className="size-4" />
+                  </button>
+                </div>
+              </motion.div>
+            )}
+          </AnimatePresence>
+
+          <ProjectFilters open={isOpenFilter} onOpenChange={setIsOpenFilter} />
+
+          <DrawerResponsive
+            title={"Kamu yakin?"}
+            description="Yakin nih mau hapus project ini?"
+            open={isOpenDelete}
+            onOpenChange={setIsOpenDelete}
+          >
+            <div>
+              <p className="text-muted-foreground text-sm">
+                {`Yakin mau hapus ${selectedProjects.length} project? Aksi ini gak bisa di-undo loh!`}
+              </p>
+            </div>
+
+            <div
+              className={clsx(
+                "mt-auto flex items-center gap-2",
+                isPendingDelete ? "justify-center" : "justify-end",
+              )}
+            >
+              {isPendingDelete ? (
+                <>
+                  <p className="animate-pulse">Lagi ngapus...</p>
+                  <LoaderCircleIcon className="text-primary animate-spin" />
+                </>
+              ) : (
+                <>
+                  <Button
+                    variant={"secondary"}
+                    className="max-sm:w-full max-sm:flex-1"
+                    onClick={() => setIsOpenDelete(false)}
+                    disabled={isPendingDelete}
+                  >
+                    G jadi deng
+                  </Button>
+                  <Button
+                    className="max-sm:w-full max-sm:flex-1"
+                    onClick={handleDeleteBulkAction}
+                    disabled={isPendingDelete}
+                  >
+                    Y
+                  </Button>
+                </>
+              )}
+            </div>
+          </DrawerResponsive>
+        </>
+      )}
     </div>
   );
 };

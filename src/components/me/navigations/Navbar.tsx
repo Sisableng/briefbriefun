@@ -27,6 +27,7 @@ import UserAvatar from "../avatar/UserAvatar";
 import useWindowScroll from "@/hooks/useWindowScroll";
 import clsx from "clsx";
 import { useTheme } from "next-themes";
+import { useIsClient } from "@/hooks/useIsClient";
 
 export default function Navbar() {
   const pathname = usePathname();
@@ -35,6 +36,7 @@ export default function Navbar() {
   const { user } = useSession();
 
   const { isScrolled } = useWindowScroll();
+  const isClient = useIsClient();
 
   const { setTheme, resolvedTheme } = useTheme();
 
@@ -48,7 +50,7 @@ export default function Navbar() {
     });
   }
 
-  if (pathname === "/me/after-oauth") return null;
+  if (!isClient || pathname === "/me/after-oauth") return null;
 
   return (
     <div

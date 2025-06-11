@@ -60,7 +60,14 @@ const CardProject = ({
           </Badge>
         </div>
 
-        <CardTitle>{data.title}</CardTitle>
+        <CardTitle className={clsx(checkMode && "pointer-events-none")}>
+          <Link
+            href={`/me/projects/${data.id}`}
+            className="hover:text-primary transition-colors ease-in-out"
+          >
+            {data.title}
+          </Link>
+        </CardTitle>
         <CardDescription className="line-clamp-2">
           {data.description}
         </CardDescription>

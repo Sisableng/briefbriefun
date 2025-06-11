@@ -3,6 +3,8 @@ import {
   createProjectAction,
   deleteProjectAction,
   getProjectAction,
+  getProjectCountAction,
+  ProjectQueryOptions,
   updateProjectAction,
 } from "@/components/forms/projects/actions";
 import {
@@ -10,13 +12,20 @@ import {
   ProjectStatus,
 } from "@/components/forms/projects/schema";
 
+export const useProjectCountQuery = (
+  userId?: string,
+  options?: ProjectQueryOptions,
+) => {
+  return useQuery({
+    queryKey: ["db-count-projects", userId, options],
+    queryFn: () => getProjectCountAction(userId, options),
+    enabled: options?.withCount && !!userId,
+  });
+};
+
 export const useProjectQuery = (
   userId?: string,
-  options?: {
-    projectId?: string;
-    page?: number;
-    pageSize?: number;
-  },
+  options?: ProjectQueryOptions,
 ) => {
   return useQuery({
     queryKey: ["db-projects", userId, options],
@@ -69,19 +78,14 @@ export const useProjectMutations = (userId?: string) => {
   };
 };
 
-export const useProject = (
-  userId?: string,
-  options?: {
-    projectId?: string;
-    page?: number;
-    pageSize?: number;
-  },
-) => {
+export const useProject = (userId?: string, options?: ProjectQueryOptions) => {
+  const count = useProjectCountQuery(userId, options);
   const project = useProjectQuery(userId, options);
   const mutations = useProjectMutations(userId);
 
   return {
     project,
+    count,
     ...mutations,
   };
 };
