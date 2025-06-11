@@ -1,5 +1,5 @@
 "use client";
-import React, { FC } from "react";
+import React, { FC, useCallback, useMemo } from "react";
 import {
   Card,
   CardContent,
@@ -16,6 +16,12 @@ import { Badge } from "@/components/ui/badge";
 import StatusBadge from "./StatusBadge";
 import { cn } from "@/lib/utils";
 import clsx from "clsx";
+import { useUrlParams } from "@/hooks/useUrlParams";
+import { useSearchParams } from "next/navigation";
+import {
+  industryOptions,
+  typeOptions,
+} from "@/components/forms/projects/options";
 
 interface CardProjectProps {
   data: Project;
@@ -32,11 +38,42 @@ const CardProject = ({
   checked,
   onCheckedChange,
 }: CardProjectProps) => {
+  const searchParams = useSearchParams();
+  const { updateParams, deleteParams, getParam, hasParam } =
+    useUrlParams(searchParams);
+
+  const typeName = useMemo(() => {
+    const all = typeOptions
+      .flatMap((x) => x.options)
+      .find((x) => x.value === data.type);
+
+    return all?.name || "Unknown";
+  }, [data.type]);
+
+  const industryName = useMemo(() => {
+    const all = industryOptions.find((x) => x.value === data.industry);
+
+    return all?.name || "Unknown";
+  }, [data.type]);
+
   const handleCardClick = () => {
     if (checkMode && onCheckedChange) {
       onCheckedChange(!checked);
     }
   };
+
+  const toggleParam = useCallback(
+    (key: string, value: string) => {
+      const exists = hasParam(key);
+
+      if (exists) {
+        deleteParams(key);
+      } else {
+        updateParams(key, value);
+      }
+    },
+    [updateParams],
+  );
 
   return (
     <Card
@@ -52,11 +89,21 @@ const CardProject = ({
     >
       <CardHeader>
         <div className="flex flex-wrap items-center gap-2 border-b pb-4">
-          <Badge variant={"secondary"} className="capitalize">
-            {data.type.replace("-", " ")}
+          <Badge
+            variant={getParam("type") === data.type ? "default" : "secondary"}
+            className="cursor-pointer capitalize"
+            onClick={() => toggleParam("type", data.type)}
+          >
+            {typeName}
           </Badge>
-          <Badge variant={"secondary"} className="capitalize">
-            {data.industry.replace("-", " ")}
+          <Badge
+            variant={
+              getParam("industry") === data.industry ? "default" : "secondary"
+            }
+            className="cursor-pointer capitalize"
+            onClick={() => toggleParam("industry", data.industry)}
+          >
+            {industryName}
           </Badge>
         </div>
 
@@ -84,7 +131,10 @@ const CardProject = ({
           checkMode && "pointer-events-none",
         )}
       >
-        <StatusBadge status={data.status} />
+        <StatusBadge
+          status={data.status}
+          onClick={() => toggleParam("status", data.status)}
+        />
 
         <Button size={"icon"} variant={"outline"} className="ml-auto" asChild>
           <Link href={`/me/projects/${data.id}`}>

@@ -1,26 +1,32 @@
 "use client";
 import BackButton from "@/components/BackButton";
-import ProjectField from "@/components/me/project/ProjectField";
 import { Separator } from "@/components/ui/separator";
 import { useSession } from "@/hooks/query/auth-hooks";
 import { useProject } from "@/hooks/query/useProject";
 import { useParams } from "next/navigation";
 import React, { useMemo, useState } from "react";
-import Markdown from "react-markdown";
 import dynamic from "next/dynamic";
 import { Button } from "@/components/ui/button";
-import StatusBadge from "@/components/me/project/StatusBadge";
 import { ProjectStatus } from "@/components/forms/projects/schema";
 import { toast } from "sonner";
 import { mq, useMediaQuery } from "@/hooks/useMediaQuery";
-import {
-  EllipsisVerticalIcon,
-  LoaderCircleIcon,
-  TrashIcon,
-} from "lucide-react";
-import DrawerResponsive from "@/components/ui/drawer-responsive";
+import { LoaderCircleIcon, TrashIcon } from "lucide-react";
 import { useRouter } from "@bprogress/next/app";
 import clsx from "clsx";
+
+const ProjectField = dynamic(
+  () => import("@/components/me/project/ProjectField"),
+  { ssr: false },
+);
+const Markdown = dynamic(() => import("react-markdown"), { ssr: false });
+const StatusBadge = dynamic(
+  () => import("@/components/me/project/StatusBadge"),
+  { ssr: false },
+);
+const DrawerResponsive = dynamic(
+  () => import("@/components/ui/drawer-responsive"),
+  { ssr: false },
+);
 
 const LoadingSkeleton = dynamic(
   () => import("@/components/forms/projects/LoadingSkeleton"),
@@ -112,7 +118,7 @@ export default function DetailProjectPage() {
               {data.status === "draft" && (
                 <Button
                   size={mdScreen ? "sm" : "default"}
-                  variant={mdScreen ? "secondary" : "default"}
+                  variant={"default"}
                   onClick={() => handleUpdateStatus("inProgress")}
                   className="max-sm:w-full max-sm:flex-1"
                 >
@@ -122,7 +128,7 @@ export default function DetailProjectPage() {
               {data.status === "inProgress" && (
                 <Button
                   size={mdScreen ? "sm" : "default"}
-                  variant={mdScreen ? "secondary" : "default"}
+                  variant={"default"}
                   onClick={() => handleUpdateStatus("completed")}
                   className="max-sm:w-full max-sm:flex-1"
                 >
@@ -132,7 +138,7 @@ export default function DetailProjectPage() {
               {data.status === "completed" && (
                 <Button
                   size={mdScreen ? "sm" : "default"}
-                  variant={mdScreen ? "secondary" : "default"}
+                  variant={"default"}
                   onClick={() => handleUpdateStatus("draft")}
                   className="max-sm:w-full max-sm:flex-1"
                 >

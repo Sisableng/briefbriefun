@@ -22,15 +22,17 @@ const SonnerProvider = ({ children }: SonnerProviderProps) => {
         closeButton
         position="top-center"
         icons={{
-          success: <CircleCheck className="text-green-500" size={iconSize} />,
-          info: <Info size={iconSize} className="text-blue-500" />,
-          warning: (
-            <TriangleAlert className="text-orange-500" size={iconSize} />
+          success: (
+            <CircleCheck className="dark text-green-500" size={iconSize} />
           ),
-          error: <CircleX className="text-red-500" size={iconSize} />,
+          info: <Info size={iconSize} className="dark text-blue-500" />,
+          warning: (
+            <TriangleAlert className="dark text-orange-500" size={iconSize} />
+          ),
+          error: <CircleX className="dark text-red-500" size={iconSize} />,
           loading: (
             <LoaderCircle
-              className="text-primary animate-spin"
+              className="dark text-primary animate-spin"
               size={iconSize}
             />
           ),

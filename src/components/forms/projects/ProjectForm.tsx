@@ -171,7 +171,7 @@ export default function ProjectForm() {
             <div className="w-full shrink-0 space-y-8 self-start overflow-y-auto p-1 md:sticky md:top-26 md:w-60">
               <form
                 onSubmit={form.handleSubmit(onSubmit)}
-                className="space-y-8"
+                className="space-y-4"
               >
                 <FormField
                   control={form.control}
@@ -322,21 +322,24 @@ export default function ProjectForm() {
         ) : (
           <form
             onSubmit={form.handleSubmit(onSubmit)}
-            className="bg-secondary fixed inset-x-0 bottom-0 z-10 min-h-20 rounded-t-xl"
+            className="bg-secondary dark fixed inset-x-0 bottom-0 z-10 min-h-20 rounded-t-xl"
           >
             <div className="relative grid grid-cols-2 gap-2 p-4">
               <FormField
                 control={form.control}
                 name="type"
                 render={({ field }) => (
-                  <FormItem>
+                  <FormItem className="dark">
                     <FormControl>
                       <Select
                         {...field}
                         onValueChange={(value) => field.onChange(value)}
                       >
-                        <SelectTrigger className="w-full">
-                          <SelectValue placeholder="Select Type" />
+                        <SelectTrigger className="dark w-full text-zinc-300">
+                          <SelectValue
+                            placeholder="Select Type"
+                            className="dark"
+                          />
                         </SelectTrigger>
                         <SelectContent className="max-sm:max-h-96">
                           {isGroupedOptions(types)
@@ -392,7 +395,7 @@ export default function ProjectForm() {
                         {...field}
                         onValueChange={(value) => field.onChange(value)}
                       >
-                        <SelectTrigger className="w-full">
+                        <SelectTrigger className="w-full text-zinc-300">
                           <SelectValue placeholder="Select Type" />
                         </SelectTrigger>
                         <SelectContent className="max-sm:max-h-96">
@@ -425,7 +428,7 @@ export default function ProjectForm() {
                         {...field}
                         onValueChange={(value) => field.onChange(value)}
                       >
-                        <SelectTrigger className="w-full">
+                        <SelectTrigger className="w-full text-zinc-300">
                           <SelectValue placeholder="Select Type" />
                         </SelectTrigger>
                         <SelectContent className="max-sm:max-h-96">

@@ -303,7 +303,7 @@ const ProjectLists = ({ userId }: ProjectListsProps) => {
     <div className="space-y-10">
       <div className="flex items-center justify-between gap-2">
         <div className="relative w-full max-w-sm">
-          <SearchIcon className="text-muted-foreground absolute top-3.5 left-4 size-5" />
+          <SearchIcon className="text-muted-foreground absolute top-2.5 left-4 size-5 md:top-3.5" />
           <Input
             id="spi"
             defaultValue={searchQuery}
@@ -317,7 +317,7 @@ const ProjectLists = ({ userId }: ProjectListsProps) => {
             <Button
               size={"icon"}
               variant={"secondary"}
-              className="absolute top-1.5 right-1.5"
+              className="absolute top-0.5 right-1.5 md:top-1.5"
               onClick={() => {
                 deleteParams("search");
 
@@ -450,12 +450,13 @@ const ProjectLists = ({ userId }: ProjectListsProps) => {
                   opacity: 0,
                   y: 50,
                 }}
-                className="fixed inset-x-0 bottom-4 mx-auto w-max max-w-sm"
+                className="dark fixed inset-x-0 bottom-4 z-10 mx-auto w-max max-w-sm"
               >
                 <div className="bg-secondary flex items-center gap-2 rounded-full p-2 px-2">
                   <Button
                     size={"sm"}
                     variant={"outline"}
+                    className="dark text-zinc-300"
                     onClick={toggleSelectAll}
                   >
                     {selectedProjects.length === data.length ? (
@@ -469,8 +470,9 @@ const ProjectLists = ({ userId }: ProjectListsProps) => {
                   <Button
                     size={"sm"}
                     variant={"outline"}
-                    className="text-destructive"
+                    className="dark text-destructive"
                     onClick={() => setIsOpenDelete(true)}
+                    disabled={!selectedProjects.length} // Tambahkan kondisi untuk men
                   >
                     <TrashIcon />
                     {`Hapus ${selectedProjects.length}`}

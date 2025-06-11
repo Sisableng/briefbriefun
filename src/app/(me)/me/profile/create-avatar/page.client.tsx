@@ -1,7 +1,5 @@
 "use client";
 
-import { type Style } from "@dicebear/core";
-import * as styles from "@dicebear/collection";
 import React from "react";
 import {
   Select,
@@ -16,6 +14,7 @@ import { Button } from "@/components/ui/button";
 import BackButton from "@/components/BackButton";
 import { LoaderCircleIcon, MinusIcon, PlusIcon } from "lucide-react";
 import { Separator } from "@/components/ui/separator";
+import { AVATAR_STYLES, getStyleMetadata } from "@/utils/avatarStyles";
 
 const OptionItem = dynamic(() => import("@/components/me/avatar/OptionItem"), {
   ssr: false,
@@ -43,14 +42,7 @@ export default function CreateAvatarPage() {
     radius: 0,
   });
 
-  const listStyle: (Style<any> & { key: string })[] = Object.keys(styles).map(
-    (x) => ({
-      key: x,
-      ...(styles as any)[x],
-    }),
-  );
-
-  const [selectedType, setSelectedType] = React.useState(listStyle[0].key);
+  const [selectedType, setSelectedType] = React.useState(AVATAR_STYLES[0]);
 
   const handleChangeOptions = (name: string, value: any) => {
     setOptions((prev: any) => {
@@ -70,23 +62,22 @@ export default function CreateAvatarPage() {
         <Separator className="sm:hidden" />
 
         <div className="shrink-0 space-y-8 overflow-y-auto p-1 md:w-60">
-          <Select value={selectedType} onValueChange={setSelectedType}>
+          <Select
+            value={selectedType}
+            onValueChange={(v) => setSelectedType(v as any)}
+          >
             <SelectTrigger className="w-full flex-1 data-[size=default]:h-12">
               <SelectValue placeholder="Theme" />
             </SelectTrigger>
             <SelectContent className="max-h-96 sm:w-[calc(var(--spacing)*60-var(--spacing)*1)]">
-              {listStyle.map((x) => {
-                let title = x.meta?.title;
-                let slugifyKey = x.key
+              {AVATAR_STYLES.map((styleName) => {
+                const metadata = getStyleMetadata(styleName);
+                const slugifyKey = styleName
                   .replace(/([a-z0-9])([A-Z])/g, "$1-$2")
                   .toLowerCase();
 
-                if (x.key.includes("Neutral") && !title?.includes("Neutral")) {
-                  title += " Neutral";
-                }
-
                 return (
-                  <SelectItem key={x.key} value={x.key}>
+                  <SelectItem key={styleName} value={styleName}>
                     <Image
                       src={`https://api.dicebear.com/9.x/${slugifyKey}/webp`}
                       width={36}
@@ -94,7 +85,7 @@ export default function CreateAvatarPage() {
                       alt=""
                       className="bg-secondary rounded-md object-contain"
                     />
-                    {title}
+                    {metadata.title}
                   </SelectItem>
                 );
               })}
@@ -103,6 +94,7 @@ export default function CreateAvatarPage() {
 
           <Separator />
 
+          {/* Rest of your options components remain the same */}
           <OptionItem title="Rotasi">
             <div className="flex items-center gap-2">
               <Button
@@ -160,14 +152,13 @@ export default function CreateAvatarPage() {
               >
                 <MinusIcon className="h-4 w-4" />
               </Button>
-              {/* <div className="flex-1 text-center">{options.scale}%</div> */}
 
               <Select
                 value={String(options.scale)}
                 onValueChange={(v) => handleChangeOptions("scale", Number(v))}
               >
                 <SelectTrigger className="flex-1 text-center">
-                  <SelectValue placeholder="Rotasi" />
+                  <SelectValue placeholder="Skala" />
                 </SelectTrigger>
                 <SelectContent className="max-h-96">
                   {[...Array(200 / 10 + 1)].map((_, i) => {
@@ -206,14 +197,13 @@ export default function CreateAvatarPage() {
               >
                 <MinusIcon className="h-4 w-4" />
               </Button>
-              {/* <div className="flex-1 text-center">{options.radius}%</div> */}
 
               <Select
                 value={String(options.radius)}
                 onValueChange={(v) => handleChangeOptions("radius", Number(v))}
               >
                 <SelectTrigger className="flex-1 text-center">
-                  <SelectValue placeholder="Rotasi" />
+                  <SelectValue placeholder="Radius" />
                 </SelectTrigger>
                 <SelectContent className="max-h-96">
                   {[...Array(50 / 5 + 1)].map((_, i) => {

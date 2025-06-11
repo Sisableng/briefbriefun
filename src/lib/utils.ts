@@ -29,3 +29,19 @@ export function getStatus(status: ProjectStatus) {
       return "Beres";
   }
 }
+
+export const getUserInitials = (name: string | null) => {
+  if (!name) return "??";
+  return name
+    .split(" ")
+    .map((n) => n[0])
+    .join("")
+    .toUpperCase();
+};
+
+export const formatLargeValue = (value: number | null | undefined) => {
+  if (value == null || value === undefined) return "N/A";
+  if (value < 1000) return value;
+  else if (value < 1000000) return `${(value / 1000).toFixed(0)}K`;
+  else return `${(value / 1000000).toFixed(0)}M`;
+};

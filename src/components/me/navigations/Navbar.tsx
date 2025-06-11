@@ -28,6 +28,8 @@ import useWindowScroll from "@/hooks/useWindowScroll";
 import clsx from "clsx";
 import { useTheme } from "next-themes";
 import { useIsClient } from "@/hooks/useIsClient";
+import GlobalMenus from "@/components/GlobalMenus";
+import { mq, useMediaQuery } from "@/hooks/useMediaQuery";
 
 export default function Navbar() {
   const pathname = usePathname();
@@ -37,6 +39,7 @@ export default function Navbar() {
 
   const { isScrolled } = useWindowScroll();
   const isClient = useIsClient();
+  const mdScreen = useMediaQuery(mq("md"));
 
   const { setTheme, resolvedTheme } = useTheme();
 
@@ -56,10 +59,10 @@ export default function Navbar() {
     <div
       className={clsx(
         "sticky inset-x-0 top-0 z-50 mx-auto flex h-16 w-full max-w-[90rem] items-center justify-between gap-4 px-4 backdrop-blur transition-all ease-in-out md:h-20",
-        isScrolled ? "bg-background/10" : "",
+        isScrolled ? "bg-background/50" : "",
       )}
     >
-      <div className="flex items-center gap-10">
+      <div className="flex items-center gap-10 max-sm:flex-1">
         <Link
           href={"/me"}
           className="hover:text-primary group transition-colors ease-in-out"
@@ -69,17 +72,26 @@ export default function Navbar() {
               <SiteName />
             </span>
 
-            <span className="block sm:hidden">B2f</span>
+            <span className="block sm:hidden">
+              B<span className="text-primary text-3xl font-extrabold">2</span>f
+            </span>
           </h3>
         </Link>
+
+        <GlobalMenus />
       </div>
 
-      <div className="flex items-center gap-4">
-        {pathname !== "/me/create-brief" && (
-          <Button className="font-semibold" asChild>
+      <div className="flex items-center gap-2 md:gap-4">
+        {mdScreen && pathname !== "/me/create-brief" && (
+          <Button
+            size={"default"}
+            variant={"secondary"}
+            className="font-semibold"
+            asChild
+          >
             <Link href={"/me/create-brief"}>
               <PlusIcon />
-              Tambah Brief
+              <span className="max-sm:sr-only">Tambah Brief</span>
             </Link>
           </Button>
         )}

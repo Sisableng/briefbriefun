@@ -4,7 +4,7 @@ import React from "react";
 
 export default function AfterOauthPage() {
   return (
-    <div className="c-content mt-10 max-w-lg space-y-10">
+    <div className="c-content mt-10 max-w-2xl space-y-10">
       <h1 className="text-muted text-center">
         <SiteName />
       </h1>

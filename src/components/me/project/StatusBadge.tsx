@@ -6,9 +6,10 @@ import React, { FC } from "react";
 interface StatusBadgeProps {
   status: ProjectStatus;
   className?: string;
+  onClick?: () => void;
 }
 
-const StatusBadge = ({ status, className }: StatusBadgeProps) => {
+const StatusBadge = ({ status, className, onClick }: StatusBadgeProps) => {
   return (
     <Badge
       variant={
@@ -19,6 +20,7 @@ const StatusBadge = ({ status, className }: StatusBadgeProps) => {
             : "default"
       }
       className={cn("", className)}
+      onClick={onClick}
     >
       {getStatus(status)}
     </Badge>

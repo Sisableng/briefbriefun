@@ -2,7 +2,6 @@
 import { outputSchema } from "@/ai-stuff/output-schema";
 import React, { memo, useCallback } from "react";
 import { z } from "zod";
-import Markdown from "react-markdown";
 import { Separator } from "@/components/ui/separator";
 import { ArrowRightIcon, FilePenIcon, FileXIcon, SaveIcon } from "lucide-react";
 import { Button } from "@/components/ui/button";
@@ -11,9 +10,15 @@ import { projectFormSchema, statusSchema } from "../../forms/projects/schema";
 import { useSession } from "@/hooks/query/auth-hooks";
 import { useRouter } from "@bprogress/next/app";
 import { useProject } from "@/hooks/query/useProject";
-import ProjectField from "./ProjectField";
-import LoadingSkeleton from "@/components/forms/projects/LoadingSkeleton";
 import clsx from "clsx";
+import dynamic from "next/dynamic";
+
+const ProjectField = dynamic(() => import("./ProjectField"), { ssr: false });
+const LoadingSkeleton = dynamic(
+  () => import("@/components/forms/projects/LoadingSkeleton"),
+  { ssr: false },
+);
+const Markdown = dynamic(() => import("react-markdown"), { ssr: false });
 
 const formSchema = projectFormSchema.omit({
   source: true,

@@ -1,20 +1,31 @@
 "use client";
 
 import React, { useMemo } from "react";
-import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Button } from "@/components/ui/button";
 import { LucideIcon, WandSparklesIcon } from "lucide-react";
 import Link from "next/link";
 import BackButton from "@/components/BackButton";
 import { useSession } from "@/hooks/query/auth-hooks";
-import UserInfoTab from "@/components/me/profile/UserInfoTab";
-import AccountTab from "@/components/me/profile/AccountTab";
-import SecurityTab from "@/components/me/profile/SecurityTab";
 import LoadingScreen from "@/components/LoadingScreen";
 import { useUrlParams } from "@/hooks/useUrlParams";
 import { useSearchParams } from "next/navigation";
-import UserAvatar from "@/components/me/avatar/UserAvatar";
 import clsx from "clsx";
+import dynamic from "next/dynamic";
+
+const UserInfoTab = dynamic(
+  () => import("@/components/me/profile/UserInfoTab"),
+  { ssr: false },
+);
+const AccountTab = dynamic(() => import("@/components/me/profile/AccountTab"), {
+  ssr: false,
+});
+const SecurityTab = dynamic(
+  () => import("@/components/me/profile/SecurityTab"),
+  { ssr: false },
+);
+const UserAvatar = dynamic(() => import("@/components/me/avatar/UserAvatar"), {
+  ssr: false,
+});
 
 type ProfileTab = {
   title: string;
@@ -106,7 +117,10 @@ export default function ProfilePage() {
               key={tab.value}
               variant={activeTab === tab.value ? "outline" : "ghost"}
               onClick={() => handleActiveTab(tab.value)}
-              className={clsx(activeTab === tab.value && "text-primary")}
+              className={clsx(
+                activeTab === tab.value &&
+                  "not-dark:bg-primary not-dark:text-primary-foreground dark:text-primary not-dark:border-0",
+              )}
             >
               {tab.title}
             </Button>

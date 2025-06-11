@@ -9,6 +9,7 @@ import {
   QueryClient,
 } from "@tanstack/react-query";
 import { headers } from "next/headers";
+import FloatingAddBriefBtn from "@/components/FloatingAddBriefBtn";
 
 interface MeLayoutProps {
   children: React.ReactNode;
@@ -29,6 +30,7 @@ const MeLayout = async ({ children }: MeLayoutProps) => {
       <main className="flex min-h-dvh flex-col gap-10 pb-20 md:gap-20">
         <Navbar />
         {children}
+        <FloatingAddBriefBtn />
       </main>
     </HydrationBoundary>
   );

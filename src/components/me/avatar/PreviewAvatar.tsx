@@ -1,8 +1,7 @@
 "use client";
 import { createRandomSeed } from "@/lib/utils";
 import { createAvatar } from "@dicebear/core";
-import * as styles from "@dicebear/collection";
-import React, { FC } from "react";
+import React from "react";
 import Image from "next/image";
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
@@ -17,6 +16,7 @@ import Link from "next/link";
 import { Badge } from "@/components/ui/badge";
 import { toast } from "sonner";
 import { useUpdateUser } from "@/hooks/query/auth-hooks";
+import { importAvatarStyle } from "@/utils/avatarStyles";
 
 interface PreviewAvatarProps {
   type: string;
@@ -26,19 +26,15 @@ interface PreviewAvatarProps {
 const PreviewAvatar = ({ type, options }: PreviewAvatarProps) => {
   const [avatarUrl, setAvatarUrl] = React.useState("");
   const [seed, setSeed] = React.useState(createRandomSeed());
+  const [currentStyle, setCurrentStyle] = React.useState<any>(null);
+  const [svg, setSvg] = React.useState("");
+  const [isLoading, setIsLoading] = React.useState(false);
 
   const {
     mutateAsync: updateUser,
     error: updateError,
     isPending,
   } = useUpdateUser();
-
-  const avatar = createAvatar((styles as any)[type], {
-    seed,
-    ...options,
-  });
-
-  const svg = avatar.toDataUri();
 
   const debounced = useDebounce((term: string) => {
     if (term.length > 0) {
@@ -48,28 +44,71 @@ const PreviewAvatar = ({ type, options }: PreviewAvatarProps) => {
     }
   }, 500);
 
-  const urlParam = new URL(
-    `https://api.dicebear.com/9.x/${type
-      .replace(/([a-z0-9])([A-Z])/g, "$1-$2")
-      .toLowerCase()}/webp`,
-  );
+  // Dynamically load the specific style when type changes
+  React.useEffect(() => {
+    if (!type) return;
+
+    const loadStyle = async () => {
+      setIsLoading(true);
+      try {
+        const style = await importAvatarStyle(type);
+        setCurrentStyle(style);
+      } catch (error) {
+        console.error("Failed to load style:", error);
+        // Fallback to a basic style
+        try {
+          const fallbackStyle = await importAvatarStyle("initials");
+          setCurrentStyle(fallbackStyle);
+        } catch (fallbackError) {
+          console.error("Failed to load fallback style:", fallbackError);
+        }
+      } finally {
+        setIsLoading(false);
+      }
+    };
+
+    loadStyle();
+  }, [type]);
+
+  // Generate avatar when style, seed, or options change
+  React.useEffect(() => {
+    if (currentStyle && !isLoading) {
+      try {
+        const avatar = createAvatar(currentStyle, {
+          seed,
+          ...options,
+        });
+        setSvg(avatar.toDataUri());
+      } catch (error) {
+        console.error("Failed to generate avatar:", error);
+      }
+    }
+  }, [currentStyle, seed, options, isLoading]);
+
+  const urlParam = React.useMemo(() => {
+    return new URL(
+      `https://api.dicebear.com/9.x/${type
+        .replace(/([a-z0-9])([A-Z])/g, "$1-$2")
+        .toLowerCase()}/webp`,
+    );
+  }, [type]);
 
   async function handleSave() {
     const toastId = toast.loading("Sabar...");
 
-    await updateUser({
-      image: avatarUrl,
-    });
+    try {
+      await updateUser({
+        image: avatarUrl,
+      });
 
-    if (updateError) {
+      toast.success("Dah disimpan!", {
+        id: toastId,
+      });
+    } catch (error) {
       toast.error("Gagal menyimpan!", {
         id: toastId,
       });
     }
-
-    toast.success("Dah disimpan!", {
-      id: toastId,
-    });
   }
 
   React.useEffect(() => {
@@ -84,11 +123,18 @@ const PreviewAvatar = ({ type, options }: PreviewAvatarProps) => {
         }
       });
     }
+
+    setAvatarUrl(urlParam.toString());
   }, [type, seed, options, urlParam]);
 
-  React.useEffect(() => {
-    setAvatarUrl(urlParam.toString());
-  }, [type, seed, options]);
+  if (isLoading || !currentStyle || !svg) {
+    return (
+      <div className="flex flex-1 flex-col items-center justify-center gap-4">
+        <LoaderCircleIcon className="text-muted-foreground size-10 animate-spin" />
+        <p>Loading avatar...</p>
+      </div>
+    );
+  }
 
   return (
     <div className="flex flex-1 flex-col items-center gap-4 md:border-r">
@@ -138,12 +184,16 @@ const PreviewAvatar = ({ type, options }: PreviewAvatarProps) => {
           size={"lg"}
           variant={"secondary"}
           onClick={() => setSeed(createRandomSeed())}
-          disabled={isPending}
+          disabled={isPending || isLoading}
         >
           <DicesIcon />
           Random
         </Button>
-        <Button size={"lg"} onClick={handleSave} disabled={isPending}>
+        <Button
+          size={"lg"}
+          onClick={handleSave}
+          disabled={isPending || isLoading}
+        >
           {isPending ? (
             <>
               Sabar... <LoaderCircleIcon className="animate-spin" />

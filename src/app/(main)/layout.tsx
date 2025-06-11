@@ -11,7 +11,7 @@ const MainLayout = ({ children }: MainLayoutProps) => {
     <main className="flex min-h-dvh flex-col gap-10">
       <Navbar />
 
-      <div className="flex-1">{children}</div>
+      <div className="flex-1 pb-20">{children}</div>
 
       <Footer />
     </main>
