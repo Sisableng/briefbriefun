@@ -4,19 +4,6 @@ import React, { useRef, forwardRef, Suspense } from "react";
 import { cn } from "@/lib/utils";
 import Tip from "@/components/Tip";
 import { LoaderCircleIcon } from "lucide-react";
-// import Spline from "@splinetool/react-spline";
-
-// import dynamic from "next/dynamic";
-// import { LoaderCircleIcon } from "lucide-react";
-
-// const Spline = dynamic(() => import(""), {
-//   ssr: false,
-//   loading: () => (
-//     <div className="grid min-h-60 place-content-center">
-//       <LoaderCircleIcon className="text-muted-foreground size-6 animate-spin" />
-//     </div>
-//   ),
-// });
 
 const Spline = React.lazy(() => import("@splinetool/react-spline"));
 

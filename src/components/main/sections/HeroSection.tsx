@@ -57,8 +57,9 @@ export default function HeroSection() {
               size={"lg"}
               variant={"secondary"}
               className="h-12 font-semibold"
+              asChild
             >
-              📝 Lihat Contohnya
+              <Link href={"/example"}>📝 Lihat Contohnya</Link>
             </Button>
 
             <Button size={"lg"} className="h-12 font-semibold" asChild>
