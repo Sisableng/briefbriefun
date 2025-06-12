@@ -39,8 +39,8 @@ export const useProjectMutations = (userId?: string) => {
 
   const create = useMutation({
     mutationFn: (data: CreateProject) => createProjectAction(data),
-    onSuccess: () => {
-      queryClient.invalidateQueries({
+    onSuccess: async () => {
+      await queryClient.invalidateQueries({
         queryKey: ["db-projects", userId],
         exact: true,
         refetchType: "active",
@@ -51,8 +51,8 @@ export const useProjectMutations = (userId?: string) => {
   const update = useMutation({
     mutationFn: (data: { status: ProjectStatus; projectId: string }) =>
       updateProjectAction(data),
-    onSuccess: () => {
-      queryClient.invalidateQueries({
+    onSuccess: async () => {
+      await queryClient.invalidateQueries({
         queryKey: ["db-projects", userId],
         exact: true,
         refetchType: "active",
@@ -62,8 +62,8 @@ export const useProjectMutations = (userId?: string) => {
 
   const deleteProject = useMutation({
     mutationFn: (projectId: string) => deleteProjectAction(projectId),
-    onSuccess: () => {
-      queryClient.invalidateQueries({
+    onSuccess: async () => {
+      await queryClient.invalidateQueries({
         queryKey: ["db-projects", userId],
         exact: true,
         refetchType: "active",

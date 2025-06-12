@@ -52,16 +52,16 @@ const ProjectFilters = ({ open, onOpenChange }: ProjectFiltersProps) => {
             opacity: 0,
             y: 50,
           }}
-          className="fixed inset-x-0 bottom-4 z-10 mx-auto w-max max-w-sm"
+          className="fixed inset-x-0 bottom-4 z-10 mx-auto max-w-sm px-2"
         >
-          <div className="bg-secondary dark flex items-center gap-2 rounded-full p-2 px-2">
+          <div className="bg-secondary dark flex w-full items-center gap-2 rounded-full p-2 px-2">
             <Scroller
               orientation="horizontal"
-              className="w-full flex-1"
+              className=""
               hideScrollbar
               asChild
             >
-              <div className="flex items-center gap-2">
+              <div className="flex w-full flex-auto items-center gap-2">
                 <Select
                   value={getParam("type") ?? undefined}
                   onValueChange={(v) => handleUpdateParms("type", v)}

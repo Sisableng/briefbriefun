@@ -26,9 +26,7 @@ import {
 import {
   Select,
   SelectContent,
-  SelectGroup,
   SelectItem,
-  SelectLabel,
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
@@ -172,6 +170,146 @@ export default function ProjectForm() {
     return form.formState.isSubmitting || isLoading;
   }, [form.formState.isSubmitting, isLoading]);
 
+  const Fields = () => {
+    return (
+      <>
+        <FormField
+          control={form.control}
+          name="type"
+          render={({ field }) => (
+            <FormItem>
+              <FormLabel className="max-sm:sr-only">Tipe</FormLabel>
+              <FormControl>
+                <Combobox
+                  type="single"
+                  value={field.value}
+                  onValueChange={field.onChange}
+                >
+                  <ComboboxInput
+                    placeholder="Pilih Tipe..."
+                    onValueChange={field.onChange}
+                  />
+                  <ComboboxContent className="dark">
+                    <ComboboxEmpty className="text-muted-foreground py-2">
+                      {`Kustom "${field.value}"`}
+                    </ComboboxEmpty>
+                    {isGroupedOptions(types)
+                      ? types
+                          .sort((a, b) => a.name.localeCompare(b.name))
+                          .map((group) => (
+                            <ComboboxGroup
+                              key={group.name}
+                              className="not-last:mb-4"
+                              heading={group.name}
+                            >
+                              {group.options
+                                .sort((a, b) => a.name.localeCompare(b.name))
+                                .map((opt) => (
+                                  <ComboboxItem
+                                    key={opt.name}
+                                    value={opt.value}
+                                    // className="text-sm"
+                                  >
+                                    {opt.name}
+                                  </ComboboxItem>
+                                ))}
+                            </ComboboxGroup>
+                          ))
+                      : types
+                          .sort((a, b) => a.name.localeCompare(b.name))
+                          .map((opt) => (
+                            <ComboboxItem
+                              key={opt.name}
+                              value={opt.value}
+                              // className="text-sm"
+                            >
+                              {opt.name}
+                            </ComboboxItem>
+                          ))}
+                  </ComboboxContent>
+                </Combobox>
+              </FormControl>
+              <FormMessage className="ml-0" />
+            </FormItem>
+          )}
+        />
+
+        <FormField
+          control={form.control}
+          name="industry"
+          render={({ field }) => (
+            <FormItem>
+              <FormLabel className="max-sm:sr-only">Industri</FormLabel>
+              <FormControl>
+                <Combobox
+                  type="single"
+                  value={field.value}
+                  onValueChange={field.onChange}
+                >
+                  <ComboboxInput
+                    placeholder="Pilih Industri..."
+                    onValueChange={field.onChange}
+                  />
+                  <ComboboxContent className="dark">
+                    <ComboboxEmpty className="text-muted-foreground py-2">
+                      {`Kustom "${field.value}"`}
+                    </ComboboxEmpty>
+                    {industries
+                      .sort((a, b) => a.name.localeCompare(b.name))
+                      .map((opt) => (
+                        <ComboboxItem
+                          key={opt.name}
+                          value={opt.value}
+                          // className="text-sm"
+                        >
+                          {opt.name}
+                        </ComboboxItem>
+                      ))}
+                  </ComboboxContent>
+                </Combobox>
+              </FormControl>
+              <FormMessage className="ml-0" />
+            </FormItem>
+          )}
+        />
+
+        <FormField
+          control={form.control}
+          name="vibe"
+          render={({ field }) => (
+            <FormItem className="max-sm:col-span-full">
+              <FormLabel className="max-sm:sr-only">Vibe</FormLabel>
+              <FormControl>
+                <Select
+                  {...field}
+                  onValueChange={(value) => field.onChange(value)}
+                >
+                  <SelectTrigger className="w-full">
+                    <SelectValue placeholder="Select Type" />
+                  </SelectTrigger>
+                  <SelectContent className="dark">
+                    {vibes
+                      .sort((a, b) => a.name.localeCompare(b.name))
+                      .map((opt) => (
+                        <SelectItem
+                          key={opt.name}
+                          value={opt.value}
+                          className="text-sm"
+                        >
+                          {opt.name}
+                        </SelectItem>
+                      ))}
+                  </SelectContent>
+                </Select>
+              </FormControl>
+              <FormMessage className="ml-0" />
+            </FormItem>
+          )}
+        />
+      </>
+    );
+  };
+
   return (
     <div className="flex size-full flex-1 flex-col gap-10 max-sm:border-t max-sm:pt-8 sm:flex-row md:mt-14">
       <Form {...form}>
@@ -182,141 +320,7 @@ export default function ProjectForm() {
                 onSubmit={form.handleSubmit(onSubmit)}
                 className="space-y-4"
               >
-                <FormField
-                  control={form.control}
-                  name="type"
-                  render={({ field }) => (
-                    <FormItem>
-                      <FormLabel>Tipe</FormLabel>
-                      <FormControl>
-                        <Combobox
-                          type="single"
-                          value={field.value}
-                          onValueChange={field.onChange}
-                        >
-                          <ComboboxInput
-                            placeholder="Pilih Tipe..."
-                            onValueChange={field.onChange}
-                          />
-                          <ComboboxContent className="dark">
-                            <ComboboxEmpty className="text-muted-foreground py-2">
-                              {`Kustom "${field.value}"`}
-                            </ComboboxEmpty>
-                            {isGroupedOptions(types)
-                              ? types
-                                  .sort((a, b) => a.name.localeCompare(b.name))
-                                  .map((group) => (
-                                    <ComboboxGroup
-                                      key={group.name}
-                                      className="not-last:mb-4"
-                                      heading={group.name}
-                                    >
-                                      {group.options
-                                        .sort((a, b) =>
-                                          a.name.localeCompare(b.name),
-                                        )
-                                        .map((opt) => (
-                                          <ComboboxItem
-                                            key={opt.name}
-                                            value={opt.value}
-                                            // className="text-sm"
-                                          >
-                                            {opt.name}
-                                          </ComboboxItem>
-                                        ))}
-                                    </ComboboxGroup>
-                                  ))
-                              : types
-                                  .sort((a, b) => a.name.localeCompare(b.name))
-                                  .map((opt) => (
-                                    <ComboboxItem
-                                      key={opt.name}
-                                      value={opt.value}
-                                      // className="text-sm"
-                                    >
-                                      {opt.name}
-                                    </ComboboxItem>
-                                  ))}
-                          </ComboboxContent>
-                        </Combobox>
-                      </FormControl>
-                      <FormMessage className="ml-0" />
-                    </FormItem>
-                  )}
-                />
-
-                <FormField
-                  control={form.control}
-                  name="industry"
-                  render={({ field }) => (
-                    <FormItem>
-                      <FormLabel>Industri</FormLabel>
-                      <FormControl>
-                        <Combobox
-                          type="single"
-                          value={field.value}
-                          onValueChange={field.onChange}
-                        >
-                          <ComboboxInput
-                            placeholder="Pilih Industri..."
-                            onValueChange={field.onChange}
-                          />
-                          <ComboboxContent className="dark">
-                            <ComboboxEmpty className="text-muted-foreground py-2">
-                              {`Kustom "${field.value}"`}
-                            </ComboboxEmpty>
-                            {industries
-                              .sort((a, b) => a.name.localeCompare(b.name))
-                              .map((opt) => (
-                                <ComboboxItem
-                                  key={opt.name}
-                                  value={opt.value}
-                                  // className="text-sm"
-                                >
-                                  {opt.name}
-                                </ComboboxItem>
-                              ))}
-                          </ComboboxContent>
-                        </Combobox>
-                      </FormControl>
-                      <FormMessage className="ml-0" />
-                    </FormItem>
-                  )}
-                />
-
-                <FormField
-                  control={form.control}
-                  name="vibe"
-                  render={({ field }) => (
-                    <FormItem>
-                      <FormLabel>Vibe</FormLabel>
-                      <FormControl>
-                        <Select
-                          {...field}
-                          onValueChange={(value) => field.onChange(value)}
-                        >
-                          <SelectTrigger className="w-full">
-                            <SelectValue placeholder="Select Type" />
-                          </SelectTrigger>
-                          <SelectContent className="dark">
-                            {vibes
-                              .sort((a, b) => a.name.localeCompare(b.name))
-                              .map((opt) => (
-                                <SelectItem
-                                  key={opt.name}
-                                  value={opt.value}
-                                  className="text-sm"
-                                >
-                                  {opt.name}
-                                </SelectItem>
-                              ))}
-                          </SelectContent>
-                        </Select>
-                      </FormControl>
-                      <FormMessage className="ml-0" />
-                    </FormItem>
-                  )}
-                />
+                <Fields />
 
                 <Button
                   type="submit"
@@ -344,131 +348,7 @@ export default function ProjectForm() {
             className="bg-secondary dark fixed inset-x-0 bottom-0 z-10 min-h-20 rounded-t-xl"
           >
             <div className="relative grid grid-cols-2 gap-2 p-4">
-              <FormField
-                control={form.control}
-                name="type"
-                render={({ field }) => (
-                  <FormItem className="dark">
-                    <FormControl>
-                      <Select
-                        {...field}
-                        onValueChange={(value) => field.onChange(value)}
-                      >
-                        <SelectTrigger className="dark w-full text-zinc-300">
-                          <SelectValue
-                            placeholder="Select Type"
-                            className="dark"
-                          />
-                        </SelectTrigger>
-                        <SelectContent className="max-sm:max-h-96">
-                          {isGroupedOptions(types)
-                            ? types
-                                .sort((a, b) => a.name.localeCompare(b.name))
-                                .map((group) => (
-                                  <SelectGroup
-                                    key={group.name}
-                                    className="not-last:mb-4"
-                                  >
-                                    <SelectLabel>{group.name}</SelectLabel>
-                                    {group.options
-                                      .sort((a, b) =>
-                                        a.name.localeCompare(b.name),
-                                      )
-                                      .map((opt) => (
-                                        <SelectItem
-                                          key={opt.name}
-                                          value={opt.value}
-                                          className="text-sm"
-                                        >
-                                          {opt.name}
-                                        </SelectItem>
-                                      ))}
-                                  </SelectGroup>
-                                ))
-                            : types
-                                .sort((a, b) => a.name.localeCompare(b.name))
-                                .map((opt) => (
-                                  <SelectItem
-                                    key={opt.name}
-                                    value={opt.value}
-                                    className="text-sm"
-                                  >
-                                    {opt.name}
-                                  </SelectItem>
-                                ))}
-                        </SelectContent>
-                      </Select>
-                    </FormControl>
-                    <FormMessage className="ml-0" />
-                  </FormItem>
-                )}
-              />
-
-              <FormField
-                control={form.control}
-                name="industry"
-                render={({ field }) => (
-                  <FormItem>
-                    <FormControl>
-                      <Select
-                        {...field}
-                        onValueChange={(value) => field.onChange(value)}
-                      >
-                        <SelectTrigger className="w-full text-zinc-300">
-                          <SelectValue placeholder="Select Type" />
-                        </SelectTrigger>
-                        <SelectContent className="max-sm:max-h-96">
-                          {industries
-                            .sort((a, b) => a.name.localeCompare(b.name))
-                            .map((opt) => (
-                              <SelectItem
-                                key={opt.name}
-                                value={opt.value}
-                                className="text-sm"
-                              >
-                                {opt.name}
-                              </SelectItem>
-                            ))}
-                        </SelectContent>
-                      </Select>
-                    </FormControl>
-                    <FormMessage className="ml-0" />
-                  </FormItem>
-                )}
-              />
-
-              <FormField
-                control={form.control}
-                name="vibe"
-                render={({ field }) => (
-                  <FormItem className="col-span-full">
-                    <FormControl>
-                      <Select
-                        {...field}
-                        onValueChange={(value) => field.onChange(value)}
-                      >
-                        <SelectTrigger className="w-full text-zinc-300">
-                          <SelectValue placeholder="Select Type" />
-                        </SelectTrigger>
-                        <SelectContent className="max-sm:max-h-96">
-                          {vibes
-                            .sort((a, b) => a.name.localeCompare(b.name))
-                            .map((opt) => (
-                              <SelectItem
-                                key={opt.name}
-                                value={opt.value}
-                                className="text-sm"
-                              >
-                                {opt.name}
-                              </SelectItem>
-                            ))}
-                        </SelectContent>
-                      </Select>
-                    </FormControl>
-                    <FormMessage className="ml-0" />
-                  </FormItem>
-                )}
-              />
+              <Fields />
 
               <Button
                 type="submit"

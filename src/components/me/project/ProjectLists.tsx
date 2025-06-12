@@ -127,7 +127,6 @@ const ProjectLists = ({ userId }: ProjectListsProps) => {
       ...filtersParams,
       title: searchQuery,
     },
-    withCount: true,
   });
 
   // Optimized handler with useCallback to prevent unnecessary re-renders
@@ -452,7 +451,7 @@ const ProjectLists = ({ userId }: ProjectListsProps) => {
                   opacity: 0,
                   y: 50,
                 }}
-                className="dark fixed inset-x-0 bottom-4 z-10 mx-auto w-max max-w-sm"
+                className="dark fixed inset-x-0 bottom-4 z-10 mx-auto max-w-sm px-2"
               >
                 <div className="bg-secondary flex items-center gap-2 rounded-full p-2 px-2">
                   <Button
