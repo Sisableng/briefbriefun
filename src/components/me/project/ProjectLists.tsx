@@ -116,7 +116,6 @@ const ProjectLists = ({ userId }: ProjectListsProps) => {
 
   const {
     project: { data, isPending, error, refetch },
-    count: { data: countData },
     deleteProject: {
       mutateAsync: deleteProjectMutation,
       isPending: isPendingDelete,
@@ -124,7 +123,10 @@ const ProjectLists = ({ userId }: ProjectListsProps) => {
   } = useProject(userId, {
     page: Number(currentPage) ?? 1,
     pageSize: PAGE_SIZE,
-    filters: filtersParams,
+    filters: {
+      ...filtersParams,
+      title: searchQuery,
+    },
     withCount: true,
   });
 
@@ -294,10 +296,10 @@ const ProjectLists = ({ userId }: ProjectListsProps) => {
 
   const shouldShowOptions = useMemo(() => {
     if (data && data.length > 0) return true;
-    else if (data && data.length === 0 && countData && countData.count > 0)
-      return true;
+    else if (searchParams.toString().length > 0 && data && data.length === 0)
+      return true; // Assuming searchQuery is used for filtering data
     return false;
-  }, [data, countData]);
+  }, [data, searchParams]);
 
   return (
     <div className="space-y-10">
@@ -411,15 +413,15 @@ const ProjectLists = ({ userId }: ProjectListsProps) => {
                   defaultValue={currentPage}
                   onChange={(e) => debounceInputpage(e.target.value)}
                   min={1}
-                  max={Math.ceil((countData?.count ?? 0) / PAGE_SIZE)}
+                  max={Math.ceil((data?.length ?? 0) / PAGE_SIZE)}
                   step={1}
                   disabled={
                     Number(currentPage) >=
-                    Math.ceil((countData?.count ?? 0) / PAGE_SIZE)
+                    Math.ceil((data?.length ?? 0) / PAGE_SIZE)
                   }
                   className="bg-input disabled:text-muted-foreground h-9 rounded-md px-2 pr-12 text-center focus:border-0 focus:ring-0 focus:outline-none disabled:pointer-events-none"
                 />
-                <div className="text-muted-foreground absolute top-1.5 right-4 block">{`/ ${Math.ceil((countData?.count ?? 0) / PAGE_SIZE)}`}</div>
+                <div className="text-muted-foreground absolute top-1.5 right-4 block">{`/ ${Math.ceil((data?.length ?? 0) / PAGE_SIZE)}`}</div>
               </div>
               <Button
                 size={"icon"}
@@ -427,7 +429,7 @@ const ProjectLists = ({ userId }: ProjectListsProps) => {
                 onClick={() => handleUpdatePage("next")}
                 disabled={
                   Number(currentPage) >=
-                  Math.ceil((countData?.count ?? 0) / PAGE_SIZE)
+                  Math.ceil((data?.length ?? 0) / PAGE_SIZE)
                 }
               >
                 <ChevronRightIcon />

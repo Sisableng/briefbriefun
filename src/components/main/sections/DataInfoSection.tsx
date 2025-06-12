@@ -13,7 +13,7 @@ export default function DataInfoSection() {
   const isLoading = isLoadingProject || isLoadingUser; // Assuming both are loading at the same time
 
   return (
-    <section className="container flex items-center justify-center gap-10 md:gap-20">
+    <section className="container flex items-center justify-center gap-6 md:gap-20">
       <div className="flex items-center gap-4 text-left">
         {isLoading ? (
           <div className="space-y-4">
@@ -23,7 +23,7 @@ export default function DataInfoSection() {
         ) : (
           <>
             <h1>{formatLargeValue(countProject?.count ?? 0)}</h1>
-            <p className="text-muted-foreground text-sm">
+            <p className="text-muted-foreground text-xs sm:text-sm">
               Brief udah <br /> dibuat
             </p>
           </>
@@ -41,7 +41,7 @@ export default function DataInfoSection() {
         ) : (
           <>
             <h1>{formatLargeValue(countUser?.count ?? 0)}</h1>
-            <p className="text-muted-foreground text-sm">
+            <p className="text-muted-foreground text-xs sm:text-sm">
               Pengangguran <br /> terdaftar
             </p>
           </>
