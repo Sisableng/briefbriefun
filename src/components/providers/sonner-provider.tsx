@@ -13,7 +13,7 @@ interface SonnerProviderProps {
 }
 
 const SonnerProvider = ({ children }: SonnerProviderProps) => {
-  const iconSize = 20;
+  const iconSize = 16;
   return (
     <>
       {children}
@@ -23,13 +23,13 @@ const SonnerProvider = ({ children }: SonnerProviderProps) => {
         position="top-center"
         icons={{
           success: (
-            <CircleCheck className="dark text-green-500" size={iconSize} />
+            <CircleCheck className="dark text-green-200" size={iconSize} />
           ),
           info: <Info size={iconSize} className="dark text-blue-500" />,
           warning: (
-            <TriangleAlert className="dark text-orange-500" size={iconSize} />
+            <TriangleAlert className="dark text-yellow-500" size={iconSize} />
           ),
-          error: <CircleX className="dark text-red-500" size={iconSize} />,
+          error: <CircleX className="dark text-destructive" size={iconSize} />,
           loading: (
             <LoaderCircle
               className="dark text-primary animate-spin"
@@ -45,6 +45,9 @@ const SonnerProvider = ({ children }: SonnerProviderProps) => {
             success: "toast-success",
             info: "toast-info",
             warning: "toast-warning",
+            title: "toast-title",
+            description: "toast-description",
+            icon: "toast-icon",
           },
         }}
       />

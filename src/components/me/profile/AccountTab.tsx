@@ -12,6 +12,7 @@ import React from "react";
 import { toast } from "sonner";
 import DrawerResponsive from "@/components/ui/drawer-responsive";
 import { capitalize } from "@/lib/utils";
+import { Separator } from "@/components/ui/separator";
 
 const acceptedProviders = ["google", "github"];
 
@@ -162,8 +163,10 @@ export default function AccountTab() {
         )}
       </div>
 
+      <Separator />
+
       {/* Missing providers - show buttons to add them */}
-      <h3 className="mt-20 max-sm:text-lg">Provider yang Siap Digaet</h3>
+      <h3 className="max-sm:text-lg">Provider yang Siap Digaet</h3>
       <div className="space-y-2">
         {missingProviders.map((provider) => (
           <div

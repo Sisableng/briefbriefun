@@ -32,6 +32,15 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
+import {
+  Combobox,
+  ComboboxContent,
+  ComboboxEmpty,
+  ComboboxGroup,
+  ComboboxInput,
+  ComboboxItem,
+} from "@/components/ui/combobox";
+
 import { ArrowRightIcon, LoaderCircleIcon } from "lucide-react";
 import { toast } from "sonner";
 import { experimental_useObject as useObject } from "@ai-sdk/react";
@@ -180,51 +189,56 @@ export default function ProjectForm() {
                     <FormItem>
                       <FormLabel>Tipe</FormLabel>
                       <FormControl>
-                        <Select
-                          {...field}
-                          onValueChange={(value) => field.onChange(value)}
+                        <Combobox
+                          type="single"
+                          value={field.value}
+                          onValueChange={field.onChange}
                         >
-                          <SelectTrigger className="w-full">
-                            <SelectValue placeholder="Select Type" />
-                          </SelectTrigger>
-                          <SelectContent>
+                          <ComboboxInput
+                            placeholder="Pilih Tipe..."
+                            onValueChange={field.onChange}
+                          />
+                          <ComboboxContent className="dark">
+                            <ComboboxEmpty className="text-muted-foreground py-2">
+                              {`Kustom "${field.value}"`}
+                            </ComboboxEmpty>
                             {isGroupedOptions(types)
                               ? types
                                   .sort((a, b) => a.name.localeCompare(b.name))
                                   .map((group) => (
-                                    <SelectGroup
+                                    <ComboboxGroup
                                       key={group.name}
                                       className="not-last:mb-4"
+                                      heading={group.name}
                                     >
-                                      <SelectLabel>{group.name}</SelectLabel>
                                       {group.options
                                         .sort((a, b) =>
                                           a.name.localeCompare(b.name),
                                         )
                                         .map((opt) => (
-                                          <SelectItem
+                                          <ComboboxItem
                                             key={opt.name}
                                             value={opt.value}
-                                            className="text-sm"
+                                            // className="text-sm"
                                           >
                                             {opt.name}
-                                          </SelectItem>
+                                          </ComboboxItem>
                                         ))}
-                                    </SelectGroup>
+                                    </ComboboxGroup>
                                   ))
                               : types
                                   .sort((a, b) => a.name.localeCompare(b.name))
                                   .map((opt) => (
-                                    <SelectItem
+                                    <ComboboxItem
                                       key={opt.name}
                                       value={opt.value}
-                                      className="text-sm"
+                                      // className="text-sm"
                                     >
                                       {opt.name}
-                                    </SelectItem>
+                                    </ComboboxItem>
                                   ))}
-                          </SelectContent>
-                        </Select>
+                          </ComboboxContent>
+                        </Combobox>
                       </FormControl>
                       <FormMessage className="ml-0" />
                     </FormItem>
@@ -238,27 +252,32 @@ export default function ProjectForm() {
                     <FormItem>
                       <FormLabel>Industri</FormLabel>
                       <FormControl>
-                        <Select
-                          {...field}
-                          onValueChange={(value) => field.onChange(value)}
+                        <Combobox
+                          type="single"
+                          value={field.value}
+                          onValueChange={field.onChange}
                         >
-                          <SelectTrigger className="w-full">
-                            <SelectValue placeholder="Select Type" />
-                          </SelectTrigger>
-                          <SelectContent>
+                          <ComboboxInput
+                            placeholder="Pilih Industri..."
+                            onValueChange={field.onChange}
+                          />
+                          <ComboboxContent className="dark">
+                            <ComboboxEmpty className="text-muted-foreground py-2">
+                              {`Kustom "${field.value}"`}
+                            </ComboboxEmpty>
                             {industries
                               .sort((a, b) => a.name.localeCompare(b.name))
                               .map((opt) => (
-                                <SelectItem
+                                <ComboboxItem
                                   key={opt.name}
                                   value={opt.value}
-                                  className="text-sm"
+                                  // className="text-sm"
                                 >
                                   {opt.name}
-                                </SelectItem>
+                                </ComboboxItem>
                               ))}
-                          </SelectContent>
-                        </Select>
+                          </ComboboxContent>
+                        </Combobox>
                       </FormControl>
                       <FormMessage className="ml-0" />
                     </FormItem>
@@ -279,7 +298,7 @@ export default function ProjectForm() {
                           <SelectTrigger className="w-full">
                             <SelectValue placeholder="Select Type" />
                           </SelectTrigger>
-                          <SelectContent>
+                          <SelectContent className="dark">
                             {vibes
                               .sort((a, b) => a.name.localeCompare(b.name))
                               .map((opt) => (

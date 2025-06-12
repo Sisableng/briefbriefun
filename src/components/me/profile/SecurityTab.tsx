@@ -94,7 +94,9 @@ export default function SecurityTab() {
 
       {showForm && <ChangePasswordForm />}
 
-      <h3 className="mt-10 max-sm:text-lg">Zona Bahaya!</h3>
+      <Separator />
+
+      <h3 className="max-sm:text-lg">Zona Bahaya!</h3>
 
       <div className="space-y-4 rounded-xl border p-4 md:p-6">
         <div className="text-destructive mb-8 space-y-2">

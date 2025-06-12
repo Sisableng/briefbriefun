@@ -1,19 +1,19 @@
-import { db } from "@/db/drizzle";
-import { user } from "@/db/schemas/auth-schema";
-import { project } from "@/db/schemas/project-schema";
-import { eq } from "drizzle-orm";
+"use client";
+import { Button } from "@/components/ui/button";
 import React from "react";
+import { toast } from "sonner";
 
 export default async function page() {
-  //   const data = await db
-  //     .select()
-  //     .from(project)
-  //     .where(eq(project.userId, "BK0hW4G75luwhxkHQgqINt83SJ6rm9ig"));
-  const data = await db.select().from(user);
+  const testToast = () => {
+    toast.info("Lorem, ipsum dolor sit amet consectetur adipisicing elit", {
+      duration: Infinity,
+    });
+  };
 
   return (
-    <div>
-      <pre>{JSON.stringify(data, null, 2)}</pre>
+    <div className="cme-content grid min-h-96 place-content-center">
+      <Button onClick={testToast}>Test Toast</Button>
+      {/* <p>Lorem, ipsum dolor sit amet consectetur adipisicing elit. Soluta nam ducimus, velit omnis possimus ullam.</p> */}
     </div>
   );
 }

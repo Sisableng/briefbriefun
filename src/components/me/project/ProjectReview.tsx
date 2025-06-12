@@ -37,7 +37,7 @@ interface ProjectReviewProps {
 
 // Memoized Error component
 const ErrorDisplay = memo(({ error }: { error: Error }) => (
-  <div className="inset-0 grid min-h-80 place-content-center gap-2 p-4 text-center">
+  <div className="inset-0 grid min-h-60 place-content-center gap-2 p-4 text-center">
     <div className="bg-secondary m-auto mb-4 grid size-14 place-content-center rounded-full">
       <FileXIcon className="text-primary size-8" />
     </div>
@@ -66,7 +66,7 @@ ErrorDisplay.displayName = "ErrorDisplay";
 
 // Memoized Empty state component
 const EmptyState = memo(() => (
-  <div className="inset-0 grid h-80 place-content-center gap-2 p-4 text-center">
+  <div className="inset-0 grid h-60 place-content-center gap-2 p-4 text-center">
     <div className="bg-secondary m-auto mb-4 grid size-14 place-content-center rounded-full">
       <FilePenIcon className="text-primary size-8" />
     </div>
@@ -213,7 +213,7 @@ const ProjectReview = memo(({ data, isLoading, error }: ProjectReviewProps) => {
   return (
     <div
       className={clsx(
-        "md:bg-card relative flex h-fit min-h-60 flex-1 flex-col gap-4 rounded-xl p-4 md:p-6",
+        "md:bg-card relative flex h-fit min-h-60 flex-1 flex-col gap-4 rounded-xl p-4 max-sm:pb-40 md:p-6",
         data.object && "max-sm:pb-40",
       )}
     >

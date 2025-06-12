@@ -13,10 +13,11 @@ import {
 } from "@/components/ui/dropdown-menu";
 import { ChevronDownIcon } from "lucide-react";
 import { globalMenus } from "@/other-stuff/information";
+import { useSession } from "@/hooks/query/auth-hooks";
 
 export default function GlobalMenus() {
   const pathname = usePathname();
-
+  const { session } = useSession();
   const mdScreen = useMediaQuery(mq("md"));
 
   if (!mdScreen) {
@@ -28,7 +29,7 @@ export default function GlobalMenus() {
           </Button>
         </DropdownMenuTrigger>
         <DropdownMenuContent className="dark">
-          {!pathname.includes("/me") && (
+          {!pathname.includes("/me") && session && (
             <>
               <DropdownMenuItem
                 variant="default"

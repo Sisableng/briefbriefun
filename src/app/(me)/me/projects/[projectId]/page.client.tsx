@@ -114,10 +114,10 @@ export default function DetailProjectPage() {
 
         {data && (
           <>
-            <div className="max-sm:bg-secondary/50 flex items-center gap-3 max-sm:fixed max-sm:inset-x-0 max-sm:bottom-0 max-sm:rounded-t-xl max-sm:p-4 max-sm:backdrop-blur">
+            <div className="bg-secondary/80 md:bg-secondary/80 dark fixed inset-x-0 bottom-0 mx-auto flex max-w-sm items-center gap-3 rounded-t-xl p-4 backdrop-blur md:bottom-4 md:w-max md:rounded-full md:p-2">
               {data.status === "draft" && (
                 <Button
-                  size={mdScreen ? "sm" : "default"}
+                  size={"default"}
                   variant={"default"}
                   onClick={() => handleUpdateStatus("inProgress")}
                   className="max-sm:w-full max-sm:flex-1"
@@ -127,7 +127,7 @@ export default function DetailProjectPage() {
               )}
               {data.status === "inProgress" && (
                 <Button
-                  size={mdScreen ? "sm" : "default"}
+                  size={"default"}
                   variant={"default"}
                   onClick={() => handleUpdateStatus("completed")}
                   className="max-sm:w-full max-sm:flex-1"
@@ -137,7 +137,7 @@ export default function DetailProjectPage() {
               )}
               {data.status === "completed" && (
                 <Button
-                  size={mdScreen ? "sm" : "default"}
+                  size={"default"}
                   variant={"default"}
                   onClick={() => handleUpdateStatus("draft")}
                   className="max-sm:w-full max-sm:flex-1"
@@ -146,24 +146,24 @@ export default function DetailProjectPage() {
                 </Button>
               )}
 
-              {!mdScreen && (
-                <Button
-                  size={"icon"}
-                  variant={"secondary"}
-                  className="text-destructive"
-                  onClick={() => setIsOpenDelete(true)}
-                >
-                  <TrashIcon />
-                </Button>
-              )}
+              {/* {!mdScreen && (
+              )} */}
+              <Button
+                size={"icon"}
+                variant={"secondary"}
+                className="text-destructive"
+                onClick={() => setIsOpenDelete(true)}
+              >
+                <TrashIcon />
+              </Button>
             </div>
 
-            {!mdScreen && (
-              <StatusBadge
-                status={data.status as any}
-                className="h-9 px-3 py-1 text-sm font-semibold"
-              />
-            )}
+            {/* {!mdScreen && (
+            )} */}
+            <StatusBadge
+              status={data.status as any}
+              className="h-9 px-3 py-1 text-sm font-semibold"
+            />
           </>
         )}
       </div>
@@ -177,12 +177,6 @@ export default function DetailProjectPage() {
           data && (
             <>
               <div className="space-y-2">
-                {mdScreen && (
-                  <StatusBadge
-                    status={data.status as any}
-                    className="px-3 py-1 text-sm font-semibold"
-                  />
-                )}
                 {data.title && <h2>{data.title}</h2>}
                 {data.description && (
                   <p className="text-muted-foreground">{data.description}</p>
@@ -195,10 +189,26 @@ export default function DetailProjectPage() {
                 </ProjectField>
               )}
 
-              {data.deadline && (
-                <ProjectField title="Deadline">
-                  <p>{data.deadline}</p>
-                </ProjectField>
+              {(data.type || data.industry || data.deadline) && (
+                <div className="flex flex-wrap justify-between gap-8">
+                  {data.type && (
+                    <ProjectField title="Tipe">
+                      <p>{data.type}</p>
+                    </ProjectField>
+                  )}
+
+                  {data.industry && (
+                    <ProjectField title="Industri">
+                      <p>{data.industry}</p>
+                    </ProjectField>
+                  )}
+
+                  {data.deadline && (
+                    <ProjectField title="Deadline">
+                      <p>{data.deadline}</p>
+                    </ProjectField>
+                  )}
+                </div>
               )}
 
               {data.content && (

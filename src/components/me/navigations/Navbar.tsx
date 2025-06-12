@@ -35,7 +35,7 @@ export default function Navbar() {
   const pathname = usePathname();
   const router = useRouter();
 
-  const { user } = useSession();
+  const { user, refetch } = useSession();
 
   const { isScrolled } = useWindowScroll();
   const isClient = useIsClient();
@@ -46,7 +46,9 @@ export default function Navbar() {
   async function signOut() {
     await authClient.signOut({
       fetchOptions: {
-        onSuccess: () => {
+        onSuccess: async () => {
+          await refetch();
+
           router.push("/sign-in");
         },
       },
@@ -58,92 +60,95 @@ export default function Navbar() {
   return (
     <div
       className={clsx(
-        "sticky inset-x-0 top-0 z-50 mx-auto flex h-16 w-full max-w-[90rem] items-center justify-between gap-4 px-4 backdrop-blur transition-all ease-in-out md:h-20",
-        isScrolled ? "bg-background/50" : "",
+        "sticky inset-x-0 top-0 z-50 p-2 transition-all ease-in-out md:px-4 md:backdrop-blur",
+        isScrolled ? "md:bg-background/50" : "",
       )}
     >
-      <div className="flex items-center gap-10 max-sm:flex-1">
-        <Link
-          href={"/me"}
-          className="hover:text-primary group transition-colors ease-in-out"
-        >
-          <h3>
-            <span className="hidden sm:block">
-              <SiteName />
-            </span>
+      <div className="max-sm:bg-secondary/50 mx-auto flex w-full max-w-[90rem] shrink-0 items-center justify-between gap-4 max-sm:rounded-full max-sm:p-2 max-sm:backdrop-blur max-sm:not-dark:border md:h-16">
+        <div className="flex items-center gap-10 max-sm:flex-1 max-sm:pl-2">
+          <h3 className="leading-none max-sm:mb-1">
+            <Link
+              href={"/me"}
+              className="hover:text-primary group transition-colors ease-in-out"
+            >
+              <span className="hidden sm:block">
+                <SiteName />
+              </span>
 
-            <span className="block sm:hidden">
-              B<span className="text-primary text-3xl font-extrabold">2</span>f
-            </span>
-          </h3>
-        </Link>
-
-        <GlobalMenus />
-      </div>
-
-      <div className="flex items-center gap-2 md:gap-4">
-        {mdScreen && pathname !== "/me/create-brief" && (
-          <Button
-            size={"default"}
-            variant={"secondary"}
-            className="font-semibold"
-            asChild
-          >
-            <Link href={"/me/create-brief"}>
-              <PlusIcon />
-              <span className="max-sm:sr-only">Tambah Brief</span>
+              <span className="block sm:hidden">
+                B<span className="text-primary text-3xl font-extrabold">2</span>
+                f
+              </span>
             </Link>
-          </Button>
-        )}
+          </h3>
 
-        {user && (
-          <DropdownMenu>
-            <DropdownMenuTrigger className="flex cursor-pointer items-center gap-3">
-              <UserAvatar
-                src={user.image ?? undefined}
-                fallback={user.name}
-                className="flex-1"
-              />
+          <GlobalMenus />
+        </div>
 
-              <div className="hidden max-w-30 text-left md:block">
-                <p className="truncate text-sm font-semibold">{user.name}</p>
-                <p className="text-muted-foreground truncate text-xs">
-                  {user.email}
-                </p>
-              </div>
-            </DropdownMenuTrigger>
-            <DropdownMenuContent className="dark">
-              <DropdownMenuItem asChild>
-                <Link href={"/me/profile"}>
-                  <UserIcon />
-                  Profil
-                </Link>
-              </DropdownMenuItem>
-              <DropdownMenuItem
-                onClick={() => {
-                  setTheme(resolvedTheme === "dark" ? "light" : "dark");
-                }}
-              >
-                {resolvedTheme === "light" ? (
-                  <>
-                    <MoonIcon />
-                    Dark
-                  </>
-                ) : (
-                  <>
-                    <SunIcon />
-                    Light
-                  </>
-                )}
-              </DropdownMenuItem>
-              <DropdownMenuSeparator />
-              <DropdownMenuItem variant="destructive" onClick={signOut}>
-                <LogOutIcon />
-                Keluar
-              </DropdownMenuItem>
-            </DropdownMenuContent>
-          </DropdownMenu>
-        )}
+        <div className="flex items-center gap-2 md:gap-4">
+          {mdScreen && pathname !== "/me/create-brief" && (
+            <Button
+              size={"default"}
+              variant={"default"}
+              className="font-semibold"
+              asChild
+            >
+              <Link href={"/me/create-brief"}>
+                <PlusIcon />
+                <span className="max-sm:sr-only">Tambah Brief</span>
+              </Link>
+            </Button>
+          )}
+
+          {user && (
+            <DropdownMenu>
+              <DropdownMenuTrigger className="flex cursor-pointer items-center gap-3">
+                <UserAvatar
+                  src={user.image ?? undefined}
+                  fallback={user.name}
+                  className="flex-1"
+                />
+
+                <div className="hidden max-w-30 text-left md:block">
+                  <p className="truncate text-sm font-semibold">{user.name}</p>
+                  <p className="text-muted-foreground truncate text-xs">
+                    {user.email}
+                  </p>
+                </div>
+              </DropdownMenuTrigger>
+              <DropdownMenuContent align="end" className="dark">
+                <DropdownMenuItem asChild>
+                  <Link href={"/me/profile"}>
+                    <UserIcon />
+                    Profil
+                  </Link>
+                </DropdownMenuItem>
+                <DropdownMenuItem
+                  onClick={() => {
+                    setTheme(resolvedTheme === "dark" ? "light" : "dark");
+                  }}
+                >
+                  {resolvedTheme === "light" ? (
+                    <>
+                      <MoonIcon />
+                      Dark
+                    </>
+                  ) : (
+                    <>
+                      <SunIcon />
+                      Light
+                    </>
+                  )}
+                </DropdownMenuItem>
+                <DropdownMenuSeparator />
+                <DropdownMenuItem variant="destructive" onClick={signOut}>
+                  <LogOutIcon />
+                  Keluar
+                </DropdownMenuItem>
+              </DropdownMenuContent>
+            </DropdownMenu>
+          )}
+        </div>
       </div>
     </div>
   );

@@ -88,7 +88,7 @@ export default function ProfilePage() {
     <div className="cme-content flex h-full flex-col gap-8">
       <BackButton />
 
-      <div className="flex items-start gap-4">
+      <div className="flex items-start gap-4 max-sm:flex-col max-sm:items-center max-sm:text-center">
         <UserAvatar
           src={user.image ?? undefined}
           fallback={user.name}
@@ -96,10 +96,10 @@ export default function ProfilePage() {
         />
 
         <div className="space-y-2">
-          <h2>{user.name}</h2>
-          <p className="text-muted-foreground">{user.email}</p>
+          <h2 className="max-sm:text-xl">{user.name}</h2>
+          <p className="text-muted-foreground break-all">{user.email}</p>
 
-          <div className="mt-6 flex items-center gap-2">
+          <div className="mt-6 flex items-center gap-2 max-sm:flex-col">
             <Button size={"sm"} variant={"secondary"} asChild>
               <Link href={"/me/profile/create-avatar"}>
                 <WandSparklesIcon />
@@ -111,7 +111,7 @@ export default function ProfilePage() {
       </div>
 
       <div className="mt-10 md:mt-14">
-        <div className="flex w-full items-center gap-2 border-b pb-8">
+        <div className="flex w-full items-center gap-2 border-b pb-8 max-sm:justify-center">
           {tabs.map((tab) => (
             <Button
               key={tab.value}

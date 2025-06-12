@@ -9,15 +9,15 @@ import { useSession } from "@/hooks/query/auth-hooks";
 import clsx from "clsx";
 
 export default function HeroSection() {
-  const [isRobotLoaded, setIsRobotLoaded] = React.useState(false);
+  // const [isRobotLoaded, setIsRobotLoaded] = React.useState(false);
 
   const { session } = useSession();
 
   return (
-    <section className="c-content relative mt-60 flex items-end justify-center md:mt-80">
+    <section className="c-content relative mt-52 flex items-end justify-center md:mt-80">
       <div className="z-10 flex flex-col items-center justify-center gap-10">
         <div className="mx-auto max-w-3xl space-y-8 text-center">
-          <h1 className="text-5xl leading-snug md:text-6xl">
+          <h1 className="text-4xl leading-snug md:text-6xl">
             Biar{" "}
             <Image
               src={"/1f9e0.svg"}
@@ -30,6 +30,7 @@ export default function HeroSection() {
             <span className="text-primary inline-block rounded-full border p-0 px-3 backdrop-blur md:p-1 md:px-5 md:text-5xl">
               <SiteName />
             </span>{" "}
+            <br className="block sm:hidden" />
             dulu yuk{" "}
             <Image
               src={"/1f60e.svg"}
@@ -40,7 +41,7 @@ export default function HeroSection() {
             />
           </h1>
 
-          <h4 className="text-muted-foreground">
+          <h4 className="text-muted-foreground max-sm:text-base">
             Portofolio nggak akan nambah sendiri!
           </h4>
         </div>

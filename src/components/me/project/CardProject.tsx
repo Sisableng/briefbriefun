@@ -47,13 +47,13 @@ const CardProject = ({
       .flatMap((x) => x.options)
       .find((x) => x.value === data.type);
 
-    return all?.name || "Unknown";
+    return all?.name || data.type;
   }, [data.type]);
 
   const industryName = useMemo(() => {
     const all = industryOptions.find((x) => x.value === data.industry);
 
-    return all?.name || "Unknown";
+    return all?.name || data.industry;
   }, [data.type]);
 
   const handleCardClick = () => {
@@ -78,29 +78,30 @@ const CardProject = ({
   return (
     <Card
       className={cn(
-        "",
+        "transition-all ease-in-out",
 
-        checkMode && "ring-border cursor-pointer ring hover:opacity-50",
+        checkMode &&
+          "ring-border ring-offset-background cursor-pointer opacity-40 ring-2 ring-offset-2 hover:opacity-100",
 
-        checked ? "ring-primary ring-2" : "",
+        checked ? "ring-primary opacity-100 ring-2" : "",
         className,
       )}
       onClick={handleCardClick}
     >
-      <CardHeader>
+      <CardHeader className={clsx(checkMode && "pointer-events-none")}>
         <div className="flex flex-wrap items-center gap-2 border-b pb-4">
           <Badge
             variant={getParam("type") === data.type ? "default" : "secondary"}
-            className="cursor-pointer capitalize"
+            className="hover:bg-input max-w-24 cursor-pointer truncate capitalize"
             onClick={() => toggleParam("type", data.type)}
           >
-            {typeName}
+            <span>{typeName}</span>
           </Badge>
           <Badge
             variant={
               getParam("industry") === data.industry ? "default" : "secondary"
             }
-            className="cursor-pointer capitalize"
+            className="hover:bg-input cursor-pointer capitalize"
             onClick={() => toggleParam("industry", data.industry)}
           >
             {industryName}
@@ -134,6 +135,7 @@ const CardProject = ({
         <StatusBadge
           status={data.status}
           onClick={() => toggleParam("status", data.status)}
+          className="hover:bg-border cursor-pointer"
         />
 
         <Button size={"icon"} variant={"outline"} className="ml-auto" asChild>

@@ -96,6 +96,7 @@
   --accent: oklch(0.967 0.001 286.375);
   --accent-foreground: oklch(0.21 0.006 285.885);
   --destructive: oklch(0.577 0.245 27.325);
+  --destructive-foreground: oklch(0.88 0.06 18);
   --border: oklch(0.92 0.004 286.32);
   --input: oklch(0.92 0.004 286.32);
   --ring: var(--primary);
@@ -130,6 +131,7 @@
   --accent: oklch(0.274 0.006 286.033);
   --accent-foreground: oklch(0.985 0 0);
   --destructive: oklch(0.704 0.191 22.216);
+  --destructive-foreground: oklch(0.88 0.06 18);
   --border: oklch(1 0 0 / 10%);
   --input: oklch(1 0 0 / 15%);
   --ring: oklch(0.85 0.21 129);
@@ -196,7 +198,11 @@
 
   /* Toast */
   .toast-container {
-    @apply bg-secondary/50! text-foreground! border-none! backdrop-blur!;
+    @apply bg-secondary/50! text-foreground! gap-3! rounded-xl! border-none! backdrop-blur!;
+  }
+
+  .toast-icon {
+    @apply grid! size-6! place-content-center! rounded-full bg-zinc-700!;
   }
 
   .toast-close-button {
@@ -204,19 +210,19 @@
   }
 
   .toast-error {
-    @apply bg-destructive/30! text-destructive-foreground! border-transparent!;
+    @apply from-destructive/60 border-transparent! -bg-linear-65! via-zinc-800/80 to-zinc-800/80 !text-white;
   }
 
   .toast-success {
-    @apply border-transparent! bg-green-500/30! text-green-50!;
+    @apply border-transparent! -bg-linear-65! from-green-500/60 via-zinc-800/80 to-zinc-800/80 text-green-50! dark:bg-green-500/30!;
   }
 
   .toast-warning {
-    @apply border-transparent! bg-yellow-500/30! text-yellow-50!;
+    @apply border-transparent! -bg-linear-65! from-yellow-500/60 via-zinc-800/80 to-zinc-800/80 text-yellow-50!;
   }
 
   .toast-info {
-    @apply border-transparent! bg-blue-500/30! text-blue-50!;
+    @apply border-transparent! -bg-linear-65! from-blue-500/60 via-zinc-800/80 to-zinc-800/80 text-blue-50!;
   }
 }
 

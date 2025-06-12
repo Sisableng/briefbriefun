@@ -301,8 +301,8 @@ const ProjectLists = ({ userId }: ProjectListsProps) => {
 
   return (
     <div className="space-y-10">
-      <div className="flex items-center justify-between gap-2">
-        <div className="relative w-full max-w-sm">
+      <div className="flex flex-wrap items-center justify-between max-sm:gap-4 md:gap-2">
+        <div className="relative w-full max-w-sm max-sm:flex-auto">
           <SearchIcon className="text-muted-foreground absolute top-2.5 left-4 size-5 md:top-3.5" />
           <Input
             id="spi"
@@ -334,7 +334,7 @@ const ProjectLists = ({ userId }: ProjectListsProps) => {
           )}
         </div>
 
-        <div className="flex items-center gap-2">
+        <div className="flex items-center gap-2 max-sm:flex-auto max-sm:justify-between">
           <Button
             variant={"secondary"}
             onClick={toggleSelectMode}
