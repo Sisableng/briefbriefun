@@ -14,7 +14,7 @@ export default function DataInfoSection() {
 
   return (
     <section className="container flex items-center justify-center gap-6 md:gap-20">
-      <div className="flex items-center gap-4 text-left">
+      <div className="flex flex-wrap items-center gap-4 text-left">
         {isLoading ? (
           <div className="space-y-4">
             <Skeleton className="h-4 w-32" />
@@ -32,7 +32,7 @@ export default function DataInfoSection() {
 
       <Separator orientation="vertical" className="!h-20" />
 
-      <div className="flex items-center gap-4 text-left">
+      <div className="flex flex-wrap items-center gap-4 text-left">
         {isLoading ? (
           <div className="space-y-4">
             <Skeleton className="h-4 w-32" />
