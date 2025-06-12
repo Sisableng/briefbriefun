@@ -4,22 +4,15 @@ import HeroSection from "@/components/main/sections/HeroSection";
 import DataInfoSection from "@/components/main/sections/DataInfoSection";
 import dynamic from "next/dynamic";
 
-const WhatIsSection = dynamic(
-  () => import("@/components/main/sections/WhatIsSection"),
-  { ssr: false },
-);
-const FeatureSection = dynamic(
-  () => import("@/components/main/sections/FeatureSection"),
-  { ssr: false },
-);
+import WhatIsSection from "@/components/main/sections/WhatIsSection";
+import FeatureSection from "@/components/main/sections/FeatureSection";
+import CTASection from "@/components/main/sections/CTASection";
+
 const ExampleSection = dynamic(
   () => import("@/components/main/sections/ExampleSection"),
   { ssr: false },
 );
-const CTASection = dynamic(
-  () => import("@/components/main/sections/CTASection"),
-  { ssr: false },
-);
+
 const LeaderBoardSection = dynamic(
   () => import("@/components/main/sections/LeaderBoardSection"),
   { ssr: false },
