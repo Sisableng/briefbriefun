@@ -1,6 +1,6 @@
 import React from "react";
 import Image from "next/image";
-import Robot from "@/components/main/stuff/Robot";
+// import Robot from "@/components/main/stuff/Robot";
 import SiteName from "@/components/SiteName";
 import { Button } from "@/components/ui/button";
 import Link from "next/link";
@@ -14,7 +14,7 @@ export default function HeroSection() {
   const { session } = useSession();
 
   return (
-    <section className="c-content relative flex min-h-[40rem] items-end justify-center">
+    <section className="c-content relative mt-60 flex items-end justify-center md:mt-80">
       <div className="z-10 flex flex-col items-center justify-center gap-10">
         <div className="mx-auto max-w-3xl space-y-8 text-center">
           <h1 className="text-5xl leading-snug md:text-6xl">
@@ -71,33 +71,14 @@ export default function HeroSection() {
         )}
       </div>
 
-      <Robot
+      {/* <Robot
         onLoaded={setIsRobotLoaded}
         className="absolute inset-x-0 bottom-0"
-      />
-
-      <div className="absolute top-6 -z-[1] mask-b-from-10% mask-b-to-90%">
-        <svg
-          viewBox="0 0 100 100"
-          height="400"
-          width="400"
-          opacity={0.5}
-          xmlns="http://www.w3.org/2000/svg"
-        >
-          <circle
-            r="45"
-            cx="50"
-            cy="50"
-            fill="none"
-            stroke="var(--secondary)"
-            strokeWidth="10"
-          />
-        </svg>
-      </div>
+      /> */}
 
       {/* Loading screen */}
 
-      <div
+      {/* <div
         className={clsx(
           "bg-primary animate-in fixed inset-0 z-50 grid place-content-center transition-all ease-in-out",
           isRobotLoaded
@@ -108,7 +89,7 @@ export default function HeroSection() {
         <h1 className="text-primary-foreground animate-pulse">
           <SiteName />
         </h1>
-      </div>
+      </div> */}
     </section>
   );
 }

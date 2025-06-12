@@ -28,7 +28,7 @@ const LeaderBoardSection = dynamic(
 export default function Home() {
   return (
     <div className="space-y-40 md:space-y-60">
-      <div className="space-y-20">
+      <div className="space-y-10 md:space-y-20">
         <HeroSection />
 
         <DataInfoSection />
