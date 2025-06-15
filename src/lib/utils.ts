@@ -45,3 +45,15 @@ export const formatLargeValue = (value: number | null | undefined) => {
   else if (value < 1000000) return `${(value / 1000).toFixed(0)}K`;
   else return `${(value / 1000000).toFixed(0)}M`;
 };
+
+export function scrambleText(text: string) {
+  return text
+    .split("")
+    .map((char) => {
+      if (char === " ") return " ";
+      return `<span class="relative">${char}<span class="select-none absolute left-0 opacity-0">${String.fromCharCode(
+        8203,
+      )}${String.fromCharCode(Math.random() * 1000 + 8000)}</span></span>`;
+    })
+    .join("");
+}

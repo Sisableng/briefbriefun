@@ -12,6 +12,7 @@ import { useSearchParams } from "next/navigation";
 import clsx from "clsx";
 import dynamic from "next/dynamic";
 import { SpringElement } from "@/components/animate-ui/components/spring-element";
+import Tip from "@/components/Tip";
 
 const UserInfoTab = dynamic(
   () => import("@/components/me/profile/UserInfoTab"),
@@ -25,6 +26,9 @@ const SecurityTab = dynamic(
   { ssr: false },
 );
 const UserAvatar = dynamic(() => import("@/components/me/avatar/UserAvatar"), {
+  ssr: false,
+});
+const AdminRequest = dynamic(() => import("@/components/AdminRequest"), {
   ssr: false,
 });
 
@@ -91,24 +95,31 @@ export default function ProfilePage() {
 
       <div className="flex items-start gap-4 max-sm:flex-col max-sm:items-center max-sm:text-center">
         <SpringElement>
-          <UserAvatar
-            src={user.image ?? undefined}
-            fallback={user.name}
-            className="size-20 md:size-24"
-          />
+          <div className="group relative">
+            <UserAvatar
+              src={user.image ?? undefined}
+              fallback={user.name}
+              className="size-20 md:size-24"
+            />
+            <Tip className="inset-x-0 -top-12 mx-auto min-h-max min-w-max text-xs">
+              Drag me
+            </Tip>
+          </div>
         </SpringElement>
 
         <div className="space-y-2">
           <h2 className="max-sm:text-xl">{user.name}</h2>
           <p className="text-muted-foreground break-all">{user.email}</p>
 
-          <div className="mt-6 flex items-center gap-2 max-sm:flex-col">
+          <div className="mt-6 flex items-center justify-center gap-2">
             <Button size={"sm"} variant={"secondary"} asChild>
               <Link href={"/me/profile/create-avatar"}>
                 <WandSparklesIcon />
                 Buat Avatar
               </Link>
             </Button>
+
+            <AdminRequest />
           </div>
         </div>
       </div>

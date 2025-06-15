@@ -1,13 +1,13 @@
-'use client';
+"use client";
 
-import * as React from 'react';
+import * as React from "react";
 import {
   type HTMLMotionProps,
   motion,
   useMotionValue,
   useSpring,
-} from 'motion/react';
-import { cn } from '@/lib/utils';
+} from "motion/react";
+import { cn } from "@/lib/utils";
 
 const generateSpringPath = (
   x1: number,
@@ -77,13 +77,13 @@ const generateSpringPath = (
     path.push(`C${c1x},${c1y} ${c2x},${c2y} ${mx},${my}`);
     path.push(`C${c3x},${c3y} ${c4x},${c4y} ${ex},${ey}`);
   }
-  return path.join(' ');
+  return path.join(" ");
 };
 
 function useMotionValueValue(mv: any) {
   return React.useSyncExternalStore(
     (callback) => {
-      const unsub = mv.on('change', callback);
+      const unsub = mv.on("change", callback);
       return unsub;
     },
     () => mv.get(),
@@ -105,7 +105,7 @@ type SpringAvatarProps = {
     curveRatioMax?: number;
     bezierOffset?: number;
   };
-} & HTMLMotionProps<'div'>;
+} & HTMLMotionProps<"div">;
 
 function SpringElement({
   ref,
@@ -148,19 +148,19 @@ function SpringElement({
       }
     }
     update();
-    window.addEventListener('resize', update);
-    window.addEventListener('scroll', update, true);
+    window.addEventListener("resize", update);
+    window.addEventListener("scroll", update, true);
     return () => {
-      window.removeEventListener('resize', update);
-      window.removeEventListener('scroll', update, true);
+      window.removeEventListener("resize", update);
+      window.removeEventListener("scroll", update, true);
     };
   }, []);
 
   React.useEffect(() => {
     if (isDragging) {
-      document.body.style.cursor = 'grabbing';
+      document.body.style.cursor = "grabbing";
     } else {
-      document.body.style.cursor = 'default';
+      document.body.style.cursor = "default";
     }
   }, [isDragging]);
 
@@ -177,14 +177,14 @@ function SpringElement({
       <svg
         width="100vw"
         height="100vh"
-        className="fixed inset-0 w-screen h-screen pointer-events-none z-40 inset-0"
+        className="pointer-events-none fixed inset-0 z-40 h-screen w-screen"
       >
         <path
           d={path}
           strokeLinecap="round"
           strokeLinejoin="round"
           className={cn(
-            'stroke-2 stroke-neutral-900 dark:stroke-neutral-100 fill-none',
+            "fill-none stroke-neutral-900 stroke-2 dark:stroke-neutral-100",
             springClassName,
           )}
         />
@@ -192,8 +192,8 @@ function SpringElement({
       <motion.div
         ref={childRef}
         className={cn(
-          'z-50',
-          isDragging ? 'cursor-grabbing' : 'cursor-grab',
+          "z-50",
+          isDragging ? "cursor-grabbing" : "cursor-grab",
           className,
         )}
         style={{

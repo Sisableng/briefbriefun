@@ -31,6 +31,9 @@ interface DrawerResponsiveProps {
   showHeader?: boolean;
   className?: string;
   classNameContent?: string;
+  headerContent?: React.ReactNode;
+  disableClickOutside?: boolean;
+  dismissible?: boolean;
 }
 
 export default function DrawerResponsive({
@@ -43,12 +46,15 @@ export default function DrawerResponsive({
   showHeader = true,
   className,
   classNameContent,
+  headerContent,
+  disableClickOutside,
+  dismissible = true,
 }: DrawerResponsiveProps) {
   const isDesktop = useMediaQuery("(min-width: 768px)");
 
   if (!isDesktop) {
     return (
-      <Drawer open={open} onOpenChange={onOpenChange}>
+      <Drawer dismissible={dismissible} open={open} onOpenChange={onOpenChange}>
         {trigger && <DrawerTrigger asChild>{trigger}</DrawerTrigger>}
         <DrawerContent
           className={cn(
@@ -63,6 +69,8 @@ export default function DrawerResponsive({
             {description && (
               <DrawerDescription>{description}</DrawerDescription>
             )}
+
+            {headerContent}
           </DrawerHeader>
 
           <div
@@ -88,6 +96,9 @@ export default function DrawerResponsive({
             "dark:bg-popover flex flex-col overflow-hidden bg-white focus:outline-none",
             className,
           )}
+          onInteractOutside={(e) =>
+            disableClickOutside ? e.preventDefault() : undefined
+          }
         >
           <DialogHeader className={clsx(title ? "" : "sr-only")}>
             <DialogTitle className={clsx("pb-4", title ? "" : "sr-only")}>
@@ -99,6 +110,8 @@ export default function DrawerResponsive({
                 {description}
               </DialogDescription>
             )}
+
+            {headerContent}
           </DialogHeader>
 
           <div
