@@ -38,7 +38,7 @@ export default function Home() {
           />
         )}
 
-        <div className="absolute inset-x-0 top-44 mx-auto w-max max-w-screen overflow-hidden mask-b-from-10% mask-b-to-90% md:top-52">
+        <div className="absolute inset-x-0 top-32 mx-auto w-max max-w-screen overflow-hidden mask-b-from-10% mask-b-to-90% md:top-52">
           <svg
             viewBox="0 0 100 100"
             height="400"

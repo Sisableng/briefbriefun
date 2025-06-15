@@ -12,7 +12,7 @@ export default function HeroSection() {
   const { session } = useSession();
 
   return (
-    <section className="c-content relative mt-52 flex items-end justify-center md:mt-80">
+    <section className="c-content relative mt-40 flex items-end justify-center md:mt-80">
       <div className="z-10 flex flex-col items-center justify-center gap-10">
         <div className="mx-auto max-w-3xl space-y-8 text-center">
           <h1 className="text-4xl leading-snug md:text-6xl">
