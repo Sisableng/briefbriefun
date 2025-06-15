@@ -98,23 +98,23 @@ export default function SecurityTab() {
 
       <h3 className="max-sm:text-lg">Zona Bahaya!</h3>
 
-      <div className="space-y-4 rounded-xl border p-4 md:p-6">
-        <div className="text-destructive mb-8 space-y-2">
-          <h3 className="max-sm:text-lg">Ingat bro!</h3>
+      <div className="space-y-6">
+        <div className="text-destructive space-y-2">
+          <h4 className="max-sm:text-lg">Ingat!</h4>
           <p className="max-sm:text-sm">
-            Sekali hapus, akun lo lenyap. Serius, ini bukan latihan.
+            Sekali hapus, akun kamu bakal lenyap. Serius, ini bukan latihan.
           </p>
         </div>
 
         <Separator />
 
-        <div className="flex justify-end">
+        <div className="flex justify-start">
           <Button
-            variant={"destructive"}
-            className="bg-red-400 text-red-50"
+            variant={"secondary"}
+            className="border-destructive border"
             onClick={() => setIsOpen(true)}
           >
-            Iya gw ngerti!
+            Iya ngerti!
           </Button>
         </div>
 

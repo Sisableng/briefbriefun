@@ -30,6 +30,7 @@ interface DrawerResponsiveProps {
   onOpenChange?: (value: boolean) => void;
   showHeader?: boolean;
   className?: string;
+  classNameContent?: string;
 }
 
 export default function DrawerResponsive({
@@ -41,6 +42,7 @@ export default function DrawerResponsive({
   onOpenChange,
   showHeader = true,
   className,
+  classNameContent,
 }: DrawerResponsiveProps) {
   const isDesktop = useMediaQuery("(min-width: 768px)");
 
@@ -64,9 +66,10 @@ export default function DrawerResponsive({
           </DrawerHeader>
 
           <div
-            className={clsx(
+            className={cn(
               "flex min-h-40 flex-col overflow-y-auto px-4",
               showHeader ? "mb-6" : "my-6",
+              classNameContent,
             )}
           >
             {children}
@@ -98,7 +101,12 @@ export default function DrawerResponsive({
             )}
           </DialogHeader>
 
-          <div className="flex min-h-28 flex-grow flex-col overflow-auto">
+          <div
+            className={cn(
+              "flex min-h-28 flex-grow flex-col overflow-auto",
+              classNameContent,
+            )}
+          >
             {children}
           </div>
         </DialogContent>

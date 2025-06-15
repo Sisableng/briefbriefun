@@ -89,10 +89,10 @@ const CardProject = ({
       onClick={handleCardClick}
     >
       <CardHeader className={clsx(checkMode && "pointer-events-none")}>
-        <div className="flex flex-wrap items-center gap-2 border-b pb-4">
+        <div className="flex items-center gap-2 overflow-x-auto border-b pb-4">
           <Badge
             variant={getParam("type") === data.type ? "default" : "secondary"}
-            className="hover:bg-input max-w-24 cursor-pointer truncate capitalize"
+            className="hover:bg-input cursor-pointer truncate capitalize"
             onClick={() => toggleParam("type", data.type)}
           >
             <span>{typeName}</span>
@@ -108,7 +108,7 @@ const CardProject = ({
           </Badge>
         </div>
 
-        <CardTitle className={clsx(checkMode && "pointer-events-none")}>
+        <CardTitle className={clsx("mt-1", checkMode && "pointer-events-none")}>
           <Link
             href={`/me/projects/${data.id}`}
             className="hover:text-primary transition-colors ease-in-out"
@@ -120,7 +120,7 @@ const CardProject = ({
           {data.description}
         </CardDescription>
       </CardHeader>
-      <CardContent>
+      <CardContent className="mt-auto">
         <div className={clsx(checkMode && "pointer-events-none")}>
           <p className="text-sm">Deadline</p>
           <p className="text-muted-foreground text-sm">{data.deadline}</p>
@@ -135,10 +135,15 @@ const CardProject = ({
         <StatusBadge
           status={data.status}
           onClick={() => toggleParam("status", data.status)}
-          className="hover:bg-border cursor-pointer"
+          className="hover:bg-border hover:text-foreground cursor-pointer"
         />
 
-        <Button size={"icon"} variant={"outline"} className="ml-auto" asChild>
+        <Button
+          size={"icon"}
+          variant={"outline"}
+          className="dark:hover:bg-primary hover:bg-primary hover:border-primary hover:text-primary-foreground ml-auto"
+          asChild
+        >
           <Link href={`/me/projects/${data.id}`}>
             <ArrowUpRightIcon />
           </Link>

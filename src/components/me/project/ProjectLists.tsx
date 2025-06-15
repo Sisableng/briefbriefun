@@ -1,4 +1,4 @@
-import React, { FC, useCallback, useEffect, useMemo, useState } from "react";
+import React, { useCallback, useMemo, useState } from "react";
 import CardProject from "./CardProject";
 import { Button } from "@/components/ui/button";
 import {
@@ -25,7 +25,7 @@ import clsx from "clsx";
 import { useSearchParams } from "next/navigation";
 import { useUrlParams } from "@/hooks/useUrlParams";
 import ProjectFilters from "./ProjectFilters";
-import { useDebounce, useDebounceValue } from "@/hooks/useDebounce";
+import { useDebounce } from "@/hooks/useDebounce";
 import { ProjectQueryOptions } from "@/components/forms/projects/actions";
 
 interface ProjectListsProps {
@@ -365,7 +365,7 @@ const ProjectLists = ({ userId }: ProjectListsProps) => {
             }}
             disabled={!shouldShowOptions}
           >
-            <ListFilterIcon />
+            {isOpenFilter ? <XIcon /> : <ListFilterIcon />}
             Filter
           </Button>
         </div>
@@ -455,9 +455,8 @@ const ProjectLists = ({ userId }: ProjectListsProps) => {
               >
                 <div className="bg-secondary flex items-center gap-2 rounded-full p-2 px-2">
                   <Button
-                    size={"sm"}
                     variant={"outline"}
-                    className="dark text-zinc-300"
+                    className="dark text-zinc-300 max-sm:flex-auto"
                     onClick={toggleSelectAll}
                   >
                     {selectedProjects.length === data.length ? (
@@ -469,9 +468,8 @@ const ProjectLists = ({ userId }: ProjectListsProps) => {
                   </Button>
 
                   <Button
-                    size={"sm"}
                     variant={"outline"}
-                    className="dark text-destructive"
+                    className="dark text-destructive max-sm:flex-auto"
                     onClick={() => setIsOpenDelete(true)}
                     disabled={!selectedProjects.length} // Tambahkan kondisi untuk men
                   >
@@ -526,6 +524,7 @@ const ProjectLists = ({ userId }: ProjectListsProps) => {
                     G jadi deng
                   </Button>
                   <Button
+                    variant={"destructive"}
                     className="max-sm:w-full max-sm:flex-1"
                     onClick={handleDeleteBulkAction}
                     disabled={isPendingDelete}

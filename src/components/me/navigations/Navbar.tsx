@@ -60,11 +60,11 @@ export default function Navbar() {
   return (
     <div
       className={clsx(
-        "sticky inset-x-0 top-0 z-50 p-2 transition-all ease-in-out md:px-4 md:backdrop-blur",
+        "sticky inset-x-0 top-0 z-50 max-w-screen overflow-hidden p-2 transition-all ease-in-out md:px-4 md:backdrop-blur",
         isScrolled ? "md:bg-background/50" : "",
       )}
     >
-      <div className="max-sm:bg-secondary/50 mx-auto flex w-full max-w-[90rem] shrink-0 items-center justify-between gap-4 max-sm:rounded-full max-sm:p-2 max-sm:backdrop-blur max-sm:not-dark:border md:h-16">
+      <div className="max-sm:bg-secondary/50 mx-auto flex w-full shrink-0 items-center justify-between gap-4 max-sm:rounded-full max-sm:p-2 max-sm:backdrop-blur max-sm:not-dark:border md:h-16 md:max-w-[90rem]">
         <div className="flex items-center gap-10 max-sm:flex-1 max-sm:pl-2">
           <h3 className="leading-none max-sm:mb-1">
             <Link

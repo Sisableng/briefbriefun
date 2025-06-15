@@ -205,6 +205,7 @@ export default function AccountTab() {
         title={`Putusin ${capitalize(unlinkData?.providerId)}`}
         description="Sekali hapus, gak bisa di-undo, bro. Yakin nih?"
         className="md:max-w-xl"
+        classNameContent="min-h-max"
       >
         <div className="flex flex-wrap items-center gap-2 md:justify-end">
           <Button
@@ -214,8 +215,12 @@ export default function AccountTab() {
           >
             G jadi deng
           </Button>
-          <Button className="max-sm:w-full" onClick={handleUnlinkAccount}>
-            Yoi!
+          <Button
+            variant={"destructive"}
+            className="max-sm:w-full"
+            onClick={handleUnlinkAccount}
+          >
+            Putusin!
           </Button>
         </div>
       </DrawerResponsive>

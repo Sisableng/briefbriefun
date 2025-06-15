@@ -55,18 +55,13 @@ const ProjectFilters = ({ open, onOpenChange }: ProjectFiltersProps) => {
           className="fixed inset-x-0 bottom-4 z-10 mx-auto max-w-sm px-2"
         >
           <div className="bg-secondary dark flex w-full items-center gap-2 rounded-full p-2 px-2">
-            <Scroller
-              orientation="horizontal"
-              className=""
-              hideScrollbar
-              asChild
-            >
+            <Scroller orientation="horizontal" hideScrollbar asChild>
               <div className="flex w-full flex-auto items-center gap-2">
                 <Select
                   value={getParam("type") ?? undefined}
                   onValueChange={(v) => handleUpdateParms("type", v)}
                 >
-                  <SelectTrigger className="dark max-w-32 rounded-full">
+                  <SelectTrigger className="dark w-full max-w-32 rounded-full">
                     <SelectValue placeholder="Type" />
                   </SelectTrigger>
                   <SelectContent className="dark max-h-96">
@@ -95,7 +90,7 @@ const ProjectFilters = ({ open, onOpenChange }: ProjectFiltersProps) => {
                   value={getParam("industry") ?? undefined}
                   onValueChange={(v) => handleUpdateParms("industry", v)}
                 >
-                  <SelectTrigger className="dark max-w-32 rounded-full">
+                  <SelectTrigger className="dark w-full max-w-32 rounded-full">
                     <SelectValue placeholder="Industry" />
                   </SelectTrigger>
                   <SelectContent className="dark">
