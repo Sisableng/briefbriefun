@@ -49,19 +49,13 @@ function ComboboxInputBase({
 }
 
 function ComboboxInput(
-  props: React.ComponentProps<typeof ComboboxPrimitive.Input> & {
-    onValueChange?: (v: string) => void;
-  },
+  props: React.ComponentProps<typeof ComboboxPrimitive.Input>,
 ) {
   return (
     <ComboboxInputBase>
       <InputBaseControl>
         <ComboboxPrimitive.Input asChild>
-          <InputBaseInput
-            data-slot="combobox-input"
-            {...props}
-            onChange={(e) => props.onValueChange?.(e.target.value)}
-          />
+          <InputBaseInput data-slot="combobox-input" {...props} />
         </ComboboxPrimitive.Input>
       </InputBaseControl>
     </ComboboxInputBase>

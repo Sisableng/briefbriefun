@@ -5,6 +5,8 @@ import { eq, and, SQL, desc, count, ilike } from "drizzle-orm";
 import { project } from "@/db/schemas/project-schema";
 import { z } from "zod";
 import { createProjectSchema, ProjectStatus } from "./schema";
+import { Ratelimit } from "@upstash/ratelimit";
+import { Redis } from "@upstash/redis";
 
 export type ProjectQueryOptions = {
   projectId?: string;
@@ -143,4 +145,15 @@ export const updateProjectAction = async (data: {
 
 export const deleteProjectAction = async (projectId: string) => {
   await db.delete(project).where(eq(project.id, projectId));
+};
+
+export const rateLimiter = async (ip: string) => {
+  const ratelimit = new Ratelimit({
+    redis: Redis.fromEnv(),
+    limiter: Ratelimit.fixedWindow(5, "1d"),
+    enableProtection: true,
+  });
+
+  const res = await ratelimit.limit(ip);
+  return res;
 };

@@ -1,12 +1,10 @@
 import React from "react";
 import Image from "next/image";
-// import Robot from "@/components/main/stuff/Robot";
 import SiteName from "@/components/SiteName";
 import { Button } from "@/components/ui/button";
 import Link from "next/link";
 import { ArrowRightIcon } from "lucide-react";
 import { useSession } from "@/hooks/query/auth-hooks";
-import clsx from "clsx";
 
 export default function HeroSection() {
   // const [isRobotLoaded, setIsRobotLoaded] = React.useState(false);
@@ -41,9 +39,9 @@ export default function HeroSection() {
             />
           </h1>
 
-          <h4 className="text-muted-foreground max-sm:text-base">
+          {/* <h4 className="text-muted-foreground max-sm:text-base">
             Portofolio nggak akan nambah sendiri!
-          </h4>
+          </h4> */}
         </div>
 
         {session ? (
@@ -71,11 +69,6 @@ export default function HeroSection() {
           </div>
         )}
       </div>
-
-      {/* <Robot
-        onLoaded={setIsRobotLoaded}
-        className="absolute inset-x-0 bottom-0"
-      /> */}
 
       {/* Loading screen */}
 

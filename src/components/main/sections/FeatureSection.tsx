@@ -14,13 +14,14 @@ export default function FeatureSection() {
         <h1>
           Trus fitur nya <br /> Aapa aja bang? 🤔
         </h1>
-        <p className="text-muted-foreground">
+
+        <p className="text-muted-foreground mt-8">
           Dari klien fiktif yang absurd sampai brief yang sok profesional —
           semua bisa kamu dapat di sini. Nggak perlu drama revisi, tinggal klik
           dan langsung gas!.
         </p>
 
-        <ul className="list-inside list-disc space-y-8">
+        <ul className="mt-12 list-inside list-disc space-y-8">
           <ListItem number={1}>
             <h5 className="font-bold">AI Brief Generator</h5>
             <p className="text-muted-foreground leading-relaxed">

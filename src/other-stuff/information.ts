@@ -60,11 +60,7 @@ Bisa. Di halaman dashboard, klik tombol hapus di project yang ingin kamu buang. 
 
 ### Kenapa saya nggak bisa bikin brief lagi?
 
-Kemungkinan besar kamu sudah mencapai batas penggunaan sementara (rate limit). Coba lagi beberapa menit lagi. Klien fiktif juga butuh rehat 😴
-
----
-
-Kalau kamu ingin tambah bagian khusus kayak **"Apakah nanti bisa kolaborasi?"** atau **"Apakah bisa export ke PDF?"**, tinggal bilang aja, aku bisa tambahin. Siap lanjut ke bagian **How to Use**?
+Kemungkinan besar kamu sudah mencapai batas penggunaan sementara (rate limit) setiap harinya dibatasi 5x ya. Coba lagi besok. Klien fiktif juga butuh rehat 😴
 `;
 
 export const howTo = `

@@ -1,33 +1,46 @@
-// import { openai } from '@ai-sdk/openai';
-import { generateObject, streamObject } from "ai";
+import { streamObject } from "ai";
 import { outputSchema, systemPrompt } from "@/ai-stuff/output-schema";
 
 import { ollama } from "ollama-ai-provider";
 import { groq } from "@ai-sdk/groq";
 
-import { Ratelimit } from "@upstash/ratelimit"; // for deno: see above
+import { Ratelimit } from "@upstash/ratelimit";
 import { Redis } from "@upstash/redis";
+import { auth } from "@/lib/auth";
+import { NextRequest } from "next/server";
 
 // Allow streaming responses up to 30 seconds
 export const maxDuration = 30;
 
-// Create Rate limit
-const ratelimit = new Ratelimit({
-  redis: Redis.fromEnv(),
-  limiter: Ratelimit.fixedWindow(5, "1d"),
-  enableProtection: true,
-});
-
-export async function POST(req: Request) {
+export async function POST(req: NextRequest) {
   const headers = new Headers();
 
   const body = await req.json();
-
   const { type, industry, vibe, ip } = JSON.parse(body);
 
-  const { success, remaining } = await ratelimit.limit(ip);
+  const session = await auth.api.getSession({
+    headers: req.headers,
+  });
 
-  if (!success) {
+  if (!session) {
+    return new Response("Authenticate required", {
+      status: 403,
+      statusText: "Forbidden",
+    });
+  }
+
+  // Create Rate limit
+  const ratelimit = new Ratelimit({
+    redis: Redis.fromEnv(),
+    limiter: Ratelimit.fixedWindow(5, "1d"),
+    enableProtection: true,
+  });
+
+  const { success, remaining } = await ratelimit.limit(session.user.id, {
+    ip,
+  });
+
+  if (!success && process.env.NODE_ENV === "production") {
     return new Response("Ratelimited!", { status: 429 });
   }
 
@@ -41,6 +54,7 @@ export async function POST(req: Request) {
 
 Write the full brief now using Bahasa Indonesia.`;
 
+  // use local LLM for development
   if (process.env.NODE_ENV === "development") {
     const result = await streamObject({
       model: ollama("llama3.1:8b"),
@@ -50,7 +64,13 @@ Write the full brief now using Bahasa Indonesia.`;
       system: systemPrompt,
     });
 
-    return result.toTextStreamResponse();
+    const response = result.toTextStreamResponse();
+    response.headers.set("X-RateLimit-Remaining", remaining.toString());
+    response.headers.set(
+      "Set-Cookie",
+      `X-RateLimit-Remaining=${remaining}; Path=/; SameSite=Strict`,
+    );
+    return response;
   }
 
   const result = streamObject({
@@ -66,5 +86,11 @@ Write the full brief now using Bahasa Indonesia.`;
     },
   });
 
-  return result.toTextStreamResponse();
+  const response = result.toTextStreamResponse();
+  response.headers.set("X-RateLimit-Remaining", remaining.toString());
+  response.headers.set(
+    "Set-Cookie",
+    `X-RateLimit-Remaining=${remaining}; Path=/; SameSite=Strict`,
+  );
+  return response;
 }

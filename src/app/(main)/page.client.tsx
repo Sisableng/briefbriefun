@@ -7,6 +7,12 @@ import dynamic from "next/dynamic";
 import WhatIsSection from "@/components/main/sections/WhatIsSection";
 import FeatureSection from "@/components/main/sections/FeatureSection";
 import CTASection from "@/components/main/sections/CTASection";
+import { mq, useMediaQuery } from "@/hooks/useMediaQuery";
+// import Robot from "@/components/main/stuff/Robot";
+
+const Robot = dynamic(() => import("@/components/main/stuff/Robot"), {
+  ssr: false,
+});
 
 const ExampleSection = dynamic(
   () => import("@/components/main/sections/ExampleSection"),
@@ -19,10 +25,18 @@ const LeaderBoardSection = dynamic(
 );
 
 export default function Home() {
+  const mdScreen = useMediaQuery(mq("md"));
   return (
     <div className="space-y-40 md:space-y-60">
       <div className="space-y-10 md:space-y-20">
         <HeroSection />
+
+        {mdScreen && (
+          <Robot
+            // onLoaded={setIsRobotLoaded}
+            className="absolute inset-0 top-10 z-1 hidden size-full h-dvh max-h-[70dvh] w-auto mask-b-from-20% mask-b-to-100% md:top-20 md:block"
+          />
+        )}
 
         <div className="absolute inset-x-0 top-44 mx-auto w-max max-w-screen overflow-hidden mask-b-from-10% mask-b-to-90% md:top-52">
           <svg

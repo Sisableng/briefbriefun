@@ -2,8 +2,8 @@
 "use client";
 import React, { useRef, forwardRef, Suspense } from "react";
 import { cn } from "@/lib/utils";
-import Tip from "@/components/Tip";
-import { LoaderCircleIcon } from "lucide-react";
+// import Tip from "@/components/Tip";
+// import { LoaderCircleIcon } from "lucide-react";
 
 const Spline = React.lazy(() => import("@splinetool/react-spline"));
 
@@ -31,13 +31,7 @@ const Robot = forwardRef<RobotRef, RobotProps>(
           className,
         )}
       >
-        <Suspense
-          fallback={
-            <div className="grid min-h-60 place-content-center">
-              <LoaderCircleIcon className="text-muted-foreground size-6 animate-spin" />
-            </div>
-          }
-        >
+        <Suspense fallback={null}>
           <Spline
             scene="https://prod.spline.design/kZDDjO5HuC9GJUM2/scene.splinecode"
             onLoad={(spline) => {
@@ -48,9 +42,7 @@ const Robot = forwardRef<RobotRef, RobotProps>(
           />
         </Suspense>
 
-        <Tip className="group-hover:animate-in group-hover:zoom-in absolute inset-x-0 top-[5%] mx-auto opacity-0 transition-all ease-in-out group-hover:opacity-100">
-          Ha?
-        </Tip>
+        {/* <Tip className="inset-x-0 top-[5%] mx-auto">Ha?</Tip> */}
       </div>
     );
   },

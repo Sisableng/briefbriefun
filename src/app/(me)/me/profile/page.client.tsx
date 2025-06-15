@@ -11,6 +11,7 @@ import { useUrlParams } from "@/hooks/useUrlParams";
 import { useSearchParams } from "next/navigation";
 import clsx from "clsx";
 import dynamic from "next/dynamic";
+import { SpringElement } from "@/components/animate-ui/components/spring-element";
 
 const UserInfoTab = dynamic(
   () => import("@/components/me/profile/UserInfoTab"),
@@ -89,11 +90,13 @@ export default function ProfilePage() {
       <BackButton />
 
       <div className="flex items-start gap-4 max-sm:flex-col max-sm:items-center max-sm:text-center">
-        <UserAvatar
-          src={user.image ?? undefined}
-          fallback={user.name}
-          className="size-20 md:size-24"
-        />
+        <SpringElement>
+          <UserAvatar
+            src={user.image ?? undefined}
+            fallback={user.name}
+            className="size-20 md:size-24"
+          />
+        </SpringElement>
 
         <div className="space-y-2">
           <h2 className="max-sm:text-xl">{user.name}</h2>

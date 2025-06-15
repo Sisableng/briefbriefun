@@ -43,7 +43,7 @@ export default function Navbar() {
               href={"/"}
               className="hover:text-primary group transition-colors ease-in-out"
             >
-              <span className="hidden sm:block">
+              <span className="hidden font-bold sm:block">
                 <SiteName />
               </span>
 

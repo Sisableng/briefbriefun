@@ -16,7 +16,6 @@ import {
 } from "@/components/ui/form";
 import {
   goodBriefIndustryOptions,
-  goodBriefTypeOptions,
   GroupedOption,
   industryOptions,
   typeOptions,
@@ -30,14 +29,6 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
-import {
-  Combobox,
-  ComboboxContent,
-  ComboboxEmpty,
-  ComboboxGroup,
-  ComboboxInput,
-  ComboboxItem,
-} from "@/components/ui/combobox";
 
 import { ArrowRightIcon, LoaderCircleIcon } from "lucide-react";
 import { toast } from "sonner";
@@ -47,6 +38,12 @@ import dynamic from "next/dynamic";
 import { projectFormSchema } from "./schema";
 import { useSession } from "@/hooks/query/auth-hooks";
 import { mq, useMediaQuery } from "@/hooks/useMediaQuery";
+import {
+  Autocomplete,
+  AutocompleteContent,
+  AutocompleteGroup,
+  AutocompleteItem,
+} from "@/components/ui/autocomplete";
 
 const ProjectReview = dynamic(() => import("../../me/project/ProjectReview"), {
   ssr: false,
@@ -56,13 +53,11 @@ const ProjectReview = dynamic(() => import("../../me/project/ProjectReview"), {
 });
 
 export default function ProjectForm() {
-  const [briefData, setBriefData] = React.useState<any>(null);
-
   const { session } = useSession();
 
   const mdScreen = useMediaQuery(mq("md"));
 
-  const { object, submit, isLoading, error } = useObject({
+  const { object, submit, isLoading, error, stop } = useObject({
     api: "/api/generate-projects",
     schema: outputSchema,
     onError(error) {
@@ -83,17 +78,9 @@ export default function ProjectForm() {
 
   const watchSource = form.watch("source");
 
-  const isGroupedOptions = (options: any[]): options is GroupedOption[] => {
-    return options.length > 0 && "options" in options[0];
-  };
-
   const types = React.useMemo(() => {
-    if (watchSource === "goodbrief") {
-      return goodBriefTypeOptions;
-    }
-
     return typeOptions;
-  }, [watchSource]);
+  }, []);
 
   const industries = React.useMemo(() => {
     if (watchSource === "goodbrief") {
@@ -107,6 +94,23 @@ export default function ProjectForm() {
     return vibeOptions;
   }, []);
 
+  const formatValues = (values: z.infer<typeof projectFormSchema>) => {
+    const typeValue = types
+      .flatMap((x) => x.options)
+      .find((t) => t.name === values.type)?.value;
+
+    const industryType = industries.find(
+      (t) => t.name === values.industry,
+    )?.value;
+
+    const formatted = {
+      vibe: values.vibe,
+      type: typeValue ?? values.type,
+      industry: industryType ?? values.industry,
+    };
+    return formatted;
+  };
+
   async function onSubmit(values: z.infer<typeof projectFormSchema>) {
     if (!session) {
       toast.error("Gak ada sesi ha?, Kamu siapa? 🤨");
@@ -114,43 +118,11 @@ export default function ProjectForm() {
     }
 
     try {
-      if (watchSource === "goodbrief") {
-        const toastId = toast.loading("Sabar...");
-
-        const res = await fetch("https://goodbrief.io/brief", {
-          method: "POST",
-          headers: {
-            "Content-Type": "application/json",
-          },
-          body: JSON.stringify({
-            job: values.type,
-            industry: values.industry,
-          }),
-        });
-
-        if (!res.ok) {
-          toast.error("Sori, Brief gagal dibikin", {
-            id: toastId,
-          });
-
-          return;
-        }
-
-        const data = await res.json();
-
-        setBriefData(data);
-        toast.success("Brief udah dibikinin!", {
-          id: toastId,
-        });
-
-        return;
-      }
+      const formatted = formatValues(values);
 
       submit(
         JSON.stringify({
-          type: values.type,
-          industry: values.industry,
-          vibe: values.vibe,
+          ...formatted,
           ip: session.ipAddress,
         }),
       );
@@ -180,55 +152,47 @@ export default function ProjectForm() {
             <FormItem>
               <FormLabel className="max-sm:sr-only">Tipe</FormLabel>
               <FormControl>
-                <Combobox
-                  type="single"
+                <Autocomplete
+                  {...field}
                   value={field.value}
-                  onValueChange={field.onChange}
+                  onChange={(i) => {
+                    field.onChange(i);
+                  }}
+                  onSelect={(i) => {
+                    if (i) {
+                      field.onChange(i.label);
+                      // form.setValue("autoCompleteType.select", i?.value);
+                    }
+                  }}
+                  placeholder="Search fruits..."
+                  className="w-full"
                 >
-                  <ComboboxInput
-                    placeholder="Pilih Tipe..."
-                    onValueChange={field.onChange}
-                  />
-                  <ComboboxContent className="dark">
-                    <ComboboxEmpty className="text-muted-foreground py-2">
-                      {`Kustom "${field.value}"`}
-                    </ComboboxEmpty>
-                    {isGroupedOptions(types)
-                      ? types
-                          .sort((a, b) => a.name.localeCompare(b.name))
-                          .map((group) => (
-                            <ComboboxGroup
-                              key={group.name}
-                              className="not-last:mb-4"
-                              heading={group.name}
-                            >
-                              {group.options
-                                .sort((a, b) => a.name.localeCompare(b.name))
-                                .map((opt) => (
-                                  <ComboboxItem
-                                    key={opt.name}
-                                    value={opt.value}
-                                    // className="text-sm"
-                                  >
-                                    {opt.name}
-                                  </ComboboxItem>
-                                ))}
-                            </ComboboxGroup>
-                          ))
-                      : types
-                          .sort((a, b) => a.name.localeCompare(b.name))
-                          .map((opt) => (
-                            <ComboboxItem
-                              key={opt.name}
-                              value={opt.value}
-                              // className="text-sm"
-                            >
-                              {opt.name}
-                            </ComboboxItem>
-                          ))}
-                  </ComboboxContent>
-                </Combobox>
+                  <AutocompleteContent>
+                    {types
+                      .sort((a, b) => a.name.localeCompare(b.name))
+                      .map((group) => (
+                        <AutocompleteGroup
+                          key={group.name}
+                          className="not-last:mb-4"
+                          label={group.name}
+                        >
+                          {group.options
+                            .sort((a, b) => a.name.localeCompare(b.name))
+                            .map((opt) => (
+                              <AutocompleteItem
+                                key={opt.name}
+                                value={opt.value}
+                                // className="text-sm"
+                              >
+                                {opt.name}
+                              </AutocompleteItem>
+                            ))}
+                        </AutocompleteGroup>
+                      ))}
+                  </AutocompleteContent>
+                </Autocomplete>
               </FormControl>
+
               <FormMessage className="ml-0" />
             </FormItem>
           )}
@@ -240,34 +204,38 @@ export default function ProjectForm() {
           render={({ field }) => (
             <FormItem>
               <FormLabel className="max-sm:sr-only">Industri</FormLabel>
+
               <FormControl>
-                <Combobox
-                  type="single"
+                <Autocomplete
+                  {...field}
                   value={field.value}
-                  onValueChange={field.onChange}
+                  onChange={(i) => {
+                    field.onChange(i);
+                  }}
+                  onSelect={(i) => {
+                    if (i) {
+                      field.onChange(i.label);
+                    }
+                  }}
+                  placeholder="Search fruits..."
+                  className="w-full"
                 >
-                  <ComboboxInput
-                    placeholder="Pilih Industri..."
-                    onValueChange={field.onChange}
-                  />
-                  <ComboboxContent className="dark">
-                    <ComboboxEmpty className="text-muted-foreground py-2">
-                      {`Kustom "${field.value}"`}
-                    </ComboboxEmpty>
+                  <AutocompleteContent>
                     {industries
                       .sort((a, b) => a.name.localeCompare(b.name))
                       .map((opt) => (
-                        <ComboboxItem
+                        <AutocompleteItem
                           key={opt.name}
                           value={opt.value}
                           // className="text-sm"
                         >
                           {opt.name}
-                        </ComboboxItem>
+                        </AutocompleteItem>
                       ))}
-                  </ComboboxContent>
-                </Combobox>
+                  </AutocompleteContent>
+                </Autocomplete>
               </FormControl>
+
               <FormMessage className="ml-0" />
             </FormItem>
           )}
@@ -375,7 +343,7 @@ export default function ProjectForm() {
       <ProjectReview
         data={{
           object: object as any,
-          form: form.getValues(),
+          form: formatValues(form.getValues()),
         }}
         isLoading={processing}
         error={error}
