@@ -16,7 +16,6 @@ import {
 } from "@/components/ui/form";
 import {
   goodBriefIndustryOptions,
-  GroupedOption,
   industryOptions,
   typeOptions,
   vibeOptions,

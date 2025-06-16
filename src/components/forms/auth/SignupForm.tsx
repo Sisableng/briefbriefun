@@ -23,13 +23,11 @@ import {
 } from "lucide-react";
 import { Label } from "@/components/ui/label";
 import { Checkbox } from "@/components/ui/checkbox";
-import { signin, signup } from "./actions";
 import { toast } from "sonner";
 import { authClient, getErrorMessage } from "@/lib/auth-client";
-import SocialIcon from "@/components/SocialIcon";
 import { Separator } from "@/components/ui/separator";
 import { useRouter } from "@bprogress/next/app";
-import { createRandomSeed } from "@/lib/utils";
+import SocialAuth from "./SocialAuth";
 
 const allowedEmailDomains = [
   "gmail.com",
@@ -114,37 +112,9 @@ export default function SignupForm() {
     }
   }
 
-  async function socialAuth(provider: "google" | "github") {
-    const result = await authClient.signIn.social({
-      provider: provider,
-      callbackURL: "/me",
-      newUserCallbackURL: "/me/after-oauth",
-    });
-
-    if (result?.error) {
-      console.log(result);
-      toast.error(getErrorMessage(result?.error.code));
-    }
-  }
-
   return (
     <>
-      <div className="flex items-center justify-center gap-3">
-        <Button
-          size={"lg"}
-          variant={"outline"}
-          onClick={() => socialAuth("github")}
-        >
-          <SocialIcon name="github" /> Github
-        </Button>
-        <Button
-          size={"lg"}
-          variant={"outline"}
-          onClick={() => socialAuth("google")}
-        >
-          <SocialIcon name="google" /> Google
-        </Button>
-      </div>
+      <SocialAuth />
 
       <Separator />
 

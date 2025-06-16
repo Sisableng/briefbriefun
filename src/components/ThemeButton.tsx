@@ -43,13 +43,9 @@ export function ThemeButton() {
     <DropdownMenu>
       <DropdownMenuTrigger asChild>
         <Button variant="outline" size="icon">
-          {resolvedTheme === "system" ? (
-            <MonitorIcon />
-          ) : resolvedTheme === "light" ? (
-            <SunIcon />
-          ) : (
-            <MoonIcon />
-          )}
+          {resolvedTheme === "system" && <MonitorIcon />}
+          {resolvedTheme === "light" && <SunIcon />}
+          {resolvedTheme === "dark" && <MoonIcon />}
 
           <span className="sr-only">Toggle theme</span>
         </Button>

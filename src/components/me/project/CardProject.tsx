@@ -22,6 +22,7 @@ import {
   industryOptions,
   typeOptions,
 } from "@/components/forms/projects/options";
+import { getIndustryName, getTypeName } from "@/lib/getCategoryName";
 
 interface CardProjectProps {
   data: Project;
@@ -41,20 +42,6 @@ const CardProject = ({
   const searchParams = useSearchParams();
   const { updateParams, deleteParams, getParam, hasParam } =
     useUrlParams(searchParams);
-
-  const typeName = useMemo(() => {
-    const all = typeOptions
-      .flatMap((x) => x.options)
-      .find((x) => x.value === data.type);
-
-    return all?.name || data.type;
-  }, [data.type]);
-
-  const industryName = useMemo(() => {
-    const all = industryOptions.find((x) => x.value === data.industry);
-
-    return all?.name || data.industry;
-  }, [data.type]);
 
   const handleCardClick = () => {
     if (checkMode && onCheckedChange) {
@@ -92,19 +79,19 @@ const CardProject = ({
         <div className="flex items-center gap-2 overflow-x-auto border-b pb-4">
           <Badge
             variant={getParam("type") === data.type ? "default" : "secondary"}
-            className="hover:bg-input cursor-pointer truncate capitalize"
+            className="hover:bg-input hover:text-foreground cursor-pointer truncate capitalize"
             onClick={() => toggleParam("type", data.type)}
           >
-            <span>{typeName}</span>
+            <span>{getTypeName(data.type)}</span>
           </Badge>
           <Badge
             variant={
               getParam("industry") === data.industry ? "default" : "secondary"
             }
-            className="hover:bg-input cursor-pointer capitalize"
+            className="hover:bg-input hover:text-foreground cursor-pointer capitalize"
             onClick={() => toggleParam("industry", data.industry)}
           >
-            {industryName}
+            {getIndustryName(data.industry)}
           </Badge>
         </div>
 

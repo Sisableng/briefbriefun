@@ -65,9 +65,9 @@ fun
           <div className="bg-card/50 mt-10 hidden w-full flex-1 rounded-full not-dark:border md:block"></div>
         </div>
 
-        <div className="bg-card dark prose prose-invert not-dark:bg-secondary w-full max-w-full flex-1 rounded-xl px-4 py-4 md:col-span-3 md:px-10">
-          <Scroller>
-            <div className="mx-auto max-h-[40rem] w-full max-w-prose">
+        <div className="bg-card dark prose prose-invert max-sm:prose-sm not-dark:bg-secondary w-full max-w-full flex-1 rounded-xl px-4 py-4 md:col-span-3 md:px-10 md:py-10">
+          <Scroller asChild>
+            <div className="prose-h2:first:!mt-0 mx-auto max-h-96 w-full max-w-prose md:max-h-[40rem]">
               <Markdown>{content}</Markdown>
             </div>
           </Scroller>

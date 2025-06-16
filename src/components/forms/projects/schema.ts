@@ -2,7 +2,14 @@ import { z } from "zod";
 
 // Enum schemas matching your pgEnum definitions
 export const statusSchema = z.enum(["draft", "inProgress", "completed"]);
-export const vibeSchema = z.enum(["fun", "corporate", "casual", "startup"]);
+export const vibeSchema = z.enum([
+  "fun",
+  "fun-absurd",
+  "corporate",
+  "casual",
+  "casual-friendly-non-formal",
+  "startup",
+]);
 
 export const projectFormSchema = z.object({
   source: z.enum(["default", "goodbrief"]),
@@ -21,7 +28,7 @@ export const createProjectSchema = z.object({
   type: z.string().min(1, "Type is required"),
   industry: z.string().min(1, "Industry is required"),
   status: statusSchema.default("draft"),
-  vibe: vibeSchema.default("fun"),
+  vibe: vibeSchema.default("fun-absurd"),
   deadline: z.string().min(1, "Deadline is required"),
   repoUrl: z.string().url("Must be a valid URL").optional(),
 });

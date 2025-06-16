@@ -11,6 +11,8 @@ import React from "react";
 import dynamic from "next/dynamic";
 import { mq, useMediaQuery } from "@/hooks/useMediaQuery";
 import { usePathname } from "next/navigation";
+import getFirstName from "@/lib/getFirstName";
+import { Skeleton } from "@/components/ui/skeleton";
 
 const GlobalMenus = dynamic(() => import("@/components/GlobalMenus"), {
   ssr: false,
@@ -23,12 +25,14 @@ const ThemeButton = dynamic(
 );
 
 export default function Navbar() {
-  const { session } = useSession();
+  const { session, user, isLoading } = useSession();
   const { isScrolled } = useWindowScroll();
 
   const pathname = usePathname();
   const mdScreen = useMediaQuery(mq("md"));
 
+  const authPages = ["/sign-in", "/sign-up"];
+  const isAuthPage = authPages.includes(pathname);
   return (
     <div
       className={clsx(
@@ -58,22 +62,26 @@ export default function Navbar() {
         </div>
 
         {mdScreen &&
-          (session ? (
+          (isLoading ? (
+            <Skeleton className="h-9 w-20 rounded-full" />
+          ) : session ? (
             !pathname.includes("/me") && (
               <Button variant={"secondary"} className="font-semibold" asChild>
                 <Link href={"/me"}>
-                  Ke Dashboard <ArrowRightIcon />
+                  {getFirstName(user?.name)} <ArrowRightIcon />
                 </Link>
               </Button>
             )
           ) : (
-            <div className="flex items-center gap-2">
-              <Button variant={"secondary"} className="font-semibold" asChild>
-                <Link href={"/sign-in"}>
-                  Cobain <ArrowRightIcon />
-                </Link>
-              </Button>
-            </div>
+            !isAuthPage && (
+              <div className="flex items-center gap-2">
+                <Button variant={"secondary"} className="font-semibold" asChild>
+                  <Link href={"/sign-in"}>
+                    Cobain <ArrowRightIcon />
+                  </Link>
+                </Button>
+              </div>
+            )
           ))}
         <ThemeButton />
       </div>

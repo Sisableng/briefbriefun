@@ -17,8 +17,7 @@ export default function page() {
       <div className="space-y-2">
         <h2>Bikin Brief</h2>
         <p className="text-muted-foreground max-w-lg">
-          Isi form di bawah ini buat dapetin brief palsu dari client imajiner.
-          Pilih sesuai kebutuhan kamu.
+          Siap-siap ketemu permintaan yang kadang masuk akal… kadang juga nggak.
         </p>
       </div>
 

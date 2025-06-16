@@ -8,17 +8,12 @@ import {
   DropdownMenu,
   DropdownMenuContent,
   DropdownMenuItem,
+  DropdownMenuLabel,
   DropdownMenuSeparator,
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
-import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
-import {
-  LogOutIcon,
-  MoonIcon,
-  PlusIcon,
-  SunIcon,
-  UserIcon,
-} from "lucide-react";
+
+import { BoltIcon, LogOutIcon, PlusIcon, UserIcon } from "lucide-react";
 import Link from "next/link";
 import SiteName from "@/components/SiteName";
 import { Button } from "@/components/ui/button";
@@ -26,10 +21,11 @@ import { useSession } from "@/hooks/query/auth-hooks";
 import UserAvatar from "../avatar/UserAvatar";
 import useWindowScroll from "@/hooks/useWindowScroll";
 import clsx from "clsx";
-import { useTheme } from "next-themes";
 import { useIsClient } from "@/hooks/useIsClient";
 import GlobalMenus from "@/components/GlobalMenus";
 import { mq, useMediaQuery } from "@/hooks/useMediaQuery";
+import { ThemeButton } from "@/components/ThemeButton";
+import { Separator } from "@/components/ui/separator";
 
 export default function Navbar() {
   const pathname = usePathname();
@@ -40,8 +36,6 @@ export default function Navbar() {
   const { isScrolled } = useWindowScroll();
   const isClient = useIsClient();
   const mdScreen = useMediaQuery(mq("md"));
-
-  const { setTheme, resolvedTheme } = useTheme();
 
   async function signOut() {
     await authClient.signOut({
@@ -100,53 +94,55 @@ export default function Navbar() {
             </Button>
           )}
 
-          {user && (
-            <DropdownMenu>
-              <DropdownMenuTrigger className="flex cursor-pointer items-center gap-3">
-                <UserAvatar
-                  src={user.image ?? undefined}
-                  fallback={user.name}
-                  className="flex-1"
-                />
+          <ThemeButton />
 
-                <div className="hidden max-w-30 text-left md:block">
-                  <p className="truncate text-sm font-semibold">{user.name}</p>
-                  <p className="text-muted-foreground truncate text-xs">
-                    {user.email}
-                  </p>
-                </div>
-              </DropdownMenuTrigger>
-              <DropdownMenuContent align="end" className="dark">
-                <DropdownMenuItem asChild>
-                  <Link href={"/me/profile"}>
-                    <UserIcon />
-                    Profil
-                  </Link>
-                </DropdownMenuItem>
-                <DropdownMenuItem
-                  onClick={() => {
-                    setTheme(resolvedTheme === "dark" ? "light" : "dark");
-                  }}
-                >
-                  {resolvedTheme === "light" ? (
-                    <>
-                      <MoonIcon />
-                      Dark
-                    </>
-                  ) : (
-                    <>
-                      <SunIcon />
-                      Light
-                    </>
-                  )}
-                </DropdownMenuItem>
-                <DropdownMenuSeparator />
-                <DropdownMenuItem variant="destructive" onClick={signOut}>
-                  <LogOutIcon />
-                  Keluar
-                </DropdownMenuItem>
-              </DropdownMenuContent>
-            </DropdownMenu>
+          {user && (
+            <>
+              <DropdownMenu>
+                <DropdownMenuTrigger className="flex cursor-pointer items-center gap-3">
+                  <UserAvatar
+                    src={user.image ?? undefined}
+                    fallback={user.name}
+                    className="flex-1 sm:size-10"
+                  />
+                </DropdownMenuTrigger>
+                <DropdownMenuContent align="end" className="dark">
+                  <DropdownMenuLabel>
+                    <p className="truncate font-semibold max-sm:text-sm">
+                      {user.name}
+                    </p>
+                    <p className="text-muted-foreground truncate text-xs">
+                      {user.email}
+                    </p>
+                  </DropdownMenuLabel>
+                  <DropdownMenuSeparator />
+                  <DropdownMenuItem asChild>
+                    <Link href={"/me/profile"}>
+                      <UserIcon />
+                      Profil
+                    </Link>
+                  </DropdownMenuItem>
+                  <DropdownMenuItem asChild>
+                    <Link
+                      href={{
+                        pathname: "/me/profile",
+                        query: {
+                          tab: "account",
+                        },
+                      }}
+                    >
+                      <BoltIcon />
+                      Akun
+                    </Link>
+                  </DropdownMenuItem>
+                  <DropdownMenuSeparator />
+                  <DropdownMenuItem variant="destructive" onClick={signOut}>
+                    <LogOutIcon />
+                    Keluar
+                  </DropdownMenuItem>
+                </DropdownMenuContent>
+              </DropdownMenu>
+            </>
           )}
         </div>
       </div>

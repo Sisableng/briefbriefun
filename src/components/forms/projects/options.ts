@@ -161,8 +161,8 @@ export const goodBriefIndustryOptions = [
 ];
 
 export const vibeOptions = [
-  { name: "Fun & Absurd", value: "fun" },
+  { name: "Fun & Absurd", value: "fun-absurd" },
   { name: "Corporate & Professional", value: "corporate" },
-  { name: "Casual & Friendly", value: "casual" },
+  { name: "Casual & Friendly", value: "casual-friendly-non-formal" },
   { name: "Startup & Visionary", value: "startup" },
 ];

@@ -5,6 +5,7 @@ import { useSession } from "@/hooks/query/auth-hooks";
 import getFirstName from "@/lib/getFirstName";
 import React from "react";
 import dynamic from "next/dynamic";
+import { LoaderCircleIcon } from "lucide-react";
 
 const ProjectLists = dynamic(
   () => import("@/components/me/project/ProjectLists"),
@@ -21,14 +22,28 @@ const ProjectLists = dynamic(
 );
 
 export default function MeHomePage() {
-  const { user } = useSession();
+  const { user, isLoading } = useSession();
+
+  if (isLoading) {
+    return (
+      <div className="grid h-96 place-content-center">
+        <LoaderCircleIcon className="animate-spin" />
+      </div>
+    );
+  }
+
+  if (!user) {
+    <div className="grid h-96 place-content-center">
+      <p className="text-muted-foreground">Kamu siapa?</p>
+    </div>;
+  }
 
   return (
     <div className="cme-content space-y-10">
       <div className="flex flex-wrap items-end justify-between gap-4">
         <div className="max-w-sm space-y-2">
           <h2 className="text-muted-foreground">Wassup 👋</h2>
-          <h1 className="">{getFirstName(user?.name)}.</h1>
+          {user && <h1 className="">{getFirstName(user?.name)}.</h1>}
         </div>
 
         <p className="text-muted-foreground">

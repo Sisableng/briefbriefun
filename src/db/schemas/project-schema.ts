@@ -10,8 +10,10 @@ export const statusEnum = pgEnum("status", [
 
 export const vibeEnum = pgEnum("vibe", [
   "fun",
+  "fun-absurd",
   "corporate",
   "casual",
+  "casual-friendly-non-formal",
   "startup",
 ]);
 
@@ -26,7 +28,7 @@ export const project = pgTable("project", {
   type: text("type").notNull(),
   industry: text("industry").notNull(),
   status: statusEnum().default("draft"),
-  vibe: vibeEnum().default("fun"),
+  vibe: vibeEnum().default("fun-absurd"),
   deadline: text("deadline").notNull(),
   repoUrl: text("repo_url"),
 

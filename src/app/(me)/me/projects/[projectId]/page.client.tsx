@@ -13,6 +13,7 @@ import { mq, useMediaQuery } from "@/hooks/useMediaQuery";
 import { LoaderCircleIcon, TrashIcon } from "lucide-react";
 import { useRouter } from "@bprogress/next/app";
 import clsx from "clsx";
+import { getIndustryName, getTypeName } from "@/lib/getCategoryName";
 
 const ProjectField = dynamic(
   () => import("@/components/me/project/ProjectField"),
@@ -193,13 +194,13 @@ export default function DetailProjectPage() {
                 <div className="flex flex-wrap justify-between gap-8">
                   {data.type && (
                     <ProjectField title="Tipe">
-                      <p>{data.type}</p>
+                      <p>{getTypeName(data.type)}</p>
                     </ProjectField>
                   )}
 
                   {data.industry && (
                     <ProjectField title="Industri">
-                      <p>{data.industry}</p>
+                      <p>{getIndustryName(data.industry)}</p>
                     </ProjectField>
                   )}
 
