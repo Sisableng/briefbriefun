@@ -11,7 +11,7 @@ export const AVATAR_STYLES = [
   "croodles",
   "croodlesNeutral",
   "dylan",
-  "fun",
+  "funEmoji",
   "glass",
   "icons",
   "identicon",
@@ -59,7 +59,7 @@ export const importAvatarStyle = async (styleName: string) => {
         return await import("@dicebear/croodles");
       case "croodlesNeutral":
         return await import("@dicebear/croodles-neutral");
-      case "fun":
+      case "funEmoji":
         return await import("@dicebear/fun-emoji");
       case "identicon":
         return await import("@dicebear/identicon");
@@ -115,7 +115,7 @@ export const getStyleMetadata = (styleName: string) => {
     botttsNeutral: { title: "Bottts Neutral" },
     croodles: { title: "Croodles" },
     croodlesNeutral: { title: "Croodles Neutral" },
-    fun: { title: "Fun Emoji" },
+    funEmoji: { title: "Fun Emoji" },
     identicon: { title: "Identicon" },
     initials: { title: "Initials" },
     lorelei: { title: "Lorelei" },

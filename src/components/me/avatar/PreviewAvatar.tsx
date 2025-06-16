@@ -137,16 +137,16 @@ const PreviewAvatar = ({ type, options }: PreviewAvatarProps) => {
   }
 
   return (
-    <div className="flex flex-1 flex-col items-center gap-4 md:border-r">
+    <div className="flex flex-col items-center gap-4 sm:flex-1 md:border-r">
       <Image
         src={svg}
         width={250}
         height={250}
         alt=""
-        className="bg-secondary size-40 rounded-xl md:size-60"
+        className="bg-secondary size-32 rounded-xl md:size-60"
       />
 
-      <div className="text-muted-foreground mx-auto mb-10 max-w-sm text-center text-sm">
+      <div className="text-muted-foreground mx-auto mb-4 max-w-sm text-center text-sm sm:mb-10">
         <p className="">
           Avatar ini dibikin pake Dicebear API, kalo kamu pengen bikin yang
           lebih advance langsung aja buat disini{" "}
@@ -160,8 +160,6 @@ const PreviewAvatar = ({ type, options }: PreviewAvatarProps) => {
               <ArrowUpRightIcon />
             </Link>
           </Badge>
-          <br />
-          <br /> Kalo udah, Copy URL nya lalu masukin ke dalam input dibawah.
         </p>
       </div>
 
@@ -169,20 +167,21 @@ const PreviewAvatar = ({ type, options }: PreviewAvatarProps) => {
         <Input
           placeholder="Masukin Nama Lengkap"
           onChange={(e) => debounced(e.target.value)}
-          className="max-w-sm"
+          className="max-w-sm sm:block"
         />
       )}
 
       <Input
         value={avatarUrl}
         onChange={(e) => setAvatarUrl(e.target.value)}
-        className="max-w-sm"
+        className="hidden max-w-sm sm:block"
       />
 
-      <div className="flex items-center gap-2">
+      <div className="max-sm:bg-secondary/50 z-10 flex items-center gap-2 max-sm:fixed max-sm:inset-x-0 max-sm:bottom-0 max-sm:rounded-t-xl max-sm:p-2 max-sm:backdrop-blur">
         <Button
           size={"lg"}
           variant={"secondary"}
+          className="max-sm:flex-auto"
           onClick={() => setSeed(createRandomSeed())}
           disabled={isPending || isLoading}
         >
@@ -191,6 +190,7 @@ const PreviewAvatar = ({ type, options }: PreviewAvatarProps) => {
         </Button>
         <Button
           size={"lg"}
+          className="max-sm:flex-auto"
           onClick={handleSave}
           disabled={isPending || isLoading}
         >

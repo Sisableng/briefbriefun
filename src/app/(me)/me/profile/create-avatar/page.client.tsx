@@ -15,6 +15,7 @@ import BackButton from "@/components/BackButton";
 import { LoaderCircleIcon, MinusIcon, PlusIcon } from "lucide-react";
 import { Separator } from "@/components/ui/separator";
 import { AVATAR_STYLES, getStyleMetadata } from "@/utils/avatarStyles";
+import { Scroller } from "@/components/ui/scroller";
 
 const OptionItem = dynamic(() => import("@/components/me/avatar/OptionItem"), {
   ssr: false,
@@ -53,44 +54,44 @@ export default function CreateAvatarPage() {
   };
 
   return (
-    <div className="cme-content flex size-full flex-1 flex-col gap-8">
+    <div className="cme-content flex flex-1 flex-col gap-8 sm:size-full">
       <BackButton />
 
-      <div className="flex size-full flex-1 flex-col gap-10 sm:flex-row">
+      <div className="flex size-full flex-1 flex-col gap-6 sm:flex-row sm:gap-10">
         <PreviewAvatar type={selectedType} options={options} />
 
-        <Separator className="sm:hidden" />
+        <div className="max-sm:bg-card space-y-8 overflow-y-auto p-4 max-sm:mt-auto max-sm:h-72 max-sm:flex-grow max-sm:rounded-xl sm:shrink-0 sm:p-1 md:w-60">
+          <div className="max-sm:bg-card z-10 w-full max-sm:sticky max-sm:-top-4 max-sm:-my-4 max-sm:py-4">
+            <Select
+              value={selectedType}
+              onValueChange={(v) => setSelectedType(v as any)}
+            >
+              <SelectTrigger className="w-full flex-1 data-[size=default]:h-12">
+                <SelectValue placeholder="Theme" />
+              </SelectTrigger>
+              <SelectContent className="max-h-96 sm:w-[calc(var(--spacing)*60-var(--spacing)*1)]">
+                {AVATAR_STYLES.map((styleName) => {
+                  const metadata = getStyleMetadata(styleName);
+                  const slugifyKey = styleName
+                    .replace(/([a-z0-9])([A-Z])/g, "$1-$2")
+                    .toLowerCase();
 
-        <div className="shrink-0 space-y-8 overflow-y-auto p-1 md:w-60">
-          <Select
-            value={selectedType}
-            onValueChange={(v) => setSelectedType(v as any)}
-          >
-            <SelectTrigger className="w-full flex-1 data-[size=default]:h-12">
-              <SelectValue placeholder="Theme" />
-            </SelectTrigger>
-            <SelectContent className="max-h-96 sm:w-[calc(var(--spacing)*60-var(--spacing)*1)]">
-              {AVATAR_STYLES.map((styleName) => {
-                const metadata = getStyleMetadata(styleName);
-                const slugifyKey = styleName
-                  .replace(/([a-z0-9])([A-Z])/g, "$1-$2")
-                  .toLowerCase();
-
-                return (
-                  <SelectItem key={styleName} value={styleName}>
-                    <Image
-                      src={`https://api.dicebear.com/9.x/${slugifyKey}/webp`}
-                      width={36}
-                      height={36}
-                      alt=""
-                      className="bg-secondary rounded-md object-contain"
-                    />
-                    {metadata.title}
-                  </SelectItem>
-                );
-              })}
-            </SelectContent>
-          </Select>
+                  return (
+                    <SelectItem key={styleName} value={styleName}>
+                      <Image
+                        src={`https://api.dicebear.com/9.x/${slugifyKey}/webp`}
+                        width={36}
+                        height={36}
+                        alt=""
+                        className="bg-secondary rounded-md object-contain"
+                      />
+                      {metadata.title}
+                    </SelectItem>
+                  );
+                })}
+              </SelectContent>
+            </Select>
+          </div>
 
           <Separator />
 

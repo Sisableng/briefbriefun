@@ -164,7 +164,7 @@ export default function ProjectForm() {
                       // form.setValue("autoCompleteType.select", i?.value);
                     }
                   }}
-                  placeholder="Search fruits..."
+                  placeholder="Tipe"
                   className="w-full"
                 >
                   <AutocompleteContent>
@@ -217,7 +217,7 @@ export default function ProjectForm() {
                       field.onChange(i.label);
                     }
                   }}
-                  placeholder="Search fruits..."
+                  placeholder="Industri"
                   className="w-full"
                 >
                   <AutocompleteContent>

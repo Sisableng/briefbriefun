@@ -13,6 +13,8 @@ import Image from "next/image";
 import { cn, scrambleText } from "@/lib/utils";
 import clsx from "clsx";
 import { Separator } from "./ui/separator";
+import { useSound } from "@/hooks/useSound";
+import FadeinImage from "./FadeinImage";
 
 type TestType = "brainrot" | "math" | "literacy";
 
@@ -24,6 +26,9 @@ export default function AdminRequest() {
   const [remainingAttempts, setRemainingAttempts] = useState<number>(3);
   const [iqScore, setIqScore] = useState<number>(20);
   const [isCompleted, setIsCompleted] = useState<boolean>(false);
+
+  const playThudSound = useSound("/instagram-thud.mp3");
+  const playWowSound = useSound("/anime-wow-sound-effect.mp3");
 
   const { question, setQuestion, session, setSession, reset } = useQuestion(
     useShallow((x) => ({
@@ -49,7 +54,7 @@ export default function AdminRequest() {
       return x;
     },
     staleTime: Infinity,
-    enabled: !session || remainingAttempts === 0 || !isCompleted,
+    enabled: isOpen && (!session || remainingAttempts === 0 || !isCompleted),
   });
 
   const handleReset = () => {
@@ -60,7 +65,6 @@ export default function AdminRequest() {
 
   async function loadNextQuestion() {
     if (!session) {
-      toast.error("Sori kek nya error");
       return;
     }
 
@@ -83,6 +87,8 @@ export default function AdminRequest() {
     const data = (await submitAnswer(session, answerIndex)) as any;
 
     if (data.error === "Invalid Answer") {
+      playThudSound();
+
       setRemainingAttempts((prev) => prev - 1);
 
       const decRe = remainingAttempts - 1;
@@ -100,6 +106,8 @@ export default function AdminRequest() {
 
       return;
     }
+
+    playWowSound();
 
     if (data.completed) {
       setIsCompleted(true);
@@ -119,17 +127,23 @@ export default function AdminRequest() {
     sessionStorage.clear();
   };
 
+  const handleClose = () => {
+    setIsOpen(false);
+  };
+
   //   store data to session storage
   useEffect(() => {
-    if (data) {
+    if (isOpen && data) {
       setSession(data);
     }
-  }, [data]);
+  }, [data, isOpen]);
 
   //   initialize question
   useEffect(() => {
-    loadNextQuestion();
-  }, [session]);
+    if (isOpen) {
+      loadNextQuestion();
+    }
+  }, [session, isOpen]);
 
   useEffect(() => {
     if (remainingAttempts === 0) {
@@ -143,6 +157,7 @@ export default function AdminRequest() {
       }, 1000);
 
       setTimeout(() => {
+        reset();
         handleReset();
       }, 3000);
     }
@@ -250,7 +265,7 @@ export default function AdminRequest() {
                         )}
                         onClick={() => handleAnswer(i)}
                       >
-                        <Image
+                        <FadeinImage
                           draggable={false}
                           src={img}
                           width={100}
@@ -301,7 +316,7 @@ export default function AdminRequest() {
 
         <Button
           variant={"secondary"}
-          onClick={() => setIsOpen(false)}
+          onClick={handleClose}
           className="block w-full sm:hidden"
         >
           Tutup
