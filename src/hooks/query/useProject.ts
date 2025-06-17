@@ -45,6 +45,11 @@ export const useProjectMutations = (userId?: string) => {
         exact: true,
         refetchType: "active",
       });
+      await queryClient.invalidateQueries({
+        queryKey: ["db-count-projects", userId],
+        exact: true,
+        refetchType: "active",
+      });
     },
   });
 
@@ -57,6 +62,11 @@ export const useProjectMutations = (userId?: string) => {
         exact: true,
         refetchType: "active",
       });
+      await queryClient.invalidateQueries({
+        queryKey: ["db-count-projects", userId],
+        exact: true,
+        refetchType: "active",
+      });
     },
   });
 
@@ -65,6 +75,11 @@ export const useProjectMutations = (userId?: string) => {
     onSuccess: async () => {
       await queryClient.invalidateQueries({
         queryKey: ["db-projects", userId],
+        exact: true,
+        refetchType: "active",
+      });
+      await queryClient.invalidateQueries({
+        queryKey: ["db-count-projects", userId],
         exact: true,
         refetchType: "active",
       });
