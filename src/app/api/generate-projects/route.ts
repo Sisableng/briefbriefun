@@ -1,4 +1,4 @@
-import { streamObject } from "ai";
+import { generateObject, streamObject } from "ai";
 import { createFallback } from "ai-fallback";
 import { outputSchema, systemPrompt } from "@/ai-stuff/output-schema";
 
@@ -78,7 +78,7 @@ Write the full brief now using Bahasa Indonesia.`;
   }
 
   // Production: Use fallback model (handles switching automatically)
-  const result = streamObject({
+  const result = await generateObject({
     model: fallbackModel,
     schema: outputSchema,
     schemaName: "projectBrief",
@@ -88,7 +88,7 @@ Write the full brief now using Bahasa Indonesia.`;
     mode: fallbackModel.currentModelIndex === 1 ? "tool" : "auto",
   });
 
-  const response = result.toTextStreamResponse();
+  const response = result.toJsonResponse();
   response.headers.set("X-AI-Provider", "fallback-enabled");
 
   return response;
