@@ -43,6 +43,7 @@ import {
   AutocompleteGroup,
   AutocompleteItem,
 } from "@/components/ui/autocomplete";
+import { useRemaining } from "@/hooks/query/useRemaining";
 
 const ProjectReview = dynamic(() => import("../../me/project/ProjectReview"), {
   ssr: false,
@@ -52,15 +53,24 @@ const ProjectReview = dynamic(() => import("../../me/project/ProjectReview"), {
 });
 
 export default function ProjectForm() {
-  const { session } = useSession();
+  const { session, user } = useSession();
 
   const mdScreen = useMediaQuery(mq("md"));
+
+  const {
+    data,
+    isLoading: isLoadingRemaining,
+    refetch,
+  } = useRemaining(user?.id ?? "");
 
   const { object, submit, isLoading, error, stop } = useObject({
     api: "/api/generate-projects",
     schema: outputSchema,
     onError(error) {
       console.log("use-object", error.message);
+    },
+    async onFinish() {
+      await refetch();
     },
   });
 
@@ -72,7 +82,7 @@ export default function ProjectForm() {
       //   industry: "",
       vibe: "corporate",
     },
-    disabled: isLoading,
+    disabled: isLoading || (data && data?.remaining === 0),
   });
 
   const watchSource = form.watch("source");
@@ -111,7 +121,7 @@ export default function ProjectForm() {
   };
 
   async function onSubmit(values: z.infer<typeof projectFormSchema>) {
-    if (!session) {
+    if (!session || !user) {
       toast.error("Gak ada sesi ha?, Kamu siapa? 🤨");
       return;
     }
@@ -278,21 +288,65 @@ export default function ProjectForm() {
   };
 
   return (
-    <div className="flex size-full flex-1 flex-col gap-10 max-sm:border-t max-sm:pt-8 sm:flex-row md:mt-14">
-      <Form {...form}>
-        {mdScreen ? (
-          <>
-            <div className="w-full shrink-0 space-y-8 self-start overflow-y-auto p-1 md:sticky md:top-26 md:w-60">
-              <form
-                onSubmit={form.handleSubmit(onSubmit)}
-                className="space-y-4"
-              >
+    <div className="flex flex-1 flex-col gap-4">
+      {data && (
+        <div className="text-primary flex w-max items-center gap-2 font-semibold">
+          <p>Sisa Nyawa:</p>
+          <p>{data?.remaining}</p>
+        </div>
+      )}
+
+      <div className="flex size-full flex-1 flex-col gap-10 border-t pt-8 sm:flex-row">
+        <Form {...form}>
+          {mdScreen ? (
+            <>
+              <div className="w-full shrink-0 space-y-8 self-start overflow-y-auto p-1 md:sticky md:top-26 md:w-60">
+                <form
+                  onSubmit={form.handleSubmit(onSubmit)}
+                  className="space-y-4"
+                >
+                  <Fields />
+
+                  <Button
+                    type="submit"
+                    className="w-full"
+                    disabled={
+                      form.formState.isSubmitting ||
+                      isLoading ||
+                      (data && data?.remaining === 0)
+                    }
+                  >
+                    {form.formState.isSubmitting || isLoading ? (
+                      <>
+                        Sabar...
+                        <LoaderCircleIcon className="animate-spin" />
+                      </>
+                    ) : (
+                      <>
+                        Buat
+                        <ArrowRightIcon />
+                      </>
+                    )}
+                  </Button>
+                </form>
+              </div>
+            </>
+          ) : (
+            <form
+              onSubmit={form.handleSubmit(onSubmit)}
+              className="bg-secondary dark fixed inset-x-0 bottom-0 z-10 min-h-20 rounded-t-xl"
+            >
+              <div className="relative grid grid-cols-2 gap-2 p-4">
                 <Fields />
 
                 <Button
                   type="submit"
-                  className="w-full"
-                  disabled={form.formState.isSubmitting || isLoading}
+                  className="col-span-full w-full"
+                  disabled={
+                    form.formState.isSubmitting ||
+                    isLoading ||
+                    (data && data?.remaining === 0)
+                  }
                 >
                   {form.formState.isSubmitting || isLoading ? (
                     <>
@@ -306,47 +360,21 @@ export default function ProjectForm() {
                     </>
                   )}
                 </Button>
-              </form>
-            </div>
-          </>
-        ) : (
-          <form
-            onSubmit={form.handleSubmit(onSubmit)}
-            className="bg-secondary dark fixed inset-x-0 bottom-0 z-10 min-h-20 rounded-t-xl"
-          >
-            <div className="relative grid grid-cols-2 gap-2 p-4">
-              <Fields />
+              </div>
+            </form>
+          )}
+        </Form>
 
-              <Button
-                type="submit"
-                className="col-span-full w-full"
-                disabled={form.formState.isSubmitting || isLoading}
-              >
-                {form.formState.isSubmitting || isLoading ? (
-                  <>
-                    Sabar...
-                    <LoaderCircleIcon className="animate-spin" />
-                  </>
-                ) : (
-                  <>
-                    Buat
-                    <ArrowRightIcon />
-                  </>
-                )}
-              </Button>
-            </div>
-          </form>
-        )}
-      </Form>
-
-      <ProjectReview
-        data={{
-          object: object as any,
-          form: formatValues(form.getValues()),
-        }}
-        isLoading={processing}
-        error={error}
-      />
+        <ProjectReview
+          data={{
+            object: object as any,
+            form: formatValues(form.getValues()),
+          }}
+          isLoading={processing}
+          error={error}
+          isRateLimited={data && data?.remaining === 0}
+        />
+      </div>
     </div>
   );
 }

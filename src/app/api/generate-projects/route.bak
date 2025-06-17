@@ -1,0 +1,183 @@
+import { streamObject, createProviderRegistry } from "ai";
+import { outputSchema, systemPrompt } from "@/ai-stuff/output-schema";
+
+import { ollama } from "ollama-ai-provider";
+import { groq } from "@ai-sdk/groq";
+import { google } from "@ai-sdk/google";
+import { togetherai } from "@ai-sdk/togetherai";
+
+import { Ratelimit } from "@upstash/ratelimit";
+import { Redis } from "@upstash/redis";
+import { auth } from "@/lib/auth";
+import { NextRequest } from "next/server";
+
+// Allow streaming responses up to 30 seconds
+export const maxDuration = 30;
+
+export const modifyResult = (response: Response, remaining: number) => {
+  response.headers.set("X-RateLimit-Remaining", remaining.toString());
+  response.headers.set(
+    "Set-Cookie",
+    `X-RateLimit-Remaining=${remaining}; Path=/; SameSite=Strict`,
+  );
+  return response;
+};
+
+// Create provider registry
+const registry = createProviderRegistry({
+  google: google,
+  groq: groq,
+  togetherai: togetherai,
+});
+
+// Helper function to check if error is rate limit related
+const isRateLimitError = (error: any): boolean => {
+  const errorMessage = error?.message?.toLowerCase() || "";
+  const errorCode = error?.code || "";
+
+  return (
+    errorMessage.includes("rate limit") ||
+    errorMessage.includes("quota") ||
+    errorMessage.includes("too many requests") ||
+    errorCode === "RATE_LIMIT_EXCEEDED" ||
+    error?.status === 429
+  );
+};
+
+// Fallback function using proper error handling
+async function streamWithFallback(userPrompt: string, systemPrompt: string) {
+  const models = [
+    {
+      name: "google-gemini",
+      model: registry.languageModel("google:gemini-2.0-flash-lite"),
+      config: {},
+    },
+    {
+      name: "groq-llama",
+      model: registry.languageModel("groq:llama-3.3-70b-versatile"),
+      config: { maxTokens: 1024 },
+      mode: "tool",
+    },
+    {
+      name: "togetherai",
+      model: registry.languageModel(
+        "togetherai:meta-llama/Llama-3.3-70B-Instruct-Turbo-Free",
+      ),
+      config: { maxTokens: 1024 },
+      mode: "tool",
+    },
+  ];
+
+  let lastError: any;
+
+  for (const { name, model, mode, config } of models) {
+    try {
+      console.log(`Attempting to use ${name}...`);
+
+      const result = await streamObject({
+        model,
+        mode: mode as any,
+        schema: outputSchema,
+        schemaName: "projectBrief",
+        prompt: userPrompt,
+        system: systemPrompt,
+        ...config,
+      });
+
+      console.log(`Successfully using ${name}`);
+      return { result, provider: name };
+    } catch (error) {
+      console.log(`${name} failed:`, error);
+      lastError = error;
+
+      // Continue to next provider if rate limited or other errors
+      continue;
+    }
+  }
+
+  // If all providers failed
+  throw new Error(`All providers failed. Last error: ${lastError?.message}`);
+}
+
+export async function POST(req: NextRequest) {
+  const headers = new Headers();
+
+  const body = await req.json();
+  const { type, industry, vibe, ip } = JSON.parse(body);
+
+  const session = await auth.api.getSession({
+    headers: req.headers,
+  });
+
+  if (!session) {
+    return new Response("Authenticate required", {
+      status: 403,
+      statusText: "Forbidden",
+    });
+  }
+
+  // Create Rate limit
+  const ratelimit = new Ratelimit({
+    redis: Redis.fromEnv(),
+    limiter: Ratelimit.fixedWindow(5, "1d"),
+    enableProtection: true,
+  });
+
+  const { success, remaining } = await ratelimit.limit(session.user.id, {
+    ip,
+  });
+
+  if (!success && process.env.NODE_ENV === "production") {
+    return new Response("Ratelimited!", { status: 429 });
+  }
+
+  headers.set("X-RateLimit-Remaining", remaining.toString());
+
+  const userPrompt = `Generate a fake creative brief from a fictional Indonesian client based on the following parameters:
+
+- Project type: ${type}
+- Industry: ${industry}
+- Vibe/tone: ${vibe}
+
+Write the full brief now using Bahasa Indonesia.`;
+
+  // use local LLM for development
+  // if (process.env.NODE_ENV === "development") {
+  //   const result = await streamObject({
+  //     model: ollama("llama3.1:8b"),
+  //     schema: outputSchema,
+  //     schemaName: "projectBrief",
+  //     prompt: userPrompt,
+  //     system: systemPrompt,
+  //   });
+
+  //   const response = result.toTextStreamResponse();
+  //   const modified = modifyResult(response, remaining);
+  //   return modified;
+  // }
+
+  try {
+    // Production: Use fallback chain
+    const { result, provider } = await streamWithFallback(
+      userPrompt,
+      systemPrompt,
+    );
+
+    const response = result.toTextStreamResponse();
+
+    // Add header to indicate which provider was used
+    response.headers.set("X-AI-Provider", provider);
+
+    const modified = modifyResult(response, remaining);
+    return modified;
+  } catch (error) {
+    console.log("All AI services failed:", error);
+    return new Response(
+      "All AI services are currently unavailable. Please try again later.",
+      {
+        status: 503,
+        statusText: "Service Unavailable",
+      },
+    );
+  }
+}

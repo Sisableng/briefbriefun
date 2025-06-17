@@ -31,6 +31,7 @@ interface ProjectReviewProps {
     object?: z.infer<typeof outputSchema>;
   };
   error?: Error;
+  isRateLimited?: boolean;
 }
 
 // Memoized Loading component
@@ -42,27 +43,28 @@ const ErrorDisplay = memo(({ error }: { error: Error }) => (
       <FileXIcon className="text-primary size-8" />
     </div>
 
-    {error.message === "Ratelimited!" ? (
-      <>
-        <h3>
-          Waduh, <br /> kamu ngebut banget nih 😅.
-        </h3>
-        <p className="text-muted-foreground max-w-lg">
-          Coba lagi besok, sebelum bikin brief lagi, ya!
-        </p>
-      </>
-    ) : (
-      <>
-        <h3>Sori, kayanya Error</h3>
-        <p className="text-muted-foreground max-w-lg text-sm">
-          {error.message}
-        </p>
-      </>
-    )}
+    <h3>Sori, kayanya Error</h3>
+    <p className="text-muted-foreground max-w-lg text-sm">{error.message}</p>
   </div>
 ));
 
-ErrorDisplay.displayName = "ErrorDisplay";
+// Memoized Ratelimited component
+const RateLimitedDisplay = memo(() => (
+  <div className="inset-0 grid min-h-60 place-content-center gap-2 p-4 text-center">
+    <div className="bg-secondary m-auto mb-4 grid size-14 place-content-center rounded-full">
+      <FileXIcon className="text-primary size-8" />
+    </div>
+
+    <h3>
+      Waduh, <br /> kamu ngebut banget nih 😅.
+    </h3>
+    <p className="text-muted-foreground max-w-lg">
+      Coba lagi besok, sebelum bikin brief lagi, ya!
+    </p>
+  </div>
+));
+
+RateLimitedDisplay.displayName = "RateLimitedDisplay";
 
 // Memoized Empty state component
 const EmptyState = memo(() => (
@@ -148,79 +150,86 @@ const ProjectContent = memo(
 
 ProjectContent.displayName = "ProjectContent";
 
-const ProjectReview = memo(({ data, isLoading, error }: ProjectReviewProps) => {
-  const { user } = useSession();
-  const router = useRouter();
+const ProjectReview = memo(
+  ({ data, isLoading, error, isRateLimited }: ProjectReviewProps) => {
+    const router = useRouter();
 
-  const {
-    create: { mutateAsync },
-  } = useProject(user?.id);
+    const { user } = useSession();
 
-  const handleSave = useCallback(
-    async (status: z.infer<typeof statusSchema>) => {
-      if (!user) {
-        toast.error("User gak ada! 😭");
-        return;
+    const {
+      create: { mutateAsync },
+    } = useProject(user?.id);
+
+    const handleSave = useCallback(
+      async (status: z.infer<typeof statusSchema>) => {
+        if (!user) {
+          toast.error("User gak ada! 😭");
+          return;
+        }
+
+        if (!data || !data.object) {
+          toast.error("Gak ada data buat dibikin! 😭");
+          return;
+        }
+
+        const toastId = toast.loading("Sabar...");
+        try {
+          await mutateAsync({
+            ...data.object,
+            ...data.form,
+            status,
+            userId: user.id,
+          });
+
+          toast.success("Berhasil! 😎", {
+            id: toastId,
+          });
+
+          router.push("/me");
+        } catch (error) {
+          console.error(error);
+
+          toast.error("Waduh, keknya ada yang salah! 😱", {
+            id: toastId,
+          });
+        }
+      },
+      [data, user, mutateAsync, router],
+    );
+
+    // Render content based on state
+    const renderContent = () => {
+      if (isLoading) {
+        return <LoadingSkeleton />;
       }
 
-      if (!data || !data.object) {
-        toast.error("Gak ada data buat dibikin! 😭");
-        return;
+      if (!isRateLimited && error) {
+        return <ErrorDisplay error={error} />;
       }
 
-      const toastId = toast.loading("Sabar...");
-      try {
-        await mutateAsync({
-          ...data.object,
-          ...data.form,
-          status,
-          userId: user.id,
-        });
-
-        toast.success("Berhasil! 😎", {
-          id: toastId,
-        });
-
-        router.push("/me");
-      } catch (error) {
-        console.error(error);
-
-        toast.error("Waduh, keknya ada yang salah! 😱", {
-          id: toastId,
-        });
+      if (isRateLimited) {
+        return <RateLimitedDisplay />;
       }
-    },
-    [data, user, mutateAsync, router],
-  );
 
-  // Render content based on state
-  const renderContent = () => {
-    if (isLoading) {
-      return <LoadingSkeleton />;
-    }
+      if (data.object) {
+        return <ProjectContent data={data.object} onSave={handleSave} />;
+      }
 
-    if (error) {
-      return <ErrorDisplay error={error} />;
-    }
+      return <EmptyState />;
+    };
 
-    if (data.object) {
-      return <ProjectContent data={data.object} onSave={handleSave} />;
-    }
-
-    return <EmptyState />;
-  };
-
-  return (
-    <div
-      className={clsx(
-        "md:bg-card relative flex h-fit min-h-60 flex-1 flex-col gap-4 rounded-xl p-4 max-sm:pb-40 md:p-6",
-        data.object && "max-sm:pb-40",
-      )}
-    >
-      {renderContent()}
-    </div>
-  );
-});
+    return (
+      <div
+        className={clsx(
+          "md:bg-card relative flex h-fit min-h-60 flex-1 flex-col gap-4 rounded-xl p-4 max-sm:pb-40 md:p-6",
+          data.object && "max-sm:pb-40",
+        )}
+      >
+        {renderContent()}
+      </div>
+    );
+  },
+);
 
 ProjectReview.displayName = "ProjectReview";
 
