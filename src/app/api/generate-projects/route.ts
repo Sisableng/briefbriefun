@@ -1,4 +1,4 @@
-import { generateObject, streamObject } from "ai";
+import { streamObject } from "ai";
 import { createFallback } from "ai-fallback";
 import { outputSchema, systemPrompt } from "@/ai-stuff/output-schema";
 
@@ -45,7 +45,7 @@ export async function POST(req: NextRequest) {
   }
 
   // Use the rate limit hook - much cleaner!
-  const { success, remaining } = await checkRateLimit(
+  const { success } = await checkRateLimit(
     session.user.id,
     "api", // Use 'api' config (5 requests per day)
     { ip },
@@ -78,7 +78,7 @@ Write the full brief now using Bahasa Indonesia.`;
   }
 
   // Production: Use fallback model (handles switching automatically)
-  const result = await generateObject({
+  const result = streamObject({
     model: fallbackModel,
     schema: outputSchema,
     schemaName: "projectBrief",
@@ -88,7 +88,7 @@ Write the full brief now using Bahasa Indonesia.`;
     mode: fallbackModel.currentModelIndex === 1 ? "tool" : "auto",
   });
 
-  const response = result.toJsonResponse();
+  const response = result.toTextStreamResponse();
   response.headers.set("X-AI-Provider", "fallback-enabled");
 
   return response;

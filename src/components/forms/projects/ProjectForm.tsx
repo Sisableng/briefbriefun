@@ -57,15 +57,11 @@ export default function ProjectForm() {
 
   const mdScreen = useMediaQuery(mq("md"));
 
-  // const {
-  //   data,
-  //   isLoading: isLoadingRemaining,
-  //   refetch,
-  // } = useRemaining(user?.id ?? "");
-
-  const data = {
-    remaining: 10,
-  };
+  const {
+    data,
+    isLoading: isLoadingRemaining,
+    refetch,
+  } = useRemaining(user?.id ?? "");
 
   const { object, submit, isLoading, error, stop } = useObject({
     api: "/api/generate-projects",
@@ -74,9 +70,7 @@ export default function ProjectForm() {
       console.log("use-object", error.message);
     },
     async onFinish(e) {
-      // await refetch();
-
-      console.log(e.error);
+      await refetch();
     },
   });
 
