@@ -116,6 +116,7 @@ const ProjectLists = ({ userId }: ProjectListsProps) => {
 
   const {
     project: { data, isPending, error, refetch },
+    count: { data: countData },
     deleteProject: {
       mutateAsync: deleteProjectMutation,
       isPending: isPendingDelete,
@@ -127,6 +128,7 @@ const ProjectLists = ({ userId }: ProjectListsProps) => {
       ...filtersParams,
       title: searchQuery,
     },
+    withCount: true,
   });
 
   // Optimized handler with useCallback to prevent unnecessary re-renders
@@ -395,7 +397,7 @@ const ProjectLists = ({ userId }: ProjectListsProps) => {
 
       {data && shouldShowOptions && (
         <>
-          {data.length > 0 && (
+          {countData && countData.count > 0 && (
             <div className="flex items-center justify-center gap-4">
               <Button
                 size={"icon"}
@@ -412,15 +414,15 @@ const ProjectLists = ({ userId }: ProjectListsProps) => {
                   defaultValue={currentPage}
                   onChange={(e) => debounceInputpage(e.target.value)}
                   min={1}
-                  max={Math.ceil((data?.length ?? 0) / PAGE_SIZE)}
+                  max={Math.ceil((countData.count ?? 0) / PAGE_SIZE)}
                   step={1}
                   disabled={
                     Number(currentPage) >=
-                    Math.ceil((data?.length ?? 0) / PAGE_SIZE)
+                    Math.ceil((countData.count ?? 0) / PAGE_SIZE)
                   }
                   className="bg-input disabled:text-muted-foreground h-9 rounded-md px-2 pr-12 text-center focus:border-0 focus:ring-0 focus:outline-none disabled:pointer-events-none"
                 />
-                <div className="text-muted-foreground absolute top-1.5 right-4 block">{`/ ${Math.ceil((data?.length ?? 0) / PAGE_SIZE)}`}</div>
+                <div className="text-muted-foreground absolute top-1.5 right-4 block">{`/ ${Math.ceil((countData.count ?? 0) / PAGE_SIZE)}`}</div>
               </div>
               <Button
                 size={"icon"}
@@ -428,7 +430,7 @@ const ProjectLists = ({ userId }: ProjectListsProps) => {
                 onClick={() => handleUpdatePage("next")}
                 disabled={
                   Number(currentPage) >=
-                  Math.ceil((data?.length ?? 0) / PAGE_SIZE)
+                  Math.ceil((countData.count ?? 0) / PAGE_SIZE)
                 }
               >
                 <ChevronRightIcon />
