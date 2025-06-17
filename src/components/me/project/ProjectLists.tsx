@@ -112,7 +112,7 @@ const ProjectLists = ({ userId }: ProjectListsProps) => {
     ) as ProjectQueryOptions["filters"];
   }, [searchParams]);
 
-  const PAGE_SIZE = 10;
+  const PAGE_SIZE = 9;
 
   const {
     project: { data, isPending, error, refetch },
