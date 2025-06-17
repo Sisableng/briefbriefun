@@ -9,7 +9,7 @@ import { togetherai } from "@ai-sdk/togetherai";
 
 import { auth } from "@/lib/auth";
 import { NextRequest } from "next/server";
-import { checkRateLimit, createRateLimitResponse } from "@/hooks/useRateLimit";
+import { checkRateLimit } from "@/hooks/useRateLimit";
 
 // Allow streaming responses up to 30 seconds
 export const maxDuration = 30;
@@ -17,7 +17,9 @@ export const maxDuration = 30;
 // Create fallback model with automatic switching
 const fallbackModel = createFallback({
   models: [
-    google("gemini-2.0-flash-lite"), // Primary model
+    google("gemini-2.0-flash-lite", {
+      structuredOutputs: true,
+    }), // Primary model
     groq("llama-3.3-70b-versatile"), // First fallback
     togetherai("meta-llama/Llama-3.3-70B-Instruct-Turbo-Free"), // Second fallback
   ],
@@ -63,7 +65,7 @@ Write the full brief now using Bahasa Indonesia.`;
 
   // use local LLM for development
   if (process.env.NODE_ENV === "development") {
-    const result = await streamObject({
+    const result = streamObject({
       model: ollama("llama3.1:8b"),
       schema: outputSchema,
       schemaName: "projectBrief",
@@ -72,21 +74,22 @@ Write the full brief now using Bahasa Indonesia.`;
     });
 
     const response = result.toTextStreamResponse();
-    return createRateLimitResponse(remaining, response);
+    return response;
   }
 
   // Production: Use fallback model (handles switching automatically)
-  const result = await streamObject({
+  const result = streamObject({
     model: fallbackModel,
     schema: outputSchema,
     schemaName: "projectBrief",
     prompt: userPrompt,
     system: systemPrompt,
     maxTokens: 1024,
+    mode: fallbackModel.currentModelIndex === 1 ? "tool" : "auto",
   });
 
   const response = result.toTextStreamResponse();
   response.headers.set("X-AI-Provider", "fallback-enabled");
 
-  return createRateLimitResponse(remaining, response);
+  return response;
 }
