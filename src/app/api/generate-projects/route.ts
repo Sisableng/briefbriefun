@@ -89,7 +89,7 @@ Write the full brief now using Bahasa Indonesia.`;
   });
 
   const response = result.toTextStreamResponse();
-  response.headers.set("X-AI-Provider", "fallback-enabled");
+  response.headers.set("X-AI-Provider", fallbackModel.provider);
 
   return response;
 }

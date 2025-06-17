@@ -1,5 +1,5 @@
 "use client";
-import React from "react";
+import React, { useState } from "react";
 
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useForm } from "react-hook-form";
@@ -57,13 +57,9 @@ export default function ProjectForm() {
 
   const mdScreen = useMediaQuery(mq("md"));
 
-  const {
-    data,
-    isLoading: isLoadingRemaining,
-    refetch,
-  } = useRemaining(user?.id ?? "");
+  const { data, refetch } = useRemaining(user?.id ?? "");
 
-  const { object, submit, isLoading, error, stop } = useObject({
+  const { object, submit, isLoading, error } = useObject({
     api: "/api/generate-projects",
     schema: outputSchema,
     onError(error) {
@@ -144,11 +140,11 @@ export default function ProjectForm() {
   }
 
   const processing = React.useMemo(() => {
-    if (process.env.NODE_ENV === "development") {
-      return form.formState.isSubmitting;
-    }
+    // if () {
+    // }
 
-    return form.formState.isSubmitting || isLoading;
+    return form.formState.isSubmitting;
+    // return form.formState.isSubmitting || isLoading;
   }, [form.formState.isSubmitting, isLoading]);
 
   const Fields = () => {
