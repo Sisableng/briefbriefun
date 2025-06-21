@@ -54,7 +54,7 @@ export default function Navbar() {
   return (
     <div
       className={clsx(
-        "sticky inset-x-0 top-0 z-50 max-w-screen overflow-hidden p-2 transition-all ease-in-out md:px-4 md:backdrop-blur",
+        "sticky inset-x-0 top-0 z-60 max-w-screen overflow-hidden p-2 transition-all ease-in-out md:px-4 md:backdrop-blur",
         isScrolled ? "md:bg-background/50" : "",
       )}
     >
@@ -106,7 +106,11 @@ export default function Navbar() {
                     className="flex-1 sm:size-10"
                   />
                 </DropdownMenuTrigger>
-                <DropdownMenuContent align="end" className="dark">
+                <DropdownMenuContent
+                  align="end"
+                  sideOffset={20}
+                  className="dark max-sm:w-[calc(100vw-2rem)] max-sm:max-w-screen"
+                >
                   <DropdownMenuLabel>
                     <p className="truncate font-semibold max-sm:text-sm">
                       {user.name}

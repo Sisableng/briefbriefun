@@ -90,7 +90,7 @@ export const literacyQuestions: Array<Question> = [
     options: [
       "Application Programming Interface",
       "Automated Program Installation",
-      "Antarmuka Pemrograman Interaktif",
+      "Alat untuk memasak",
       "Application Process Inventory",
     ],
     correctIndex: 0, // Jawaban benar: indeks ke-0
@@ -101,7 +101,7 @@ export const literacyQuestions: Array<Question> = [
       "Untuk mentransfer data antara server web dan klien",
       "Untuk menyimpan data di dalam database",
       "Untuk mengenkripsi pesan WhatsApp",
-      "Untuk memperkecil ukuran file gambar",
+      "Untuk memperkecil ukuran gambar",
     ],
     correctIndex: 0, // Jawaban benar: indeks ke-0
   },
@@ -110,7 +110,7 @@ export const literacyQuestions: Array<Question> = [
     options: [
       "Cascading Style Sheets",
       "Counter Strike Source",
-      "Creative Style Syntax",
+      "Cintaku Selalu Sama",
       "Content Styling Service",
     ],
     correctIndex: 0, // Jawaban benar: indeks ke-0
@@ -121,7 +121,7 @@ export const literacyQuestions: Array<Question> = [
       "Mengubah nama domain menjadi alamat IP",
       "Menyimpan file situs web ke dalam disk",
       "Memproses transaksi pembayaran online",
-      "Mengelola routing di negara tertentu",
+      "Membuka Youtube",
     ],
     correctIndex: 0, // Jawaban benar: indeks ke-0
   },
@@ -131,7 +131,7 @@ export const literacyQuestions: Array<Question> = [
       "Menyimpan data sementara saat program berjalan",
       "Mengakses AI seperti ChatGPT",
       "Memproses grafik dan video",
-      "Mengelola koneksi jaringan",
+      "Untuk bermain game",
     ],
     correctIndex: 0, // Jawaban benar: indeks ke-0
   },
@@ -140,8 +140,8 @@ export const literacyQuestions: Array<Question> = [
     options: [
       "Sistem keamanan yang memantau lalu lintas jaringan",
       "Jenis virus komputer",
-      "Ekstensi untuk browser Firefox",
-      "Bahasa pemrograman tingkat rendah",
+      "Ekstensi untuk Firefox",
+      "Bahasa pemrograman yang baru",
     ],
     correctIndex: 0, // Jawaban benar: indeks ke-0
   },
@@ -159,7 +159,7 @@ export const literacyQuestions: Array<Question> = [
     question: "Apa yang dimaksud dengan 'cloud' dalam cloud computing?",
     options: [
       "Server jarak jauh yang diakses melalui internet",
-      "Sistem pemantauan cuaca modern",
+      "Pemantau cuaca",
       "Protokol jaringan nirkabel baru",
       "Antarmuka grafis untuk analisis data",
     ],
@@ -210,7 +210,7 @@ export const literacyQuestions: Array<Question> = [
     options: [
       "Graphics Processing Unit",
       "General Processing Unit",
-      "Global Protocol Unit",
+      "Merek Balsem",
       "Graphical Power Utility",
     ],
     correctIndex: 0, // Jawaban benar: indeks ke-0

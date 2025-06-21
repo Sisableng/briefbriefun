@@ -27,6 +27,7 @@ import { useUrlParams } from "@/hooks/useUrlParams";
 import ProjectFilters from "./ProjectFilters";
 import { useDebounce } from "@/hooks/useDebounce";
 import { ProjectQueryOptions } from "@/components/forms/projects/actions";
+import { formatLargeValue } from "@/lib/utils";
 
 interface ProjectListsProps {
   userId: string;
@@ -338,10 +339,13 @@ const ProjectLists = ({ userId }: ProjectListsProps) => {
         </div>
 
         <div className="flex items-center gap-2 max-sm:flex-auto max-sm:justify-between">
+          <p className="text-muted-foreground text-sm max-sm:order-2 sm:mr-4">{`${formatLargeValue(countData?.count)} Brief`}</p>
+
           <Button
             variant={"secondary"}
             onClick={toggleSelectMode}
             disabled={!shouldShowOptions}
+            className="max-sm:order-first"
           >
             {selectMode ? (
               <>
@@ -366,6 +370,7 @@ const ProjectLists = ({ userId }: ProjectListsProps) => {
               }
             }}
             disabled={!shouldShowOptions}
+            className="order-last"
           >
             {isOpenFilter ? <XIcon /> : <ListFilterIcon />}
             Filter
@@ -420,7 +425,7 @@ const ProjectLists = ({ userId }: ProjectListsProps) => {
                     Number(currentPage) >=
                     Math.ceil((countData.count ?? 0) / PAGE_SIZE)
                   }
-                  className="bg-input disabled:text-muted-foreground h-9 rounded-md px-2 pr-12 text-center focus:border-0 focus:ring-0 focus:outline-none disabled:pointer-events-none"
+                  className="bg-secondary disabled:text-muted-foreground h-9 rounded-md px-2 pr-12 text-center focus:border-0 focus:ring-0 focus:outline-none disabled:pointer-events-none"
                 />
                 <div className="text-muted-foreground absolute top-1.5 right-4 block">{`/ ${Math.ceil((countData.count ?? 0) / PAGE_SIZE)}`}</div>
               </div>

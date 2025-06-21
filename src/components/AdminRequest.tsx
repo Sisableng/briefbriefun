@@ -1,5 +1,5 @@
 "use client";
-import React, { useEffect, useMemo, useState } from "react";
+import React, { useEffect, useState } from "react";
 import DrawerResponsive from "./ui/drawer-responsive";
 import { Button } from "./ui/button";
 import { LoaderCircleIcon, RotateCcw, ShieldUserIcon } from "lucide-react";
@@ -9,7 +9,6 @@ import { useQuestion } from "@/lib/iq/store";
 import { useShallow } from "zustand/shallow";
 import { getCurrentQuestion, submitAnswer } from "@/lib/iq";
 import { toast } from "sonner";
-import Image from "next/image";
 import { cn, scrambleText } from "@/lib/utils";
 import clsx from "clsx";
 import { Separator } from "./ui/separator";
@@ -26,6 +25,7 @@ export default function AdminRequest() {
   const [remainingAttempts, setRemainingAttempts] = useState<number>(3);
   const [iqScore, setIqScore] = useState<number>(20);
   const [isCompleted, setIsCompleted] = useState<boolean>(false);
+  const [isInvalid, setIsInvalid] = useState<number | null>(null);
 
   const playThudSound = useSound("/instagram-thud.mp3");
   const playWowSound = useSound("/anime-wow-sound-effect.mp3");
@@ -87,6 +87,7 @@ export default function AdminRequest() {
     const data = (await submitAnswer(session, answerIndex)) as any;
 
     if (data.error === "Invalid Answer") {
+      setIsInvalid(answerIndex);
       playThudSound();
 
       setRemainingAttempts((prev) => prev - 1);
@@ -99,7 +100,7 @@ export default function AdminRequest() {
             : `Salah! yahahaha, ${decRe} kesempatan lagi! 😉`,
           {
             closeButton: false,
-            duration: 1000,
+            duration: 2000,
           },
         );
       }, 200);
@@ -107,6 +108,7 @@ export default function AdminRequest() {
       return;
     }
 
+    setIsInvalid(null);
     playWowSound();
 
     if (data.completed) {
@@ -147,6 +149,7 @@ export default function AdminRequest() {
 
   useEffect(() => {
     if (remainingAttempts === 0) {
+      setIsInvalid(null);
       toast.dismiss();
 
       setTimeout(() => {
@@ -162,6 +165,14 @@ export default function AdminRequest() {
       }, 3000);
     }
   }, [remainingAttempts]);
+
+  useEffect(() => {
+    if (isInvalid !== null) {
+      setTimeout(() => {
+        setIsInvalid(null);
+      }, 800);
+    }
+  }, [isInvalid]);
 
   const headerContent = React.useMemo(() => {
     return (
@@ -262,6 +273,7 @@ export default function AdminRequest() {
                           "ring-primary group size-full cursor-pointer overflow-hidden rounded-md transition-all ease-in-out hover:ring-4",
                           remainingAttempts === 0 &&
                             "pointer-events-none opacity-50",
+                          isInvalid === i && "animate-shake",
                         )}
                         onClick={() => handleAnswer(i)}
                       >
@@ -279,17 +291,18 @@ export default function AdminRequest() {
                       <div
                         key={option + i}
                         className={cn(
-                          "ring-primary group grid size-full h-40 cursor-pointer place-content-center overflow-hidden rounded-md border text-center transition-all ease-in-out hover:ring-4",
+                          "ring-primary group grid size-full h-40 cursor-pointer place-content-center overflow-hidden rounded-md border transition-all ease-in-out hover:ring-4",
                           remainingAttempts === 0 &&
                             "pointer-events-none opacity-50",
                         )}
                         onClick={() => handleAnswer(i)}
                       >
                         <p
-                          className={clsx(
+                          className={cn(
+                            "text-sm",
                             currentTest === "math"
-                              ? "text-3xl font-bold"
-                              : "p-4 text-sm",
+                              ? "p-2 text-center font-semibold"
+                              : "p-4 text-justify",
                           )}
                         >
                           {option}
@@ -313,14 +326,6 @@ export default function AdminRequest() {
             </>
           )}
         </div>
-
-        <Button
-          variant={"secondary"}
-          onClick={handleClose}
-          className="block w-full sm:hidden"
-        >
-          Tutup
-        </Button>
       </div>
     </DrawerResponsive>
   );

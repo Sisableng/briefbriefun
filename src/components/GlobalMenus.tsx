@@ -28,7 +28,10 @@ export default function GlobalMenus() {
             Menu <ChevronDownIcon />
           </Button>
         </DropdownMenuTrigger>
-        <DropdownMenuContent className="dark">
+        <DropdownMenuContent
+          sideOffset={20}
+          className="dark max-sm:w-[calc(100vw-2rem)] max-sm:max-w-screen"
+        >
           {!pathname.includes("/me") && session && (
             <>
               <DropdownMenuItem

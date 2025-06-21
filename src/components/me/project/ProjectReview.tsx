@@ -69,14 +69,13 @@ RateLimitedDisplay.displayName = "RateLimitedDisplay";
 // Memoized Empty state component
 const EmptyState = memo(() => (
   <div className="inset-0 grid h-60 place-content-center gap-2 p-4 text-center">
-    <div className="bg-secondary m-auto mb-4 grid size-14 place-content-center rounded-full">
+    <div className="dark bg-secondary m-auto mb-4 grid size-14 place-content-center rounded-full">
       <FilePenIcon className="text-primary size-8" />
     </div>
     <h2 className="max-sm:text-2xl">Brief-an Dulu, Kerjain Nanti</h2>
     <p className="text-muted-foreground max-w-lg text-sm">
       Pilih tipe project, industri, dan gaya ngomong client-nya. Sisanya?
-      Serahin ke AI. <br /> Brief akan muncul seperti beneran dapet dari client
-      yang super... unik.
+      Serahin ke AI.
     </p>
   </div>
 ));

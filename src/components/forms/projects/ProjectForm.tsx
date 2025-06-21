@@ -29,7 +29,7 @@ import {
   SelectValue,
 } from "@/components/ui/select";
 
-import { ArrowRightIcon, LoaderCircleIcon } from "lucide-react";
+import { ArrowRightIcon, HeartIcon, LoaderCircleIcon } from "lucide-react";
 import { toast } from "sonner";
 import { experimental_useObject as useObject } from "@ai-sdk/react";
 import { outputSchema } from "@/ai-stuff/output-schema";
@@ -171,8 +171,9 @@ export default function ProjectForm() {
                   }}
                   placeholder="Tipe"
                   className="w-full"
+                  isDark
                 >
-                  <AutocompleteContent>
+                  <AutocompleteContent className="dark">
                     {types
                       .sort((a, b) => a.name.localeCompare(b.name))
                       .map((group) => (
@@ -224,6 +225,7 @@ export default function ProjectForm() {
                   }}
                   placeholder="Industri"
                   className="w-full"
+                  isDark
                 >
                   <AutocompleteContent>
                     {industries
@@ -286,9 +288,16 @@ export default function ProjectForm() {
   return (
     <div className="flex flex-1 flex-col gap-4">
       {data && (
-        <div className="text-primary flex w-max items-center gap-2 font-semibold">
-          <p>Sisa Nyawa:</p>
-          <p>{data?.remaining}</p>
+        <div className="dark:text-primary flex w-max items-center gap-2 font-semibold">
+          <p>Nyawa:</p>
+          {[...Array(data.remaining)].map((_, i) => (
+            <div
+              key={`remaining-${i}`}
+              className="text-foreground dark:text-border transition-transform ease-in-out hover:scale-125"
+            >
+              <HeartIcon className="fill-primary size-5" />
+            </div>
+          ))}
         </div>
       )}
 
@@ -351,7 +360,7 @@ export default function ProjectForm() {
                     </>
                   ) : (
                     <>
-                      Buat
+                      <span>Buat</span>
                       <ArrowRightIcon />
                     </>
                   )}

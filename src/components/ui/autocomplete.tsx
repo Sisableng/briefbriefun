@@ -118,6 +118,7 @@ export interface AutocompleteProps {
   disabled?: boolean;
   clearable?: boolean;
   noOptionsMessage?: string;
+  isDark?: boolean;
   children: ReactNode;
 }
 
@@ -136,6 +137,7 @@ export const Autocomplete = forwardRef<AutocompleteRef, AutocompleteProps>(
       disabled = false,
       clearable = true,
       noOptionsMessage = "No options found",
+      isDark,
       children,
     },
     ref,
@@ -371,7 +373,7 @@ export const Autocomplete = forwardRef<AutocompleteRef, AutocompleteProps>(
                   placeholder={placeholder}
                   disabled={disabled}
                   className={cn(
-                    `peer bg-secondary dark:border-input data-[placeholder]:text-muted-foreground [&_svg:not([class*='text-'])]:text-muted-foreground focus-visible:border-ring focus-visible:ring-ring/50 aria-invalid:ring-destructive/20 dark:aria-invalid:ring-destructive/40 aria-invalid:border-destructive dark:bg-input/30 dark:hover:bg-input/50 flex min-h-10 w-fit items-center justify-between gap-2 rounded-full px-3 py-2 text-sm whitespace-nowrap transition-[color,box-shadow] outline-none focus-visible:ring-[3px] disabled:cursor-not-allowed disabled:opacity-50 data-[size=default]:h-10 data-[size=sm]:h-8 *:data-[slot=select-value]:line-clamp-1 *:data-[slot=select-value]:flex *:data-[slot=select-value]:items-center *:data-[slot=select-value]:gap-3 [&_svg]:pointer-events-none [&_svg]:shrink-0 [&_svg:not([class*='size-'])]:size-4`,
+                    `peer bg-secondary dark:border-input data-[placeholder]:text-muted-foreground [&_svg:not([class*='text-'])]:text-muted-foreground focus-visible:border-ring focus-visible:ring-ring/50 aria-invalid:ring-destructive/20 dark:aria-invalid:ring-destructive/40 aria-invalid:border-destructive dark:bg-input/30 dark:hover:bg-input/50 text-foreground flex min-h-10 w-fit items-center justify-between gap-2 rounded-full px-3 py-2 text-sm whitespace-nowrap transition-[color,box-shadow] outline-none focus-visible:ring-[3px] disabled:cursor-not-allowed disabled:opacity-50 data-[size=default]:h-10 data-[size=sm]:h-8 *:data-[slot=select-value]:line-clamp-1 *:data-[slot=select-value]:flex *:data-[slot=select-value]:items-center *:data-[slot=select-value]:gap-3 [&_svg]:pointer-events-none [&_svg]:shrink-0 [&_svg:not([class*='size-'])]:size-4`,
                     className,
                   )}
                 />
@@ -410,7 +412,7 @@ export const Autocomplete = forwardRef<AutocompleteRef, AutocompleteProps>(
             <PopoverContent
               side="bottom"
               align="center"
-              className="border-0 p-1.5"
+              className={cn("border-0 p-1.5", isDark && "dark")}
               style={{
                 maxWidth: inputRef.current?.offsetWidth,
               }}
@@ -480,9 +482,9 @@ export const AutocompleteContent = forwardRef<
   return (
     <div
       ref={contentRef}
-      className={cn(`mt-1 flex max-h-80 flex-col shadow-lg`, className)}
+      className={cn(`mt-1 flex max-h-80 flex-col`, className)}
     >
-      <Scroller>
+      <Scroller className="bg-transparent shadow-none">
         {filteredItems.length > 0 && (
           <ItemIndexContext.Provider value={indexContextValue}>
             {children}

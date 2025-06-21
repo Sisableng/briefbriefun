@@ -54,7 +54,7 @@ export default function DrawerResponsive({
 
   if (!isDesktop) {
     return (
-      <Drawer dismissible={dismissible} open={open} onOpenChange={onOpenChange}>
+      <Drawer open={open} onOpenChange={onOpenChange}>
         {trigger && <DrawerTrigger asChild>{trigger}</DrawerTrigger>}
         <DrawerContent
           className={cn(

@@ -17,7 +17,7 @@ export default function LeaderBoardSection() {
     <section className="container space-y-20 text-center">
       <div className="space-y-4">
         <Badge>Leaderboard</Badge>
-        <h1>Sipaling Rajin</h1>
+        <h1>Sipaling Rajin 🏆</h1>
       </div>
 
       {isLoading ? (
