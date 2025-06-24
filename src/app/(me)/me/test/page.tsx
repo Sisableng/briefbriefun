@@ -16,6 +16,7 @@ import {
   PopoverContent,
   PopoverTrigger,
 } from "@/components/ui/popover";
+import { useListAccounts, useSession } from "@/hooks/query/auth-hooks";
 import React, { useState } from "react";
 
 export default function page() {
@@ -45,17 +46,19 @@ export default function page() {
   // });
   // const data = await res.json();
 
+  const { user } = useSession();
+  const { data: listAccounts } = useListAccounts();
+
   return (
     <div className="cme-content grid min-h-96 place-content-center gap-6">
       {/* <Button onClick={testToast}>Test Toast</Button> */}
-      <Autocomplete
+      {/* <Autocomplete
         value={selectedValue}
         onChange={setSelectedValue}
         onSelect={setSelectedOption}
         placeholder="Search fruits..."
       >
         <AutocompleteContent>
-          {/* Grouped items */}
           <AutocompleteGroup label="Citrus Fruits">
             <AutocompleteItem value="orange">🍊 Orange</AutocompleteItem>
             <AutocompleteItem value="lemon">🍋 Lemon</AutocompleteItem>
@@ -70,7 +73,6 @@ export default function page() {
             <AutocompleteItem value="raspberry">🫐 Raspberry</AutocompleteItem>
           </AutocompleteGroup>
 
-          {/* More non-grouped items */}
           <AutocompleteItem value="grape">🍇 Grape</AutocompleteItem>
           <AutocompleteItem value="watermelon">🍉 Watermelon</AutocompleteItem>
         </AutocompleteContent>
@@ -94,9 +96,10 @@ export default function page() {
           </PopoverAnchor>
         </PopoverTrigger>
         <PopoverContent>Place content for the popover here.</PopoverContent>
-      </Popover>
+      </Popover> */}
 
-      {/* <pre>{JSON.stringify({ session }, null, 2)}</pre> */}
+      <p>wew</p>
+      <pre>{JSON.stringify({ user, listAccounts }, null, 2)}</pre>
     </div>
   );
 }

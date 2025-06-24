@@ -3,7 +3,11 @@
 import SocialIcon from "@/components/SocialIcon";
 import { Skeleton } from "@/components/ui/skeleton";
 import { Button } from "@/components/ui/button";
-import { useSession, useUnlinkAccount } from "@/hooks/query/auth-hooks";
+import {
+  useListAccounts,
+  useSession,
+  useUnlinkAccount,
+} from "@/hooks/query/auth-hooks";
 import { authClient } from "@/lib/auth-client";
 import { useQuery } from "@tanstack/react-query";
 import { IdCardIcon, PlusIcon, XIcon } from "lucide-react";
@@ -26,15 +30,7 @@ export default function AccountTab() {
 
   const { user, refetch } = useSession();
 
-  const { data, isPending } = useQuery({
-    queryKey: ["account", user?.id],
-    queryFn: async () => {
-      const accounts = await authClient.listAccounts();
-
-      return accounts;
-    },
-    staleTime: 1000 * 60 * 30, // 30 minutes
-  });
+  const { data, isPending, error } = useListAccounts();
 
   const {
     mutateAsync: unlinkAccount,
@@ -86,9 +82,9 @@ export default function AccountTab() {
 
   // Get missing providers
   const getMissingProviders = () => {
-    if (!data?.data) return acceptedProviders;
+    if (!data) return acceptedProviders;
 
-    const existingProviders = data.data.map((item) => item.provider);
+    const existingProviders = data.map((item) => item.provider);
     return acceptedProviders.filter(
       (provider) => !existingProviders.includes(provider),
     );
@@ -110,15 +106,15 @@ export default function AccountTab() {
           </>
         ) : (
           data &&
-          (data.error ? (
+          (error ? (
             <div>
               <p>Hmmm, Kek nya ada yang salah.</p>
 
-              <pre>{JSON.stringify(data.error, null, 2)}</pre>
+              <pre>{JSON.stringify(error, null, 2)}</pre>
             </div>
           ) : (
             <>
-              {data.data.map((item) => (
+              {data.map((item) => (
                 <div
                   key={item.id}
                   className="bg-card flex min-h-16 items-center gap-4 rounded-xl p-4"

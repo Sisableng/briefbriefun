@@ -3,7 +3,7 @@ import {
   getProjectCountAction,
   getTopUsersWithMostProjects,
   getUserCountAction,
-} from "./actions";
+} from "../../actions/public";
 
 export const usePublicProjectCountQuery = () => {
   return useQuery({

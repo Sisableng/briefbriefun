@@ -3,7 +3,7 @@
 import { authClient } from "@/lib/auth-client";
 import { useRouter } from "@bprogress/next/app";
 import { usePathname } from "next/navigation";
-import React from "react";
+import React, { useTransition } from "react";
 import {
   DropdownMenu,
   DropdownMenuContent,
@@ -13,7 +13,13 @@ import {
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
 
-import { BoltIcon, LogOutIcon, PlusIcon, UserIcon } from "lucide-react";
+import {
+  BoltIcon,
+  LoaderCircleIcon,
+  LogOutIcon,
+  PlusIcon,
+  UserIcon,
+} from "lucide-react";
 import Link from "next/link";
 import SiteName from "@/components/SiteName";
 import { Button } from "@/components/ui/button";
@@ -25,9 +31,10 @@ import { useIsClient } from "@/hooks/useIsClient";
 import GlobalMenus from "@/components/GlobalMenus";
 import { mq, useMediaQuery } from "@/hooks/useMediaQuery";
 import { ThemeButton } from "@/components/ThemeButton";
-import { Separator } from "@/components/ui/separator";
 
 export default function Navbar() {
+  const [isPending, startTransition] = useTransition();
+
   const pathname = usePathname();
   const router = useRouter();
 
@@ -54,7 +61,7 @@ export default function Navbar() {
   return (
     <div
       className={clsx(
-        "sticky inset-x-0 top-0 z-60 max-w-screen overflow-hidden p-2 transition-all ease-in-out md:px-4 md:backdrop-blur",
+        "sticky inset-x-0 top-0 z-50 max-w-screen overflow-hidden p-2 transition-all ease-in-out md:px-4 md:backdrop-blur",
         isScrolled ? "md:bg-background/50" : "",
       )}
     >
@@ -140,8 +147,20 @@ export default function Navbar() {
                     </Link>
                   </DropdownMenuItem>
                   <DropdownMenuSeparator />
-                  <DropdownMenuItem variant="destructive" onClick={signOut}>
-                    <LogOutIcon />
+                  <DropdownMenuItem
+                    variant="destructive"
+                    onClick={() =>
+                      startTransition(async () => {
+                        await signOut();
+                      })
+                    }
+                    disabled={isPending}
+                  >
+                    {isPending ? (
+                      <LoaderCircleIcon className="animate-spin" />
+                    ) : (
+                      <LogOutIcon />
+                    )}
                     Keluar
                   </DropdownMenuItem>
                 </DropdownMenuContent>

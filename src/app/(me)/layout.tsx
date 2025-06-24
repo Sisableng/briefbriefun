@@ -11,6 +11,7 @@ import {
 import { headers } from "next/headers";
 import FloatingAddBriefBtn from "@/components/FloatingAddBriefBtn";
 import { Metadata } from "next/types";
+import AuthNoPasswordProtect from "@/components/providers/AuthNoPasswordProtect";
 
 interface MeLayoutProps {
   children: React.ReactNode;
@@ -26,7 +27,7 @@ export const metadata: Metadata = {
 const MeLayout = async ({ children }: MeLayoutProps) => {
   const queryClient = new QueryClient();
 
-  const { data, session, user } = await prefetchSession(
+  await prefetchSession(
     auth,
     queryClient,
     // @ts-ignore
@@ -35,11 +36,13 @@ const MeLayout = async ({ children }: MeLayoutProps) => {
 
   return (
     <HydrationBoundary state={dehydrate(queryClient)}>
-      <main className="flex min-h-dvh flex-col gap-10 pb-20 md:gap-20">
-        <Navbar />
-        {children}
-        <FloatingAddBriefBtn />
-      </main>
+      <AuthNoPasswordProtect>
+        <main className="flex min-h-dvh flex-col gap-10 pb-20 md:gap-20">
+          <Navbar />
+          {children}
+          <FloatingAddBriefBtn />
+        </main>
+      </AuthNoPasswordProtect>
     </HydrationBoundary>
   );
 };

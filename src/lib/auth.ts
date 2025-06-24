@@ -13,6 +13,7 @@ export const auth = betterAuth({
     provider: "pg",
     schema: authSchema,
   }),
+  trustedOrigins: ["http://localhost:3028", "https://b2f.wildanm.my.id"],
   session: {
     cookieCache: {
       enabled: true,

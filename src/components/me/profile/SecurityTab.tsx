@@ -6,7 +6,7 @@ import DrawerResponsive from "@/components/ui/drawer-responsive";
 import { Separator } from "@/components/ui/separator";
 import { useSession } from "@/hooks/query/auth-hooks";
 import { authClient, getErrorMessage } from "@/lib/auth-client";
-import { QueryClient } from "@tanstack/react-query";
+import { QueryClient, useQueryClient } from "@tanstack/react-query";
 import React from "react";
 import { toast } from "sonner";
 
@@ -54,9 +54,9 @@ export default function SecurityTab() {
   const { isSubmitting } = form.formState;
   const watchPw = form.watch("password");
 
-  async function onSubmit(values: z.infer<typeof loginSchema>) {
-    const queryClient = new QueryClient();
+  const queryClient = useQueryClient();
 
+  async function onSubmit(values: z.infer<typeof loginSchema>) {
     const { error } = await authClient.deleteUser({
       password: values.password,
     });
