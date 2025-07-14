@@ -10,7 +10,6 @@ import { useShallow } from "zustand/shallow";
 import { getCurrentQuestion, submitAnswer } from "@/lib/iq";
 import { toast } from "sonner";
 import { cn, scrambleText } from "@/lib/utils";
-import clsx from "clsx";
 import { Separator } from "./ui/separator";
 import { useSound } from "@/hooks/useSound";
 import FadeinImage from "./FadeinImage";
@@ -302,7 +301,7 @@ export default function AdminRequest() {
                             "text-sm",
                             currentTest === "math"
                               ? "p-2 text-center font-semibold"
-                              : "p-4 text-justify",
+                              : "p-4 text-left",
                           )}
                         >
                           {option}
